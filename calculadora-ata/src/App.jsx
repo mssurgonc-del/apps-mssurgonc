@@ -337,17 +337,17 @@ function evaluateDynamic(d, initialTier) {
   if (tier === 'none') {
     residualRisk = '—';
   } else if (cat.includes('Excelente') && noRAI) {
-    residualRisk = '0 – 1.6% (lobectomía o TT sin RAI)';
+    residualRisk = '0 – 1.6% (lobectomía o TT sin RAI; texto, no Fig. 6)';
   } else if (cat.includes('Excelente')) {
     if (initialTier === 'low') residualRisk = '< 2% (0.2 – 2%)';
     else if (initialTier === 'lowint' || initialTier === 'highint') residualRisk = '< 12% (1 – 12%)';
     else residualRisk = '3 – 15% (Era Alto Riesgo inicial: mantener vigilancia estrecha pese a excelente respuesta)';
   } else if (cat.includes('Indeterminada')) {
-    residualRisk = noRAI ? '0 – 5.6% (sin RAI)' : '5 – 20%';
+    residualRisk = noRAI ? '0 – 5.6% (sin RAI; texto, no Fig. 6)' : '5 – 20%';
   } else if (cat.includes('Bioquímicamente')) {
-    residualRisk = noRAI ? '0 – 31.6% (sin RAI)' : '20 – 53% evolucionará a enfermedad estructural';
+    residualRisk = noRAI ? '0 – 31.6% (sin RAI; texto, no Fig. 6)' : '20 – 53% evolucionará a enfermedad estructural';
   } else if (cat.includes('Estructuralmente')) {
-    residualRisk = 'Enfermedad persistente presente';
+    residualRisk = '100% (enfermedad persistente presente)';
   }
 
   // Meta de TSH y Plan de Vigilancia (Tabla 9, R31, R45–R50, R58)

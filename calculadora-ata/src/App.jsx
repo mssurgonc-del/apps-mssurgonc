@@ -10,7 +10,7 @@ const IconExcel = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" heigh
 const IconBook = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
 const IconReset = () => <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
 
-// --- DICCIONARIOS OMS 2022/2025 (Tabla 3 ATA 2025, pág. 850) ---
+// --- DICCIONARIOS OMS 2022/2025 (Tabla 3 ATA 2025) ---
 const HISTO_OPTIONS = [
   // PTC Bajo Grado
   { id: 'ptc_clasico', group: 'ptc_low', label: 'PTC Clásico', full: 'Carcinoma Papilar Clásico (o encapsulado clásico)' },
@@ -51,7 +51,7 @@ const TIER_STYLES = {
   none: { badge: 'bg-slate-500 text-white', card: 'bg-slate-50 border-slate-300', text: 'text-slate-700', band: 'bg-slate-400' },
 };
 
-// --- MOTOR POSOPERATORIO ATA 2025 (Fig. 2, pág. 848 + AJCC 8va Ed. Tabla 6, pág. 875) ---
+// --- MOTOR POSOPERATORIO ATA 2025 (Fig. 2 + AJCC 8va Ed. Tabla 6) ---
 function evaluatePostop(p) {
   const histObj = HISTO_OPTIONS.find(h => h.id === p.histo) || HISTO_OPTIONS[0];
   const isFoll = histObj.group === 'foll' || histObj.group === 'otc';
@@ -72,10 +72,10 @@ function evaluatePostop(p) {
     return {
       isNIFTP: true,
       tier: 'low',
-      label: 'MUY BAJO POTENCIAL MALIGNO (NO CÁNCER)',
+      label: 'MUY BAJO POTENCIAL MALIGNO',
       pct: 'Muy bajo',
       pT,
-      ajccStage: 'No aplica (Lesión pre-maligna / Bajo potencial)',
+      ajccStage: 'No aplica (neoplasia de muy bajo potencial maligno, R1)',
       drivers: ['▽ R1 (GPS): NIFTP, FT-UMP y Tumor Trabecular Hialinizante tienen potencial maligno inferior al DTC de más bajo riesgo.'],
       rai: { rec: 'NO INDICADO', act: '0 mCi', goal: 'No requiere completamiento quirúrgico ni I-131 de rutina [R1].' },
       warnings: []
@@ -90,7 +90,7 @@ function evaluatePostop(p) {
   // Validación de coherencia anatomopatológica en FTC / OTC
   if (isFoll) {
     if (p.follPattern === 'mi' && p.vi !== 'none') {
-      warnings.push('Incoherencia patológica: «Mínimamente invasivo (solo invasión capsular)» excluye invasión vascular. Si hay vasos invadidos, el tumor es «Encapsulado angioinvasivo» (OMS 2022/2025, Tabla 3).');
+      warnings.push('Incoherencia patológica: «Mínimamente invasivo (solo invasión capsular)» excluye invasión vascular. Si hay vasos invadidos, el tumor es «Encapsulado angioinvasivo» (Fig. 2: «Minimally invasive: capsular only»).');
     }
     if (p.follPattern === 'ea' && p.vi === 'none') {
       warnings.push('Incoherencia patológica: «Encapsulado angioinvasivo» requiere especificar si la invasión vascular es limitada (<4 vasos → Bajo-Intermedio) o extensa (≥4 vasos → Alto Riesgo).');
@@ -99,16 +99,16 @@ function evaluatePostop(p) {
 
   // 1. CRITERIOS DE ALTO RIESGO (>30% recurrencia estructural - Fig. 2)
   if (pT === 'T3b') high.push('pT3b: Extensión extratiroidea macroscópica a músculos pretiroideos (esternohioideo, esternotiroideo, tirohioideo u omohioideo)');
-  if (pT === 'T4a') high.push('pT4a: Extensión extratiroidea macroscópica a tejido subcutáneo, laringe, tráquea, esófago o nervio laríngeo recurrente');
+  if (pT === 'T4a') high.push('pT4a: Extensión extratiroidea macroscópica a tejidos blandos, laringe, tráquea, esófago o nervio laríngeo recurrente');
   if (pT === 'T4b') high.push('pT4b: Invasión macroscópica de fascia prevertebral o engloba carótida / vasos mediastinales');
   if (pT === 'T3a' && p.ete === 'micro') high.push('Combinación crítica Fig. 2: Tumor pT3a (>4 cm) + Extensión extratiroidea microscópica (48% riesgo de recurrencia, Chereau et al.)');
   if (histObj.group === 'high_grade' || p.highGradeFeatures) high.push('Histología de Alto Grado (PDTC criterios de Turín o DHGTC con ≥5 mitosis/2mm² o necrosis tumoral)');
-  if (p.margins === 'r2') high.push('Márgenes R2: Resección macroscópicamente incompleta (enfermedad residual grosera)');
+  if (p.margins === 'r2') high.push('Márgenes R2: Resección macroscópicamente incompleta (texto: «residual gross disease (R2) are categorized as ATA high-risk»; Fig. 2 lo lista en la columna PTC)');
   if (p.nodes === 'big3cm') high.push('Metástasis ganglionar clínica (cN1) con cualquier ganglio ≥ 3 cm');
-  if (p.nodes === 'ene') high.push('Extensión extranodal (ENE: rotura de la cápsula ganglionar por el tumor)');
+  if (p.nodes === 'ene') high.push('Extensión extranodal (ENE) del tumor metastásico (R27.1)');
   if (p.metastasis === 'm1') high.push('M1: Metástasis a distancia confirmada');
   if (isFoll && p.follPattern === 'wi') high.push(isOTC
-    ? 'OTC ampliamente invasivo (≥4 vasos o ≥4 focos de invasión capsular; Mayo Clinic, sección OTC)'
+    ? 'OTC ampliamente invasivo (≥4 vasos o ≥4 focos de invasión capsular con ETE mínima; sección OTC)'
     : `${histObj.label} ampliamente invasivo (invasión extensa del parénquima tiroideo)`);
   if (isFoll && p.vi === 'ext') high.push(`${histObj.label} encapsulado angioinvasivo con invasión vascular extensa (≥ 4 vasos)`);
 
@@ -124,7 +124,7 @@ function evaluatePostop(p) {
     lowInt.push('Compromiso ganglionar central cN1a, o pN1a con foco > 2 mm o > 5 ganglios afectados');
   }
   if (p.margins === 'r1_post') {
-    lowInt.push('Margen R1 microscópico positivo en cara POSTERIOR (HR 22.95 para recurrencia local vs. margen anterior)');
+    lowInt.push('Margen R1 microscópico positivo en cara POSTERIOR (factor independiente de enfermedad persistente/recurrente, HR 22.95; recurrencia 11.6% posterior vs 3.6% anterior)');
   }
   if (!isFoll && p.focality === 'multi_uni') {
     lowInt.push('Multifocalidad unilateral en PTC');
@@ -141,6 +141,7 @@ function evaluatePostop(p) {
     if (histObj.group === 'ptc_agg') intHigh.push(`${histObj.full} (Subtipo agresivo de PTC)`);
     if (p.vi === 'lim' || p.vi === 'ext') intHigh.push('Invasión vascular presente en PTC (cualquier número de vasos clasifica en Intermedio-Alto según Fig. 2)');
     if (p.focality === 'multi_bil_gt1') intHigh.push('Multifocalidad bilateral con al menos un foco > 1 cm');
+    if (p.focality === 'multi_bil_le1') warnings.push('Multifocalidad bilateral con todos los focos ≤1 cm: la Fig. 2 no la clasifica (Bajo exige «Unifocal»; Bajo-Int lista «Unilateral multifocality»; Int-Alto «Bilateral multifocality >1 cm»). No se sumó como factor: decidir con juicio clínico.');
   }
 
   // LNR elevado como modulador clínico (R16, R20, R28)
@@ -149,7 +150,7 @@ function evaluatePostop(p) {
   }
 
   if (histObj.id === 'cmtc') {
-    warnings.push('Alerta Genética (R2C, Tabla 4): El Carcinoma Cribriforme-Morular se asocia en ~40% a Poliposis Adenomatosa Familiar (gen APC) y puede preceder a los pólipos colónicos. Ofrecer consejería genética germinal y colonoscopía.');
+    warnings.push('Alerta Genética (R2C, Tabla 4): El Carcinoma Cribriforme-Morular se asocia en ~40% a Poliposis Adenomatosa Familiar (gen APC) y puede preceder a los pólipos colónicos. Considerar pruebas genéticas/consejería (R2C) y evaluación de alto riesgo colorrectal según NCCN (Tabla 4).');
   }
 
   // Fig. 2: «T1, T2 o T3a con 2+ factores Bajo-Intermedio» → Int-Alto. El T3a por sí solo ubica en
@@ -176,10 +177,10 @@ function evaluatePostop(p) {
 
   // Modulador Molecular Posoperatorio (R28B, Tabla 8)
   if (p.mol === 'tert_combo') {
-    warnings.push('Alto Riesgo Molecular (R28B, Tabla 8): BRAF V600E + TERT → RR 15.09 de mortalidad específica; RAS + TERT → HR ~106 de recurrencia; BRAF V600E + TERT o TP53 se asocia a pérdida de avidez por yodo. La guía usa el perfil molecular para afinar el riesgo, no para cambiar la categoría.');
+    warnings.push('Alto Riesgo Molecular (R28B, Tabla 8): BRAF V600E + TERT → RR 15.09 de mortalidad específica; RAS + TERT → HR ~106 de recurrencia; BRAF V600E + TERT o TP53 se asocia a pérdida de avidez por yodo. Si se obtuvo, puede usarse para estimar mejor el riesgo derivado del sistema ATA 2025 (R28B).');
   }
 
-  // ESTADIFICACIÓN AJCC 8va EDICIÓN (Mortalidad Específica - Tabla 6, pág. 875)
+  // ESTADIFICACIÓN AJCC 8va EDICIÓN (Mortalidad Específica - Tabla 6)
   const isN1 = p.nodes !== 'n0'; // n1a_micro también es N1 en AJCC (Tabla 6)
   const isM1 = p.metastasis === 'm1';
   let ajccStage = 'Estadio I';
@@ -206,14 +207,14 @@ function evaluatePostop(p) {
     };
   } else if (tier === 'high') {
     rai = {
-      rec: 'SÍ — Recomendado de rutina (Adyuvancia / Tratamiento)',
+      rec: 'SÍ — Recomendado de rutina (Adyuvancia)',
       act: '100 – 150 mCi (3.7–5.55 GBq)',
       goal: 'Ablación de remanente y terapia adyuvante para erradicar enfermedad microscópica sospechada.',
       ref: 'R32C (Fuerte, certeza moderada) · Tabla 10'
     };
   } else if (tier === 'highint') {
     rai = {
-      rec: 'CONSIDERAR (Inclinación favorable a Adyuvancia)',
+      rec: 'CONSIDERAR',
       act: '30 – 100 mCi (1.1–3.7 GBq)',
       goal: 'Ablación de remanente ± terapia adyuvante.',
       ref: 'R32B (Condicional, certeza baja) · Tabla 10'
@@ -229,7 +230,7 @@ function evaluatePostop(p) {
     rai = {
       rec: 'NO RECOMENDADO DE RUTINA (Observación)',
       act: '0 mCi (Si excepcionalmente se ablaciona: 30–50 mCi / 1.1–1.85 GBq)',
-      goal: 'Ninguno. ESTIMABL2: no-inferioridad de omitir I-131 en bajo riesgo; HiLo: 30 mCi no inferior a 100 mCi para ablación.',
+      goal: 'Ninguno o ablación de remanente (Tabla 10). ESTIMABL2: no-inferioridad de omitir I-131 en bajo riesgo; HiLo: 30 mCi no inferior a 100 mCi para ablación.',
       ref: 'R32A (Fuerte, certeza alta) · Tabla 10'
     };
   }
@@ -238,7 +239,7 @@ function evaluatePostop(p) {
     warnings.push('Particularidad en Carcinoma Oncocítico (R33): Los OTC suelen tener menor avidez por I-131. Si no se administra RAI empírico, considerar rastreo diagnóstico previo (DxWBS con I-123 o baja dosis de I-131) para confirmar avidez, y considerar 18FDG-PET/CT si Tg se eleva (R31G/R50A).');
   }
   if (p.ageGroup === 'gt70' && (tier === 'high' || isM1)) {
-    warnings.push('Alerta de Seguridad Geriátrica (R55A - Fuerte): Evitar actividades empíricas de I-131 > 150 mCi (5.55 GBq) en mayores de 70 años o con insuficiencia renal sin dosimetría previa. 200 mCi excede la actividad máxima tolerada (200 cGy a sangre/médula) en 22–38% de los ≥70 años (250 mCi: ~50%).');
+    warnings.push('Alerta de Seguridad Geriátrica (R55A - Fuerte): Evitar actividades empíricas de I-131 > 150 mCi (5.5 GBq) en mayores de 70 años o con insuficiencia renal sin dosimetría previa. 200 mCi excede la actividad máxima tolerada (200 cGy a sangre/médula) en 22–38% de los ≥70 años (250 mCi: ~50%).');
   }
 
   const drivers = [
@@ -264,7 +265,7 @@ function evaluatePostop(p) {
   };
 }
 
-// --- MOTOR DE RESPUESTA DINÁMICA AL TRATAMIENTO (Tabla 9, pág. 882 + Fig. 6, pág. 904) ---
+// --- MOTOR DE RESPUESTA DINÁMICA AL TRATAMIENTO (Tabla 9 + Fig. 6) ---
 function evaluateDynamic(d, initialTier) {
   const tgBasal = parseFloat(d.tgBasal);
   const tgStim = parseFloat(d.tgStim);
@@ -280,7 +281,7 @@ function evaluateDynamic(d, initialTier) {
     tier = 'high';
     reason = 'Evidencia estructural en imagen (US cervical, TC, RM, PET/CT o rastreo) o confirmada por biopsia locorregional/a distancia.';
   } else if (d.surgeryType === 'hemi') {
-    if (d.hemiLobe === 'normal' && d.imaging === 'neg' && d.tgAb !== 'rising') {
+    if (d.hemiLobe === 'normal' && d.imaging === 'neg') {
       cat = 'Respuesta Excelente (Post-Lobectomía)';
       tier = 'low';
       reason = 'Lóbulo contralateral normal (o nódulos benignos/bajo riesgo) sin ganglios anormales en ultrasonido (Tabla 9).';
@@ -296,7 +297,8 @@ function evaluateDynamic(d, initialTier) {
   } else if (d.surgeryType === 'tt_rai') {
     // Tiroidectomía Total + RAI (Tabla 9, col 2)
     const biochemInc = (hasBasal && tgBasal > 1.0) || (hasStim && tgStim > 10.0) || d.tgAb === 'rising';
-    const excellent = ((hasBasal && tgBasal < 0.2) || (!hasBasal && hasStim && tgStim < 1.0)) && (!hasStim || tgStim < 1.0) && d.tgAb === 'neg' && d.imaging === 'neg';
+    // Tabla 9, literal: «Nonstimulated Tg <0.2 or stimulated Tg <1» con TgAb negativos e imagen negativa
+    const excellent = ((hasBasal && tgBasal < 0.2) || (hasStim && tgStim < 1.0)) && d.tgAb === 'neg' && d.imaging === 'neg';
 
     if (biochemInc && d.imaging === 'neg') {
       cat = 'Respuesta Bioquímicamente Incompleta';
@@ -309,7 +311,7 @@ function evaluateDynamic(d, initialTier) {
     } else {
       cat = 'Respuesta Indeterminada';
       tier = 'lowint';
-      reason = 'Tg basal 0.2 – 1.0 ng/mL, Tg estimulada 1.0 – 10.0 ng/mL, TgAb positivos estables/en descenso, o hallazgos inespecíficos en imagen (<8–10 mm).';
+      reason = 'Tg basal 0.2 – 1.0 ng/mL, Tg estimulada 1.0 – 10.0 ng/mL, TgAb positivos estables/en descenso, o hallazgos inespecíficos en imagen.';
     }
   } else {
     // Tiroidectomía Total SIN RAI (Tabla 9, col 3)
@@ -323,21 +325,23 @@ function evaluateDynamic(d, initialTier) {
     } else if (excellent) {
       cat = 'Respuesta Excelente (Sin RAI)';
       tier = 'low';
-      reason = 'Tg no estimulada < 2.5 ng/mL con TgAb negativos e imagen negativa (umbral validado para tiroidectomía total sin RAI, R30/Tabla 9).';
+      reason = 'Tg no estimulada < 2.5 ng/mL con TgAb negativos e imagen negativa (umbral de la Tabla 9; discusión R30: «serum Tg levels up to 1–2.5 ng/mL while on LT4 therapy generally identify patients at low risk»).';
     } else {
       cat = 'Respuesta Indeterminada (Sin RAI)';
       tier = 'lowint';
-      reason = 'Tg no estimulada entre 2.5 y 5.0 ng/mL, TgAb estables/en descenso o hallazgos ecográficos inespecíficos.';
+      reason = 'Tg no estimulada entre 2.5 y 5.0 ng/mL, TgAb estables/en descenso o hallazgos inespecíficos en imagen.';
     }
   }
 
-  // Riesgo Residual de Recurrencia Estructural según Figura 6 (pág. 904)
+  // Riesgo Residual de Recurrencia Estructural según Figura 6 y texto de la sección de riesgo dinámico
   const noRAI = d.surgeryType !== 'tt_rai';
   let residualRisk = '5 – 20%';
   if (tier === 'none') {
     residualRisk = '—';
+  } else if (d.surgeryType === 'hemi' && !cat.includes('Excelente') && !cat.includes('Estructuralmente')) {
+    residualRisk = '— (Tabla 9: N/A en hemitiroidectomía)';
   } else if (cat.includes('Excelente') && noRAI) {
-    residualRisk = '0 – 1.6% (lobectomía o TT sin RAI; texto, no Fig. 6)';
+    residualRisk = '0 – 1.6% (lobectomía o TT sin RAI; Lee et al.: 7.4%; texto, no Fig. 6)';
   } else if (cat.includes('Excelente')) {
     if (initialTier === 'low') residualRisk = '< 2% (0.2 – 2%)';
     else if (initialTier === 'lowint' || initialTier === 'highint') residualRisk = '< 12% (1 – 12%)';
@@ -345,7 +349,7 @@ function evaluateDynamic(d, initialTier) {
   } else if (cat.includes('Indeterminada')) {
     residualRisk = noRAI ? '0 – 5.6% (sin RAI; texto, no Fig. 6)' : '5 – 20%';
   } else if (cat.includes('Bioquímicamente')) {
-    residualRisk = noRAI ? '0 – 31.6% (sin RAI; texto, no Fig. 6)' : '20 – 53% evolucionará a enfermedad estructural';
+    residualRisk = noRAI ? '0 – 31.6% (sin RAI; texto, no Fig. 6)' : '20 – 53% (tasa de recurrencia)';
   } else if (cat.includes('Estructuralmente')) {
     residualRisk = '100% (enfermedad persistente presente)';
   }
@@ -358,14 +362,17 @@ function evaluateDynamic(d, initialTier) {
     tshGoal = '—';
     actionPlan = 'Complete los valores de laboratorio para obtener el plan de vigilancia.';
   } else if (tier === 'high') {
-    tshGoal = 'Por debajo del rango normal de referencia; individualizar (FA, osteoporosis, edad). Datos sobre la meta óptima no concluyentes [Tabla 9 nota c, R45]';
+    tshGoal = 'Por debajo del rango normal de referencia; individualizar (FA, osteoporosis). Datos sobre la meta óptima no concluyentes [Tabla 9 nota c, R45]';
     actionPlan = 'Ganglios sospechosos ≥ 8–10 mm (eje corto): realizar PAAF con lavado de Tg (R31E). Si son < 8–10 mm sin amenazar estructuras vitales, pueden vigilarse (R31D). Para reoperar, la guía sugiere que el umbral previo de 8 mm podría elevarse a ≥15 mm en el compartimento central; alternativas: cirugía compartimental, ablación con etanol/RFA (R52) o I-131 si es ávido. Si es refractario a yodo (RAIR): biomarcadores y lenvatinib/sorafenib (R61–R62); terapias dirigidas según alteración NTRK, RET, ALK, BRAF (R67–R70).';
   } else if (tier === 'highint') {
     tshGoal = 'Por debajo del rango normal de referencia, sopesando comorbilidades. Datos sobre la meta óptima no concluyentes [Tabla 9 nota c, R45]';
-    actionPlan = 'Vigilar tendencia de Tg/TgAb cada 3–6 meses y US cervical. Si Tg o TgAb suben y el US de cuello es negativo, solicitar TC de tórax/hueso (R31F) o 18FDG-PET/CT si Tg > 10 ng/mL o en OTC/PDTC (R31G, R50A). Considerar I-131 empírico (100–200 mCi) solo si Tg está francamente elevada/en rápido ascenso y la imagen no muestra foco operable (R58B).';
+    actionPlan = 'Tg/TgAb cada 6–12 meses, con mayor frecuencia en riesgo intermedio-alto/alto (R47C), y US cervical. Si Tg o TgAb suben y el US de cuello es negativo, considerar TC de tórax/hueso (R31F); en OTC/PDTC con Tg/TgAb en ascenso y US negativo, 18FDG-PET/CT (R31G); en alto riesgo con Tg elevada (generalmente >10 ng/mL), sobre todo OTC/histología agresiva o rastreo negativo, 18FDG-PET/CT (R50A). Considerar I-131 empírico (100–200 mCi) solo si Tg está francamente elevada/en rápido ascenso y la imagen no muestra foco operable (R58B).';
+  } else if (tier === 'lowint' && d.surgeryType === 'hemi') {
+    tshGoal = 'Dentro del rango normal de referencia [Tabla 9]';
+    actionPlan = 'Nódulos del lóbulo residual: vigilar según las guías ATA de nódulo (R48.5); US cervical cada 1–3 años por 5–8 años (Tabla 11). No se recomienda Tg de rutina tras lobectomía (R48.6).';
   } else if (tier === 'lowint') {
     tshGoal = 'Dentro del rango normal de referencia [Tabla 9]';
-    actionPlan = 'Con Tg estimulada < 10 ng/mL (tras suspensión LT4) o < 5 ng/mL (con rhTSH), mantener solo hormona tiroidea y seguimiento seriado cada 6–12 meses sin I-131 empírico (R58A). La mayoría se reclasificará a Respuesta Excelente.';
+    actionPlan = 'Con Tg estimulada < 10 ng/mL (tras suspensión LT4) o < 5 ng/mL (con rhTSH), mantener solo hormona tiroidea y seguimiento seriado cada 6–12 meses sin I-131 empírico (R58A). La mayoría de estos pacientes tiene una buena respuesta clínica, especialmente si su riesgo inicial es bajo (Tabla 9).';
   } else if (initialTier !== 'low') {
     tshGoal = 'Dentro del rango normal de referencia [Tabla 9, R46A]';
     actionPlan = 'Respuesta excelente con riesgo inicial no bajo: el desescalamiento de R48 (Tabla 11) aplica solo a DTC de bajo riesgo. Mantener vigilancia según el riesgo inicial (recurrencia pese a respuesta excelente: hasta 12% en intermedio y 3–15% en alto riesgo): Tg/TgAb cada 6–12 meses y US cervical periódico.';
@@ -479,7 +486,7 @@ export default function App() {
       out += `📅 Fecha: ${patientMeta.fecha}${patientMeta.id ? ` | ID: ${patientMeta.id}` : ''}\n`;
       out += `──────────────────────────────────────────────────\n`;
       out += `1. ESTRATIFICACIÓN POSOPERATORIA INICIAL (ATA 2025 Fig. 2 & AJCC 8.ª Ed.):\n`;
-      out += `• Histotipo (OMS 2025): ${postopRes.histObj?.full || 'NIFTP'}\n`;
+      out += `• Histotipo (OMS 5.ª ed.): ${postopRes.histObj?.full || 'NIFTP'}\n`;
       out += `• Estadio Anatómico T: p${postopRes.pT} | Mortalidad (AJCC 8.ª): ${postopRes.ajccStage}\n`;
       out += `• RIESGO DE RECURRENCIA ESTRUCTURAL ATA 2025: ${postopRes.label} (${postopRes.pct})\n`;
       out += `• Factores determinantes:\n  ${postopRes.drivers.join('\n  ')}\n\n`;
@@ -562,7 +569,7 @@ export default function App() {
               ThyroidScore Pro · Suite Clínica e Investigación
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-              Verificada con <b>Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985</b> (Fig. 2, Fig. 6, Tablas 3, 5, 6, 9, 10 y 11)
+              Verificada con <b>Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985</b> (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña 4 fuera de esta guía
             </p>
           </div>
 
@@ -649,12 +656,12 @@ export default function App() {
             </h2>
             <div className="grid md:grid-cols-2 gap-4 text-xs leading-relaxed text-slate-700">
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                <strong className="text-slate-900 block mb-1 uppercase">1. Los 4 Niveles de Recurrencia Estructural (Fig. 2, pág. 848):</strong>
+                <strong className="text-slate-900 block mb-1 uppercase">1. Los 4 Niveles de Recurrencia Estructural (Fig. 2):</strong>
                 <ul className="space-y-1.5 mt-1">
                   <li><span className="font-bold text-emerald-700">• Bajo (&lt;10%):</span> T1–T2 (≤4 cm) intratiroideo, unifocal, pN0 o ≤5 micrometástasis (todas ≤2 mm), márgenes R0 o R1 anterior. En FTC/OTC: mínimamente invasivo (solo cápsula).</li>
                   <li><span className="font-bold text-amber-700">• Bajo–Intermedio (10–15%):</span> Tumor T3a (&gt;4 cm intratiroideo), o T1–T2 con <b>1 solo factor</b>: ETE microscópica, cN1a o pN1a (&gt;2 mm o &gt;5 ganglios), margen R1 posterior, multifocalidad unilateral en PTC, o invasión vascular limitada (&lt;4 vasos) en FTC/OTC.</li>
                   <li><span className="font-bold text-orange-700">• Intermedio–Alto (≥16–30%):</span> cN1b lateral (&lt;3 cm), subtipo agresivo de PTC, invasión vascular en PTC, multifocalidad bilateral (&gt;1 cm), o <b>T1–T3a con ≥2 factores Bajo-Intermedio</b> (Fig. 2).</li>
-                  <li><span className="font-bold text-red-700">• Alto (&gt;30%):</span> T3a + ETE microscópica, T3b (músculos pretiroideos), T4a/b, alto grado (PDTC/DHGTC), R2, ganglio ≥3 cm, extensión extranodal (ENE), M1, o FTC/OTC ampliamente invasivo o con ≥4 vasos.</li>
+                  <li><span className="font-bold text-red-700">• Alto (&gt;30%):</span> T3a + ETE microscópica, T3b (músculos pretiroideos), T4a/b, alto grado (PDTC/DHGTC), R2, cN1 ≥3 cm, extensión extranodal (ENE), M1, o FTC/OTC ampliamente invasivo o con ≥4 vasos.</li>
                 </ul>
               </div>
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
@@ -662,8 +669,8 @@ export default function App() {
                 <ul className="space-y-1.5 mt-1">
                   <li><span className="font-bold text-teal-800">• Tiroidectomía Total + RAI:</span> Excelente si Tg basal <b>&lt;0.2 ng/mL</b> (o estimulada &lt;1.0); Indeterminada <b>0.2–1.0</b> (estim. 1–10); Bioquímica Incompleta <b>&gt;1.0</b> (estim. &gt;10) o TgAb en ascenso.</li>
                   <li><span className="font-bold text-teal-800">• Tiroidectomía Total SIN RAI:</span> Excelente si Tg basal <b>&lt;2.5 ng/mL</b>; Indeterminada <b>2.5–5.0</b>; Bioquímica Incompleta <b>&gt;5.0 ng/mL</b>.</li>
-                  <li><span className="font-bold text-teal-800">• Hemitiroidectomía (R30B / R48.6):</span> Una Tg basal única a las 6–12 semanas descarta elevación masiva inesperada, pero <b>no se recomienda medir Tg de rutina</b> en el seguimiento.</li>
-                  <li><span className="font-bold text-teal-800">• Remisión Completa (R48):</span> En bajo riesgo con respuesta excelente sostenida, suspender US de cuello a los <b>5–8 años</b> y dar de alta del monitoreo bioquímico a los <b>10–15 años</b>.</li>
+                  <li><span className="font-bold text-teal-800">• Hemitiroidectomía (R30B / R48.6):</span> Una Tg única a las 6–12 semanas con TSH normal puede ser útil para asegurar que no esté inesperadamente elevada (punto de corte incierto), pero <b>no se recomienda medir Tg de rutina</b> en el seguimiento.</li>
+                  <li><span className="font-bold text-teal-800">• Remisión Completa (R48):</span> En bajo riesgo tratado con tiroidectomía total (± RAI) con respuesta excelente sostenida, suspender US de cuello a los <b>5–8 años</b> y dar de alta del monitoreo bioquímico a los <b>10–15 años</b>.</li>
                 </ul>
               </div>
             </div>
@@ -812,7 +819,7 @@ export default function App() {
                           {[
                             { v: 'mi', l: 'Mínimamente invasivo (Solo cápsula)' },
                             { v: 'ea', l: 'Encapsulado angioinvasivo' },
-                            { v: 'wi', l: postop.histo === 'otc' ? 'Ampliamente invasivo (≥4 vasos o ≥4 focos capsulares) (Alto Riesgo)' : 'Ampliamente invasivo (Alto Riesgo)' }
+                            { v: 'wi', l: postop.histo === 'otc' ? 'Ampliamente invasivo (≥4 vasos o ≥4 focos capsulares con ETE mínima) (Alto Riesgo)' : 'Ampliamente invasivo (Alto Riesgo)' }
                           ].map(o => (
                             <button
                               key={o.v}
@@ -897,7 +904,7 @@ export default function App() {
                           { v: 'n1a_mod', l: 'cN1a, o pN1a (> 5 ganglios o foco > 2 mm) [Bajo–Intermedio]' },
                           { v: 'n1b_lat', l: 'cN1b lateral clínicamente evidente (< 3 cm) [Intermedio–Alto]' },
                           { v: 'big3cm', l: 'Cualquier ganglio metastásico ≥ 3 cm (cN1) [Alto Riesgo]' },
-                          { v: 'ene', l: 'Extensión Extranodal (ENE / rotura capsular) [Alto Riesgo]' }
+                          { v: 'ene', l: 'Extensión extranodal (ENE) del tumor metastásico [Alto Riesgo]' }
                         ].map(o => (
                           <button
                             key={o.v}
@@ -977,7 +984,8 @@ export default function App() {
                           {[
                             { v: 'uni', l: 'Unifocal' },
                             { v: 'multi_uni', l: 'Multifocal unilateral (Bajo-Int)' },
-                            { v: 'multi_bil_gt1', l: 'Multifocal bilateral >1cm (Int-Alto)' }
+                            { v: 'multi_bil_gt1', l: 'Multifocal bilateral >1cm (Int-Alto)' },
+                            { v: 'multi_bil_le1', l: 'Multifocal bilateral, todos ≤1 cm (no definido en Fig. 2)' }
                           ].map(o => (
                             <button
                               key={o.v}
@@ -1018,7 +1026,7 @@ export default function App() {
                           {[
                             { v: 'none', l: 'No realizado / Bajo riesgo' },
                             { v: 'braf', l: 'BRAF V600E aislado' },
-                            { v: 'tert_combo', l: 'TERT prom. o BRAF/RAS+TERT/TP53' }
+                            { v: 'tert_combo', l: 'BRAF V600E/RAS + TERT prom. o TP53' }
                           ].map(o => (
                             <button
                               key={o.v}
@@ -1112,7 +1120,7 @@ export default function App() {
                           className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
                         />
                         <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
-                          <div><b>• Interpretación (R47E):</b> La tendencia longitudinal en el mismo laboratorio pesa más que el valor aislado. Si es positivo, interfiere con Tg-IMA.</div>
+                          <div><b>• Interpretación (R47E):</b> La tendencia de TgAb seriados con el mismo ensayo puede ser útil; los IMA/RIA de Tg suelen afectarse por TgAb; la imagen es la modalidad primaria de vigilancia en este grupo.</div>
                         </div>
                       </div>
                     </div>
@@ -1173,7 +1181,7 @@ export default function App() {
                       <div className="grid sm:grid-cols-3 gap-2">
                         {[
                           { v: 'neg', l: 'Negativos (Sin evidencia de enfermedad)' },
-                          { v: 'nonspec', l: 'Hallazgos inespecíficos (ej. lecho <6mm o ganglio <8mm)' },
+                          { v: 'nonspec', l: 'Hallazgos inespecíficos (ej. lecho <6 mm o ganglio <8–10 mm, R31D)' },
                           { v: 'structural', l: 'Enfermedad Estructural Evidente / Biopsia (+)' }
                         ].map(o => (
                           <button
@@ -1263,7 +1271,7 @@ export default function App() {
 
                         <div className="bg-white/75 p-3 rounded-xl border border-black/5 space-y-1.5 text-[11px] leading-snug">
                           <div>
-                            <strong className="text-slate-900">• Evaluación pre-RAI (R29, R30A, R31B):</strong> Medir Tg/TgAb a las <b>6–12 semanas</b> post-cirugía (nadir de Tg se alcanza a las 12 sem). Si Tg supera el rango excelente o hay TgAb, hacer US cervical antes del I-131.
+                            <strong className="text-slate-900">• Evaluación pre-RAI (R29, R30A, R31B):</strong> Medir Tg/TgAb a las <b>6–12 semanas</b> post-cirugía (mediana hasta el nadir de Tg: 12 semanas). Si Tg supera el rango excelente o hay TgAb, hacer US cervical antes del I-131.
                           </div>
                           <div>
                             <strong className="text-slate-900">• Rastreo Corporal Post-Terapia (R37, R38):</strong> Realizar rastreo corporal total (RxWBS) de rutina entre los <b>2 y 10 días posteriores</b> a la dosis de I-131, adicionando <b>SPECT/CT</b> si está disponible para localización anatómica.
@@ -1366,7 +1374,7 @@ export default function App() {
                   >
                     <option value="n0">cN0 (Sin ganglios clínicos ni ecográficos)</option>
                     <option value="n1a">cN1a (Ganglios centrales VI/VII comprometidos)</option>
-                    <option value="n1b">cN1b (Ganglios laterales IIa, III, IV, Vb comprometidos)</option>
+                    <option value="n1b">cN1b (ganglios laterales niveles I–V, uni/bilaterales o contralaterales, o retrofaríngeos)</option>
                   </select>
                 </div>
                 <div>
@@ -1388,7 +1396,8 @@ export default function App() {
                     className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50"
                   >
                     <option value="uni">Unilateral sin nódulos contralaterales sospechosos</option>
-                    <option value="bil">Enfermedad bilateral o nódulos contralaterales sospechosos</option>
+                    <option value="bil">Cáncer bilateral (multifocal, cT(m))</option>
+                    <option value="nod">Nódulos contralaterales sospechosos</option>
                   </select>
                 </div>
                 <div>
@@ -1412,6 +1421,8 @@ export default function App() {
                   ? 'Tiroidectomía Total [Tabla 5 / R15C]'
                   : surg.laterality === 'bil'
                   ? 'Tiroidectomía Total (cáncer bilateral) [R15A / Tabla 5]'
+                  : surg.laterality === 'nod'
+                  ? 'Lobectomía o Tiroidectomía Total (nodularidad contralateral sospechosa) [R15B; en cT1 «other indications», R15A]'
                   : surg.cT === 't2'
                   ? 'Lobectomía (Preferida por menor morbilidad) o Tiroidectomía Total [R15B]'
                   : 'Lobectomía Tiroidea (u Opciones No Quirúrgicas si es cT1a) [R15A / R11]'}
@@ -1428,8 +1439,8 @@ export default function App() {
                 <div className="bg-teal-900/80 p-3 rounded-xl border border-teal-700">
                   <strong className="text-teal-200 block mb-1">Alternativas No Quirúrgicas en cT1aN0M0 (R11–R14):</strong>
                   {surg.posteriorAbutment === 'yes'
-                    ? '⚠️ Por estar adyacente a la cápsula posterior/tráquea, NO es buen candidato a vigilancia activa; se prefiere lobectomía.'
-                    : '• Vigilancia Activa (R11A) con US cada 6 meses por 1–2 años y luego anual (R12), sin medir Tg sérica (R13). Indicar cirugía si crece ≥3 mm, aparece ganglio o por preferencia (R14). También puede considerarse Ablación Percutánea por RFA/MWA/LA (R11B).'}
+                    ? '⚠️ La vigilancia activa de tumores de localización posterior puede ser inapropiada por riesgo de invasión de estructuras vitales; estos casos fueron excluidos de los estudios.'
+                    : '• Vigilancia Activa (R11A) con US cada 6 meses por 1–2 años y luego anual (R12), sin medir Tg sérica (R13). Indicar cirugía si hay metástasis ganglionar nueva comprobada por biopsia, crecimiento ≥3 mm, metástasis a distancia, ETE, crecimiento posterior, ansiedad, imposibilidad de seguimiento o preferencia (R14). También puede considerarse Ablación Percutánea por RFA/MWA/LA (R11B).'}
                 </div>
               )}
 
@@ -1438,9 +1449,9 @@ export default function App() {
                   surg.cN === 'n1b' ? 'Disección terapéutica lateral compartimental (niveles IIa, III, IV y Vb) + disección central ipsilateral acompañante (R20B/C).' :
                   surg.cN === 'n1a' ? 'Disección central terapéutica (nivel VI y VII superior) acompañando a la tiroidectomía (R20A).' :
                   (surg.cT === 't1a' || surg.cT === 't1b' || surg.cT === 't2') ? 'NO realizar disección central profiláctica de rutina en cT1–T2 cN0 (R19A - Fuerte).' :
-                  'En tumores avanzados T3–T4 cN0, puede considerarse disección central profiláctica sopesando riesgo de hipoparatiroidismo (R19B).'
+                  'En PTC cN0 con T3–T4, o si la información servirá para planear la terapia, puede considerarse disección central profiláctica, sopesando los riesgos según evolucionen durante la tiroidectomía (R19B).'
                 }</div>
-                <div><b>• Estándares Perioperatorios (R6, R8, R22–R25):</b> Referir a cirujano de alto volumen (&gt;25–50 tiroidectomías/año, R6). Solicitar TC con contraste IV si hay sospecha invasiva (el yodo se depura en 4–6 semanas, R8). Evaluar voz preoperatoria y laringoscopía si hay disfonía, extensión posterior/extratiroidea, cirugía cervical o torácica alta previa, o metástasis ganglionares centrales o yugulares extensas (R22). Estimular vago/NLR antes de resecar el lóbulo contralateral para evitar parálisis bilateral (R23D). Suplementar calcio/vitamina D dirigido por PTH y evitar drenajes de rutina (R24B, R25).</div>
+                <div><b>• Estándares Perioperatorios (R6, R8, R22–R25):</b> Referir a cirujano de alto volumen (&gt;25–50 tiroidectomías/año, R6). Solicitar TC con contraste IV si hay sospecha invasiva (el yodo se depura en 4–6 semanas, R8). Evaluar la voz en todos (R22A); laringoscopía si hay disfonía, cirugía cervical o torácica alta previa, ETE posterior o metástasis ganglionares centrales o yugulares extensas (R22B). Estimular vago/NLR antes de resecar el lóbulo contralateral para evitar parálisis bilateral (R23D). Suplementar calcio/vitamina D dirigido por PTH y evitar drenajes de rutina (R24B, R25).</div>
               </div>
             </div>
           </div>
@@ -1452,7 +1463,7 @@ export default function App() {
             <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <h2 className="text-base font-black text-slate-900">Evaluación Previa de Nódulo (ACR TI-RADS 2017 & Bethesda 2023)</h2>
-                <span className="text-[11px] font-mono bg-slate-100 px-2 py-0.5 rounded text-slate-600">Complemento Pre-Diagnóstico</span>
+                <span className="text-[11px] font-mono bg-amber-100 border border-amber-300 px-2 py-0.5 rounded text-amber-900">Fuera de ATA 2025 · no verificado contra el artículo</span>
               </div>
               <div className="grid sm:grid-cols-2 gap-3 text-xs">
                 <div>
@@ -1547,7 +1558,7 @@ export default function App() {
                     </div>
                     <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-950">
                       <strong className="block mb-1">Nota de Transición ATA 2025 (R9, R10):</strong>
-                      Una vez confirmado el diagnóstico de cáncer diferenciado de tiroides (Bethesda VI o molecular positivo), <b>no se recomienda</b> medir Tiroglobulina sérica preoperatoria de rutina (R9) ni realizar paneles genómicos somáticos preoperatorios de rutina para decidir la extensión quirúrgica (R10). Proceda a la pestaña <b>3. Cirugía Preoperatoria</b>.
+                      Una vez confirmado el diagnóstico de cáncer diferenciado de tiroides (Bethesda VI o molecular positivo), <b>no se recomienda</b> medir Tg ni TgAb preoperatorias de rutina (R9) ni la evaluación genómica de rutina antes de la cirugía; si el perfil ya se conoce, puede considerarse para informar la extensión quirúrgica (R10). Proceda a la pestaña <b>3. Cirugía Preoperatoria</b>.
                     </div>
                   </>
                 );

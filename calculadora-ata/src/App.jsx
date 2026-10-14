@@ -33,6 +33,16 @@ const HISTO_OPTIONS = [
   { id: 'niftp', group: 'benign_pot', label: 'NIFTP / FT-UMP / HTT', full: 'Neoplasia Folicular No Invasiva (NIFTP) o Potencial Maligno Incierto (FT-UMP / HTT)' },
 ];
 
+// Bethesda 2023 (3.ª ed.): riesgo de malignidad media (rango) y manejo habitual
+const BETHESDA = {
+  '1': { label: 'I — No diagnóstica', rom: '13% (5–20%)', mgmt: 'Repetir PAAF guiada por ecografía.' },
+  '2': { label: 'II — Benigna', rom: '4% (2–7%)', mgmt: 'Seguimiento clínico y ecográfico.' },
+  '3': { label: 'III — Atipia de significado indeterminado (AUS)', rom: '22% (13–30%)', mgmt: 'Repetir PAAF, prueba molecular, lobectomía diagnóstica o vigilancia.' },
+  '4': { label: 'IV — Neoplasia folicular', rom: '30% (23–34%)', mgmt: 'Prueba molecular o lobectomía diagnóstica.' },
+  '5': { label: 'V — Sospechosa de malignidad', rom: '74% (67–83%)', mgmt: 'Prueba molecular, lobectomía o tiroidectomía casi total.' },
+  '6': { label: 'VI — Maligna', rom: '97% (97–100%)', mgmt: 'Lobectomía o tiroidectomía casi total según extensión (ver pestaña 3).' },
+};
+
 const TIER_STYLES = {
   low: { badge: 'bg-emerald-700 text-white', card: 'bg-emerald-50/90 border-emerald-300', text: 'text-emerald-900', band: 'bg-emerald-600' },
   lowint: { badge: 'bg-amber-600 text-white', card: 'bg-amber-50/90 border-amber-300', text: 'text-amber-900', band: 'bg-amber-500' },
@@ -520,7 +530,7 @@ export default function App() {
   const isFollSelected = postop.histo === 'ftc' || postop.histo === 'iefvptc' || postop.histo === 'otc';
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans pb-16">
+    <div className="min-h-screen bg-slate-100 text-slate-800 font-sans pb-28 lg:pb-16">
       {/* ENCABEZADO OFICIAL */}
       <header className="bg-slate-900 text-white py-5 px-4 sm:px-6 border-b-4 border-teal-600 shadow-md">
         <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -1153,8 +1163,8 @@ export default function App() {
             </div>
 
             {/* COLUMNA DERECHA: DASHBOARD CLÍNICO EN TIEMPO REAL (5 COLUMNAS) */}
-            <div className="lg:col-span-5">
-              <div className="sticky top-16 space-y-4">
+            <div className="lg:col-span-5 scroll-mt-16" id="resultados">
+              <div className="lg:sticky lg:top-16 space-y-4">
                 
                 {/* TARJETA DE RESULTADO POSOPERATORIO */}
                 <div className={`rounded-2xl border-2 shadow-lg overflow-hidden transition-all ${curStyle.card}`}>
@@ -1442,13 +1452,19 @@ export default function App() {
                 <div>
                   <label className="font-bold text-slate-600 block mb-1">Citología Bethesda 2023</label>
                   <select value={nodule.bethesda} onChange={e => setNodule({...nodule, bethesda: e.target.value})} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
-                    <option value="1">I — No diagnóstica (5–10%)</option>
-                    <option value="2">II — Benigna (0–3%)</option>
-                    <option value="3">III — AUS (13–30%)</option>
-                    <option value="4">IV — Neoplasia Folicular (25–45%)</option>
-                    <option value="5">V — Sospechosa de Malignidad (50–75%)</option>
-                    <option value="6">VI — Maligna (97–99%)</option>
+                    {Object.entries(BETHESDA).map(([k, b]) => (
+                      <option key={k} value={k}>{b.label} ({b.rom})</option>
+                    ))}
                   </select>
+                </div>
+                <div>
+                  <label className="font-bold text-slate-600 block mb-1">Diámetro mayor (cm)</label>
+                  <input
+                    type="number" inputMode="decimal" step="0.1" min="0"
+                    value={nodule.sizeCm}
+                    onChange={e => setNodule({ ...nodule, sizeCm: e.target.value })}
+                    className="w-full p-2 border rounded-lg bg-slate-50 font-semibold font-mono"
+                  />
                 </div>
               </div>
             </div>
@@ -1457,11 +1473,30 @@ export default function App() {
               {(() => {
                 const pts = nodule.comp + nodule.echo + nodule.shape + nodule.margin + nodule.foci;
                 const tr = pts === 0 ? 'TR1 (Benigno)' : pts <= 2 ? 'TR2 (No sospechoso)' : pts === 3 ? 'TR3 (Levemente sospechoso · PAAF ≥2.5 cm)' : pts <= 6 ? 'TR4 (Moderadamente sospechoso · PAAF ≥1.5 cm)' : 'TR5 (Altamente sospechoso · PAAF ≥1.0 cm)';
+                // Umbrales ACR TI-RADS 2017 (Tessler FN, et al. JACR 2017): [PAAF, seguimiento] en cm
+                const thr = pts <= 2 ? null : pts === 3 ? [2.5, 1.5] : pts <= 6 ? [1.5, 1.0] : [1.0, 0.5];
+                const size = parseFloat(nodule.sizeCm);
+                const fnaRec = !thr
+                  ? 'No requiere PAAF ni seguimiento por TI-RADS.'
+                  : isNaN(size)
+                  ? 'Ingrese el diámetro mayor para definir conducta.'
+                  : size >= thr[0]
+                  ? `PAAF indicada (≥ ${thr[0]} cm).`
+                  : size >= thr[1]
+                  ? `Seguimiento ecográfico (≥ ${thr[1]} cm y < ${thr[0]} cm); no PAAF por ahora.`
+                  : `Sin PAAF ni seguimiento obligado (< ${thr[1]} cm).`;
+                const bth = BETHESDA[nodule.bethesda];
                 return (
                   <>
                     <div className="p-3.5 rounded-xl bg-slate-900 text-white">
                       <span className="text-[10px] font-mono uppercase text-teal-300 block">Puntaje ACR TI-RADS: {pts} puntos</span>
                       <div className="text-base font-black mt-0.5">{tr}</div>
+                      <div className="text-xs font-semibold text-teal-200 mt-1">{fnaRec}</div>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                      <span className="text-[10px] font-mono uppercase text-slate-500 block">Bethesda 2023 · Riesgo de malignidad {bth.rom}</span>
+                      <div className="text-sm font-black text-slate-900 mt-0.5">{bth.label}</div>
+                      <div className="text-xs text-slate-700 mt-1 leading-snug">{bth.mgmt}</div>
                     </div>
                     <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-950">
                       <strong className="block mb-1">Nota de Transición ATA 2025 (R9, R10):</strong>
@@ -1474,6 +1509,20 @@ export default function App() {
           </div>
         )}
       </main>
+
+      {/* BARRA DE RESULTADO FLOTANTE (solo móvil/tablet) */}
+      {(activeTab === 'postop' || activeTab === 'dynamic') && (
+        <button
+          onClick={() => document.getElementById('resultados')?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+          className={`lg:hidden fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] text-left text-white shadow-[0_-4px_12px_rgba(0,0,0,0.15)] ${curStyle.band}`}
+        >
+          <span className="min-w-0">
+            <span className="block text-[10px] font-mono uppercase tracking-wider opacity-90">Riesgo ATA · p{postopRes.pT} · {dynRes.cat}</span>
+            <span className="block text-sm font-black truncate">{postopRes.label} ({postopRes.pct})</span>
+          </span>
+          <span className="shrink-0 text-xs font-bold bg-white/20 px-3 py-1.5 rounded-lg">Ver resultado ↓</span>
+        </button>
+      )}
     </div>
   );
 }

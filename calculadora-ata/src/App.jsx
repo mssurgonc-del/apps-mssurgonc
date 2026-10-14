@@ -177,7 +177,7 @@ function evaluatePostop(p) {
 
   // Modulador Molecular Posoperatorio (R28B, Tabla 8)
   if (p.mol === 'tert_combo') {
-    warnings.push('Alto Riesgo Molecular (R28B, Tabla 8): BRAF V600E + TERT → RR 15.09 de mortalidad específica; RAS + TERT → HR ~106 de recurrencia; BRAF V600E + TERT o TP53 se asocia a pérdida de avidez por yodo. Si se obtuvo, puede usarse para estimar mejor el riesgo derivado del sistema ATA 2025 (R28B).');
+    warnings.push('Alto Riesgo Molecular (R28B, Tabla 8): BRAF V600E + TERT → RR 15.09 de mortalidad específica; RAS + TERT → HR ~106 de recurrencia; BRAF V600E + TERT o TP53 se asocia a pérdida de avidez por yodo. Si se obtuvo, puede usarse para estimar mejor el riesgo derivado del sistema ATA 2025 (R28B).' + (isFoll && !isOTC ? ' En FTC/IEFVPTC usar la fila «Follicular Carcinoma and IEFVPTC» de la Tabla 8 (Corrigendum, Thyroid 2025;35(11):1350).' : ''));
   }
 
   // ESTADIFICACIÓN AJCC 8va EDICIÓN (Mortalidad Específica - Tabla 6)
@@ -503,7 +503,7 @@ export default function App() {
       out += `• Meta de TSH: ${dynRes.tshGoal}\n`;
       out += `• Plan de Seguimiento: ${dynRes.actionPlan}\n`;
       out += `──────────────────────────────────────────────────\n`;
-      out += `Ref: Ringel MD, Sosa JA, et al. 2025 ATA Management Guidelines for Adult Patients with DTC. Thyroid 2025;35(8):841-985.`;
+      out += `Ref: Ringel MD, Sosa JA, et al. 2025 ATA Management Guidelines for Adult Patients with DTC. Thyroid 2025;35(8):841-985. Corrigendum: Thyroid 2025;35(11):1350 (doi: 10.1177/10507256251387671).`;
       copyTextSafe(out, 'emr');
     } else if (mode === 'excel') {
       const headers = [
@@ -569,7 +569,7 @@ export default function App() {
               ThyroidScore Pro · Suite Clínica e Investigación
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-              Verificada con <b>Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985</b> (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña 4 fuera de esta guía
+              Verificada con <b>Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985</b> + Corrigendum <b>Thyroid 2025;35(11):1350</b> (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña 4 fuera de esta guía
             </p>
           </div>
 

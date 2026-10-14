@@ -25,4 +25,4 @@ La app es una PWA: desde el móvil, «Añadir a pantalla de inicio» la instala 
 No envía datos a ningún servidor; todo se calcula en el navegador.
 
 > Herramienta de apoyo a la decisión. No sustituye el juicio clínico ni la lectura de la guía original
-> (Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985).
+> (Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985; corrigendum Thyroid 2025;35(11):1350).

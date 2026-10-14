@@ -33,15 +33,67 @@ const HISTO_OPTIONS = [
   { id: 'niftp', group: 'benign_pot', label: 'NIFTP / FT-UMP / HTT', full: 'Neoplasia Folicular No Invasiva (NIFTP) o Potencial Maligno Incierto (FT-UMP / HTT)' },
 ];
 
-// Bethesda 2023 (3.ª ed.): riesgo de malignidad media (rango) y manejo habitual
+// Bethesda: solo categorías; ROM y manejo pendientes de fuente verificada
 const BETHESDA = {
-  '1': { label: 'I — No diagnóstica', rom: '13% (5–20%)', mgmt: 'Repetir PAAF guiada por ecografía.' },
-  '2': { label: 'II — Benigna', rom: '4% (2–7%)', mgmt: 'Seguimiento clínico y ecográfico.' },
-  '3': { label: 'III — Atipia de significado indeterminado (AUS)', rom: '22% (13–30%)', mgmt: 'Repetir PAAF, prueba molecular, lobectomía diagnóstica o vigilancia.' },
-  '4': { label: 'IV — Neoplasia folicular', rom: '30% (23–34%)', mgmt: 'Prueba molecular o lobectomía diagnóstica.' },
-  '5': { label: 'V — Sospechosa de malignidad', rom: '74% (67–83%)', mgmt: 'Prueba molecular, lobectomía o tiroidectomía casi total.' },
-  '6': { label: 'VI — Maligna', rom: '97% (97–100%)', mgmt: 'Lobectomía o tiroidectomía casi total según extensión (ver pestaña 3).' },
+  none: { label: 'Sin citología' },
+  '1': { label: 'I — No diagnóstica' },
+  '2': { label: 'II — Benigna' },
+  '3': { label: 'III — Atipia de significado indeterminado (AUS)' },
+  '4': { label: 'IV — Neoplasia folicular' },
+  '5': { label: 'V — Sospechosa de malignidad' },
+  '6': { label: 'VI — Maligna' },
 };
+
+// --- ACR TI-RADS 2017 (Tessler FN, et al. J Am Coll Radiol 2017;14:587-595, Fig. 1) ---
+const TIRADS_COMP = {
+  cystic: { l: 'Quístico o casi quístico', pts: 0 },
+  spongiform: { l: 'Espongiforme', pts: 0 },
+  mixed: { l: 'Mixto quístico y sólido', pts: 1 },
+  solid: { l: 'Sólido o casi sólido', pts: 2 },
+  undet: { l: 'No determinable (calcificación)', pts: 2 },
+};
+const TIRADS_FOCI = [
+  { k: 'macro', l: 'Macrocalcificaciones (sombra acústica)', pts: 1 },
+  { k: 'rim', l: 'Calcificaciones periféricas (anillo)', pts: 2 },
+  { k: 'punct', l: 'Focos ecogénicos puntiformes', pts: 3 },
+];
+
+function evaluateTirads(n) {
+  const notes = [];
+  let pts;
+  if (n.comp === 'spongiform') {
+    // Fig. 1: «Do not add further points for other categories»
+    pts = 0;
+    notes.push('Espongiforme: no se suman puntos de otras categorías. No clasificar como espongiforme solo por algunos espacios quísticos dispersos en un nódulo sólido.');
+  } else {
+    const echo = n.echo === -1 ? 1 : n.echo;
+    const margin = n.margin < 0 ? 0 : n.margin;
+    const foci = TIRADS_FOCI.reduce((acc, f) => acc + (n.foci[f.k] ? f.pts : 0), 0);
+    pts = TIRADS_COMP[n.comp].pts + echo + n.shape + margin + foci;
+  }
+  if (pts === 1) notes.push('1 punto no corresponde a ningún nivel: según el comité, todo nódulo que no sea TR1 suma al menos 2 puntos. Revise composición y ecogenicidad («anecoico» aplica a nódulos quísticos o casi quísticos).');
+  if (n.comp !== 'spongiform' && n.margin === 3) notes.push('Extensión extratiroidea evidente = malignidad (Fig. 1). La ETE mínima debe reportarse con cautela.');
+
+  let level, name, risk, thr = null, followUp = null;
+  if (pts === 0) { level = 'TR1'; name = 'Benigno'; risk = '≤ 2%'; }
+  else if (pts <= 2) { level = 'TR2'; name = 'No sospechoso'; risk = '≤ 2%'; }
+  else if (pts === 3) { level = 'TR3'; name = 'Levemente sospechoso'; risk = '5%'; thr = [2.5, 1.5]; followUp = 'US de seguimiento a 1, 3 y 5 años; puede suspenderse a los 5 años si no hay cambio de tamaño.'; }
+  else if (pts <= 6) { level = 'TR4'; name = 'Moderadamente sospechoso'; risk = '5 – 20%'; thr = [1.5, 1.0]; followUp = 'US de seguimiento a 1, 2, 3 y 5 años; puede suspenderse a los 5 años si no hay cambio de tamaño.'; }
+  else { level = 'TR5'; name = 'Altamente sospechoso'; risk = '≥ 20%'; thr = [1.0, 0.5]; followUp = 'US de seguimiento anual hasta 5 años; puede suspenderse a los 5 años si no hay cambio de tamaño.'; }
+
+  const size = parseFloat(n.sizeCm);
+  let rec;
+  if (!thr) { rec = 'No PAAF.'; }
+  else if (isNaN(size)) { rec = 'Ingrese el diámetro máximo para definir conducta.'; followUp = null; }
+  else if (size >= thr[0]) { rec = `PAAF (≥ ${thr[0]} cm).`; followUp = null; }
+  else if (size >= thr[1]) { rec = `Seguimiento ecográfico (≥ ${thr[1]} cm y < ${thr[0]} cm).`; }
+  else { rec = `Ni PAAF ni seguimiento (< ${thr[1]} cm).`; followUp = null; }
+
+  if (level === 'TR5' && !isNaN(size) && size >= 0.5 && size < 1.0) {
+    notes.push('TR5 de 5–9 mm: la biopsia puede ser apropiada en ciertas circunstancias (vigilancia activa, ablación o lobectomía de microcarcinoma); decisión compartida. Indicar si el nódulo se puede medir de forma reproducible y si está en localización subcapsular crítica.');
+  }
+  return { pts, level, name, risk, rec, followUp, notes };
+}
 
 const TIER_STYLES = {
   low: { badge: 'bg-emerald-700 text-white', card: 'bg-emerald-50/90 border-emerald-300', text: 'text-emerald-900', band: 'bg-emerald-600' },
@@ -442,7 +494,7 @@ export default function App() {
 
   // 4. Estado Nódulo (TI-RADS + Bethesda 2023)
   const [nodule, setNodule] = useState({
-    comp: 2, echo: 2, shape: 0, margin: 0, foci: 0, sizeCm: '1.6', bethesda: '6'
+    comp: 'solid', echo: 2, shape: 0, margin: 0, foci: { macro: false, rim: false, punct: false }, sizeCm: '1.6', bethesda: 'none'
   });
 
   const postopRes = useMemo(() => evaluatePostop(postop), [postop]);
@@ -569,7 +621,7 @@ export default function App() {
               ThyroidScore Pro · Suite Clínica e Investigación
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-              Verificada con <b>Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985</b> + Corrigendum <b>Thyroid 2025;35(11):1350</b> (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña 4 fuera de esta guía
+              Verificada con <b>Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985</b> + Corrigendum <b>Thyroid 2025;35(11):1350</b> (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña 4: ACR TI-RADS 2017 (JACR 2017;14:587–595)
             </p>
           </div>
 
@@ -1457,66 +1509,73 @@ export default function App() {
           </div>
         )}
 
-        {/* ==================== PESTAÑA 4: NÓDULO (ACR TI-RADS + BETHESDA 2023) ==================== */}
+        {/* ==================== PESTAÑA 4: NÓDULO (ACR TI-RADS 2017 — Tessler FN, et al. J Am Coll Radiol 2017;14:587-595) ==================== */}
         {activeTab === 'nodule' && (
           <div className="grid lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
-                <h2 className="text-base font-black text-slate-900">Evaluación Previa de Nódulo (ACR TI-RADS 2017 & Bethesda 2023)</h2>
-                <span className="text-[11px] font-mono bg-amber-100 border border-amber-300 px-2 py-0.5 rounded text-amber-900">Fuera de ATA 2025 · no verificado contra el artículo</span>
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h2 className="text-base font-black text-slate-900">Evaluación de Nódulo (ACR TI-RADS 2017)</h2>
+                <span className="text-[11px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">Fuente: Tessler FN, et al. J Am Coll Radiol 2017;14:587–595</span>
               </div>
+              <p className="text-[11px] text-slate-500 leading-snug">
+                Seleccione una opción en cada una de las primeras cuatro categorías y <b>todas las que apliquen</b> en focos ecogénicos; se suman los puntos (Fig. 1).
+              </p>
               <div className="grid sm:grid-cols-2 gap-3 text-xs">
                 <div>
                   <label className="font-bold text-slate-600 block mb-1">1. Composición</label>
-                  <select value={nodule.comp} onChange={e => setNodule({...nodule, comp: +e.target.value})} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
-                    <option value={0}>Quístico o Espongiforme (0 pts)</option>
-                    <option value={1}>Mixto quístico y sólido (1 pt)</option>
-                    <option value={2}>Sólido o casi sólido (2 pts)</option>
+                  <select value={nodule.comp} onChange={e => setNodule({ ...nodule, comp: e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
+                    {Object.entries(TIRADS_COMP).map(([k, o]) => <option key={k} value={k}>{o.l} ({o.pts} {o.pts === 1 ? 'pt' : 'pts'})</option>)}
                   </select>
+                  <span className="text-[11px] text-slate-500 block mt-1">Espongiforme: &gt;50% de pequeños espacios quísticos. Mixto: puntuar el componente sólido predominante.</span>
                 </div>
                 <div>
                   <label className="font-bold text-slate-600 block mb-1">2. Ecogenicidad</label>
-                  <select value={nodule.echo} onChange={e => setNodule({...nodule, echo: +e.target.value})} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
+                  <select value={nodule.echo} onChange={e => setNodule({ ...nodule, echo: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold" disabled={nodule.comp === 'spongiform'}>
                     <option value={0}>Anecoico (0 pts)</option>
-                    <option value={1}>Hiper o Isoecoico (1 pt)</option>
+                    <option value={1}>Hiper o isoecoico (1 pt)</option>
                     <option value={2}>Hipoecoico (2 pts)</option>
                     <option value={3}>Muy hipoecoico (3 pts)</option>
+                    <option value={-1}>No determinable (1 pt)</option>
                   </select>
+                  <span className="text-[11px] text-slate-500 block mt-1">Anecoico: solo nódulos quísticos o casi quísticos. Muy hipoecoico: más que la musculatura pretiroidea.</span>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-600 block mb-1">3. Forma</label>
-                  <select value={nodule.shape} onChange={e => setNodule({...nodule, shape: +e.target.value})} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
+                  <label className="font-bold text-slate-600 block mb-1">3. Forma (imagen transversal)</label>
+                  <select value={nodule.shape} onChange={e => setNodule({ ...nodule, shape: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold" disabled={nodule.comp === 'spongiform'}>
                     <option value={0}>Más ancho que alto (0 pts)</option>
                     <option value={3}>Más alto que ancho (3 pts)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-600 block mb-1">4. Márgenes</label>
-                  <select value={nodule.margin} onChange={e => setNodule({...nodule, margin: +e.target.value})} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
-                    <option value={0}>Lisos o mal definidos (0 pts)</option>
-                    <option value={2}>Lobulados o irregulares (2 pts)</option>
+                  <label className="font-bold text-slate-600 block mb-1">4. Margen</label>
+                  <select value={nodule.margin} onChange={e => setNodule({ ...nodule, margin: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold" disabled={nodule.comp === 'spongiform'}>
+                    <option value={0}>Liso (0 pts)</option>
+                    <option value={-1}>Mal definido (0 pts)</option>
+                    <option value={2}>Lobulado o irregular (2 pts)</option>
                     <option value={3}>Extensión extratiroidea (3 pts)</option>
+                    <option value={-2}>No determinable (0 pts)</option>
                   </select>
                 </div>
-                <div>
-                  <label className="font-bold text-slate-600 block mb-1">5. Focos Ecogénicos</label>
-                  <select value={nodule.foci} onChange={e => setNodule({...nodule, foci: +e.target.value})} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
-                    <option value={0}>Ninguno o cola de cometa (0 pts)</option>
-                    <option value={1}>Macrocalcificaciones (1 pt)</option>
-                    <option value={2}>Calcificación periférica en anillo (2 pts)</option>
-                    <option value={3}>Focos ecogénicos puntiformes (3 pts)</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="font-bold text-slate-600 block mb-1">Citología Bethesda 2023</label>
-                  <select value={nodule.bethesda} onChange={e => setNodule({...nodule, bethesda: e.target.value})} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
-                    {Object.entries(BETHESDA).map(([k, b]) => (
-                      <option key={k} value={k}>{b.label} ({b.rom})</option>
+                <div className="sm:col-span-2">
+                  <span className="font-bold text-slate-600 block mb-1">5. Focos ecogénicos (todos los que apliquen)</span>
+                  <div className="grid sm:grid-cols-3 gap-1.5">
+                    {TIRADS_FOCI.map(f => (
+                      <label key={f.k} className={`flex items-start gap-2 p-2 rounded-lg border cursor-pointer ${nodule.comp === 'spongiform' ? 'opacity-50' : ''} ${nodule.foci[f.k] ? 'bg-teal-50 border-teal-400' : 'bg-slate-50 border-slate-200'}`}>
+                        <input
+                          type="checkbox"
+                          disabled={nodule.comp === 'spongiform'}
+                          checked={nodule.foci[f.k]}
+                          onChange={e => setNodule({ ...nodule, foci: { ...nodule.foci, [f.k]: e.target.checked } })}
+                          className="mt-0.5 rounded text-teal-600"
+                        />
+                        <span className="font-semibold">{f.l} ({f.pts} {f.pts === 1 ? 'pt' : 'pts'})</span>
+                      </label>
                     ))}
-                  </select>
+                  </div>
+                  <span className="text-[11px] text-slate-500 block mt-1">Sin marcar = ninguno o artefactos en cola de cometa grandes (0 pts).</span>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-600 block mb-1">Diámetro mayor (cm)</label>
+                  <label className="font-bold text-slate-600 block mb-1">Diámetro máximo (cm)</label>
                   <input
                     type="number" inputMode="decimal" step="0.1" min="0"
                     value={nodule.sizeCm}
@@ -1524,37 +1583,43 @@ export default function App() {
                     className="w-full p-2 border rounded-lg bg-slate-50 font-semibold font-mono"
                   />
                 </div>
+                <div>
+                  <label className="font-bold text-slate-600 block mb-1">Citología Bethesda (si existe)</label>
+                  <select value={nodule.bethesda} onChange={e => setNodule({ ...nodule, bethesda: e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
+                    {Object.entries(BETHESDA).map(([k, b]) => <option key={k} value={k}>{b.label}</option>)}
+                  </select>
+                </div>
               </div>
             </div>
 
             <div className="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3 text-xs">
               {(() => {
-                const pts = nodule.comp + nodule.echo + nodule.shape + nodule.margin + nodule.foci;
-                const tr = pts === 0 ? 'TR1 (Benigno)' : pts <= 2 ? 'TR2 (No sospechoso)' : pts === 3 ? 'TR3 (Levemente sospechoso · PAAF ≥2.5 cm)' : pts <= 6 ? 'TR4 (Moderadamente sospechoso · PAAF ≥1.5 cm)' : 'TR5 (Altamente sospechoso · PAAF ≥1.0 cm)';
-                // Umbrales ACR TI-RADS 2017 (Tessler FN, et al. JACR 2017): [PAAF, seguimiento] en cm
-                const thr = pts <= 2 ? null : pts === 3 ? [2.5, 1.5] : pts <= 6 ? [1.5, 1.0] : [1.0, 0.5];
-                const size = parseFloat(nodule.sizeCm);
-                const fnaRec = !thr
-                  ? 'No requiere PAAF ni seguimiento por TI-RADS.'
-                  : isNaN(size)
-                  ? 'Ingrese el diámetro mayor para definir conducta.'
-                  : size >= thr[0]
-                  ? `PAAF indicada (≥ ${thr[0]} cm).`
-                  : size >= thr[1]
-                  ? `Seguimiento ecográfico (≥ ${thr[1]} cm y < ${thr[0]} cm); no PAAF por ahora.`
-                  : `Sin PAAF ni seguimiento obligado (< ${thr[1]} cm).`;
+                const t = evaluateTirads(nodule);
                 const bth = BETHESDA[nodule.bethesda];
                 return (
                   <>
                     <div className="p-3.5 rounded-xl bg-slate-900 text-white">
-                      <span className="text-[10px] font-mono uppercase text-teal-300 block">Puntaje ACR TI-RADS: {pts} puntos</span>
-                      <div className="text-base font-black mt-0.5">{tr}</div>
-                      <div className="text-xs font-semibold text-teal-200 mt-1">{fnaRec}</div>
+                      <span className="text-[10px] font-mono uppercase text-teal-300 block">Puntaje ACR TI-RADS: {t.pts} puntos</span>
+                      <div className="text-base font-black mt-0.5">{t.level} · {t.name}</div>
+                      <div className="text-[11px] text-slate-300 mt-0.5">Riesgo de cáncer en la serie del comité: {t.risk}</div>
+                      <div className="text-xs font-semibold text-teal-200 mt-1.5">{t.rec}</div>
+                      {t.followUp && <div className="text-[11px] text-slate-200 mt-1">{t.followUp}</div>}
                     </div>
-                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                      <span className="text-[10px] font-mono uppercase text-slate-500 block">Bethesda 2023 · Riesgo de malignidad {bth.rom}</span>
+                    {t.notes.map((n, i) => (
+                      <div key={i} className="bg-amber-100/90 border border-amber-400 text-amber-950 p-3 rounded-xl font-semibold leading-snug">⚠️ {n}</div>
+                    ))}
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-[11px] leading-snug text-slate-700">
+                      <strong className="text-slate-900 block">Reglas del comité ACR TI-RADS:</strong>
+                      <div>• Crecimiento significativo: aumento ≥20% en al menos dos dimensiones con un mínimo de 2 mm, o ≥50% en volumen.</div>
+                      <div>• Si el nivel TI-RADS aumenta en el seguimiento, el siguiente US se hace en 1 año.</div>
+                      <div>• Biopsiar como máximo los 2 nódulos con mayor puntaje que cumplan criterio de PAAF; seguir como máximo 4 bajo el umbral. El tamaño no es el criterio principal para elegir cuál biopsiar.</div>
+                      <div>• PAAF de ganglios cervicales sospechosos, además de hasta 2 nódulos.</div>
+                      <div>• Medir en tres ejes; el diámetro máximo define la conducta.</div>
+                    </div>
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-amber-300">
+                      <span className="text-[10px] font-mono uppercase text-amber-800 block">Bethesda · sin fuente verificada en esta app</span>
                       <div className="text-sm font-black text-slate-900 mt-0.5">{bth.label}</div>
-                      <div className="text-xs text-slate-700 mt-1 leading-snug">{bth.mgmt}</div>
+                      <div className="text-xs text-slate-700 mt-1 leading-snug">Riesgo de malignidad y manejo pendientes de cargar el artículo fuente (Bethesda 2023). El comité ACR no abordó el seguimiento de nódulos ya puncionados; la repetición de PAAF se guía por Bethesda.</div>
                     </div>
                     <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-950">
                       <strong className="block mb-1">Nota de Transición ATA 2025 (R9, R10):</strong>

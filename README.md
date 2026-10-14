@@ -4,7 +4,7 @@ Herramientas clínicas web de cirugía oncológica.
 
 | App | Carpeta | Descripción |
 |---|---|---|
-| ThyroidScore Pro | `calculadora-ata/` | Estratificación de riesgo en cáncer diferenciado de tiroides: ATA 2025 (Fig. 2), AJCC 8.ª, respuesta dinámica (Tabla 9 / Fig. 6), cirugía (Tabla 5), TI-RADS/Bethesda. Exporta nota para expediente y fila TSV para Excel. |
+| ThyroidScore Pro | `calculadora-ata/` | Estratificación de riesgo en cáncer diferenciado de tiroides: ATA 2025 (Fig. 2), AJCC 8.ª, respuesta dinámica (Tabla 9 / Fig. 6), cirugía (Tabla 5), nódulo por ACR TI-RADS 2017 (JACR 2017;14:587–595). Exporta nota para expediente y fila TSV para Excel. |
 
 ## Desarrollo local
 

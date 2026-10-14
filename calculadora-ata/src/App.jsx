@@ -152,6 +152,10 @@ function evaluatePostop(p) {
     warnings.push('Alerta Genética (R2C, Tabla 4): El Carcinoma Cribriforme-Morular se asocia en ~40% a Poliposis Adenomatosa Familiar (gen APC) y puede preceder a los pólipos colónicos. Ofrecer consejería genética germinal y colonoscopía.');
   }
 
+  // Fig. 2: «T1, T2 o T3a con 2+ factores Bajo-Intermedio» → Int-Alto. El T3a por sí solo ubica en
+  // Bajo-Intermedio pero no cuenta como uno de esos factores.
+  const lowIntFactors = lowInt.length - (pT === 'T3a' && p.ete === 'none' ? 1 : 0);
+
   // DETERMINACIÓN DE LA CATEGORÍA FINAL ATA 2025 (Con regla aditiva 2+ factores Bajo-Intermedio)
   let tier = 'low';
   let label = 'BAJO';
@@ -161,11 +165,10 @@ function evaluatePostop(p) {
     tier = 'high'; label = 'ALTO'; pct = '> 30%';
   } else if (intHigh.length > 0) {
     tier = 'highint'; label = 'INTERMEDIO–ALTO'; pct = '16 – 30%';
-  } else if (lowInt.length >= 2) {
+  } else if (lowIntFactors >= 2) {
     tier = 'highint'; label = 'INTERMEDIO–ALTO'; pct = '16 – 30%';
-    intHigh.push(`Coexistencia de ${lowInt.length} factores Bajo-Intermedio → se escala a Int-Alto`);
-    warnings.push('Escalamiento por ≥2 factores Bajo-Intermedio: el texto de la guía solo dice que «el mayor riesgo de recurrencia frecuentemente depende de factores coexistentes» (sección R28); la regla automática no está escrita en el texto. Confirmar con la Fig. 2.');
-  } else if (lowInt.length === 1) {
+    intHigh.push(`Fig. 2: «2+ Low-intermediate risk factors» — coexistencia de ${lowIntFactors} factores Bajo-Intermedio${pT === 'T3a' ? ' en tumor T3a' : ''}`);
+  } else if (lowInt.length >= 1) {
     tier = 'lowint'; label = 'BAJO–INTERMEDIO'; pct = '10 – 15%';
   } else {
     tier = 'low'; label = 'BAJO'; pct = '< 10%';
@@ -650,7 +653,7 @@ export default function App() {
                 <ul className="space-y-1.5 mt-1">
                   <li><span className="font-bold text-emerald-700">• Bajo (&lt;10%):</span> T1–T2 (≤4 cm) intratiroideo, unifocal, pN0 o ≤5 micrometástasis (todas ≤2 mm), márgenes R0 o R1 anterior. En FTC/OTC: mínimamente invasivo (solo cápsula).</li>
                   <li><span className="font-bold text-amber-700">• Bajo–Intermedio (10–15%):</span> Tumor T3a (&gt;4 cm intratiroideo), o T1–T2 con <b>1 solo factor</b>: ETE microscópica, cN1a o pN1a (&gt;2 mm o &gt;5 ganglios), margen R1 posterior, multifocalidad unilateral en PTC, o invasión vascular limitada (&lt;4 vasos) en FTC/OTC.</li>
-                  <li><span className="font-bold text-orange-700">• Intermedio–Alto (≥16–30%):</span> cN1b lateral (&lt;3 cm), subtipo agresivo de PTC, invasión vascular en PTC, multifocalidad bilateral (&gt;1 cm), o coexistencia de ≥2 factores Bajo-Intermedio (escalamiento usado por esta app; no explícito en el texto de la guía).</li>
+                  <li><span className="font-bold text-orange-700">• Intermedio–Alto (≥16–30%):</span> cN1b lateral (&lt;3 cm), subtipo agresivo de PTC, invasión vascular en PTC, multifocalidad bilateral (&gt;1 cm), o <b>T1–T3a con ≥2 factores Bajo-Intermedio</b> (Fig. 2).</li>
                   <li><span className="font-bold text-red-700">• Alto (&gt;30%):</span> T3a + ETE microscópica, T3b (músculos pretiroideos), T4a/b, alto grado (PDTC/DHGTC), R2, ganglio ≥3 cm, extensión extranodal (ENE), M1, o FTC/OTC ampliamente invasivo o con ≥4 vasos.</li>
                 </ul>
               </div>
@@ -890,7 +893,7 @@ export default function App() {
                       <div className="grid sm:grid-cols-2 gap-2">
                         {[
                           { v: 'n0', l: 'pN0 / cN0 [Bajo]' },
-                          { v: 'n1a_micro', l: 'pN1a micrometástasis (≤ 5 ganglios, todos < 2 mm) [Bajo; cuenta como N1 en AJCC]' },
+                          { v: 'n1a_micro', l: 'pN1a micrometástasis (≤ 5 ganglios, todos ≤ 2 mm) [Bajo; cuenta como N1 en AJCC]' },
                           { v: 'n1a_mod', l: 'cN1a, o pN1a (> 5 ganglios o foco > 2 mm) [Bajo–Intermedio]' },
                           { v: 'n1b_lat', l: 'cN1b lateral clínicamente evidente (< 3 cm) [Intermedio–Alto]' },
                           { v: 'big3cm', l: 'Cualquier ganglio metastásico ≥ 3 cm (cN1) [Alto Riesgo]' },

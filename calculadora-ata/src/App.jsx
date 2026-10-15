@@ -33,15 +33,18 @@ const HISTO_OPTIONS = [
   { id: 'niftp', group: 'benign_pot', label: 'NIFTP / FT-UMP / HTT', full: 'Neoplasia Folicular No Invasiva (NIFTP) o Potencial Maligno Incierto (FT-UMP / HTT)' },
 ];
 
-// Bethesda: solo categorías; ROM y manejo pendientes de fuente verificada
+// Bethesda 2023 (3.ª ed.). Fuente: Suzuki A, Bychkov A. Bethesda system diagnostic categories. PathologyOutlines.com
+// (act. 12-jun-2025), que resume Ali SZ, et al. Thyroid 2023;33:1039. ROM: «NIFTP = maligno» / «NIFTP ≠ maligno».
 const BETHESDA = {
   none: { label: 'Sin citología' },
-  '1': { label: 'I — No diagnóstica' },
-  '2': { label: 'II — Benigna' },
-  '3': { label: 'III — Atipia de significado indeterminado (AUS)' },
-  '4': { label: 'IV — Neoplasia folicular' },
-  '5': { label: 'V — Sospechosa de malignidad' },
-  '6': { label: 'VI — Maligna' },
+  '1': { label: 'I — No diagnóstica', rom: '10 – 13% de todos los nódulos; hasta 30% de los resecados', mgmt: 'Repetir PAAF, excepto quiste puro.' },
+  '2': { label: 'II — Benigna', rom: '< 3%', mgmt: 'Seguimiento según el patrón ecográfico.' },
+  '3n': { label: 'III — AUS con atipia nuclear', rom: '36 – 44% (AUS global: 13 – 30% con NIFTP = maligno; 6 – 20% con NIFTP ≠ maligno)', mgmt: 'Repetir PAAF o prueba molecular.' },
+  '3o': { label: 'III — AUS, otra atipia', rom: '15 – 23% (AUS global: 13 – 30% con NIFTP = maligno; 6 – 20% con NIFTP ≠ maligno)', mgmt: 'Repetir PAAF o prueba molecular.' },
+  '4': { label: 'IV — Neoplasia folicular', rom: '23 – 34% (NIFTP = maligno) o 23% (NIFTP ≠ maligno)', mgmt: 'Lobectomía diagnóstica o prueba molecular.' },
+  '4o': { label: 'IV — Neoplasia folicular oncocítica', rom: '25 – 50%', mgmt: 'Lobectomía diagnóstica o prueba molecular.' },
+  '5': { label: 'V — Sospechosa de malignidad', rom: '74% (NIFTP = maligno) o 65% (NIFTP ≠ maligno)', mgmt: 'Cirugía (habitualmente).' },
+  '6': { label: 'VI — Maligna', rom: '97 – 100% (NIFTP = maligno) o 94% (NIFTP ≠ maligno)', mgmt: 'Cirugía (habitualmente). Para cáncer diferenciado, ver pestaña 3 (ATA 2025).' },
 };
 
 // --- ACR TI-RADS 2017 (Tessler FN, et al. J Am Coll Radiol 2017;14:587-595, Fig. 1) ---
@@ -621,7 +624,7 @@ export default function App() {
               ThyroidScore Pro · Suite Clínica e Investigación
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-              Verificada con <b>Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985</b> + Corrigendum <b>Thyroid 2025;35(11):1350</b> (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña 4: ACR TI-RADS 2017 (JACR 2017;14:587–595)
+              Verificada con <b>Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985</b> + Corrigendum <b>Thyroid 2025;35(11):1350</b> (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña 4: ACR TI-RADS 2017 (JACR 2017;14:587–595) y Bethesda 2023 (resumen PathologyOutlines)
             </p>
           </div>
 
@@ -1515,7 +1518,7 @@ export default function App() {
             <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-base font-black text-slate-900">Evaluación de Nódulo (ACR TI-RADS 2017)</h2>
-                <span className="text-[11px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">Fuente: Tessler FN, et al. J Am Coll Radiol 2017;14:587–595</span>
+                <span className="text-[11px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">TI-RADS: Tessler FN, et al. J Am Coll Radiol 2017;14:587–595 · Bethesda 2023 (vía PathologyOutlines)</span>
               </div>
               <p className="text-[11px] text-slate-500 leading-snug">
                 Seleccione una opción en cada una de las primeras cuatro categorías y <b>todas las que apliquen</b> en focos ecogénicos; se suman los puntos (Fig. 1).
@@ -1616,11 +1619,15 @@ export default function App() {
                       <div>• PAAF de ganglios cervicales sospechosos, además de hasta 2 nódulos.</div>
                       <div>• Medir en tres ejes; el diámetro máximo define la conducta.</div>
                     </div>
-                    <div className="p-3.5 rounded-xl bg-slate-50 border border-amber-300">
-                      <span className="text-[10px] font-mono uppercase text-amber-800 block">Bethesda · sin fuente verificada en esta app</span>
-                      <div className="text-sm font-black text-slate-900 mt-0.5">{bth.label}</div>
-                      <div className="text-xs text-slate-700 mt-1 leading-snug">Riesgo de malignidad y manejo pendientes de cargar el artículo fuente (Bethesda 2023). El comité ACR no abordó el seguimiento de nódulos ya puncionados; la repetición de PAAF se guía por Bethesda.</div>
-                    </div>
+                    {bth.rom && (
+                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
+                        <span className="text-[10px] font-mono uppercase text-slate-500 block">Bethesda 2023 · Riesgo de malignidad</span>
+                        <div className="text-sm font-black text-slate-900 mt-0.5">{bth.label}</div>
+                        <div className="text-xs font-semibold text-slate-800 mt-1">ROM: {bth.rom}</div>
+                        <div className="text-xs text-slate-700 mt-1 leading-snug">Manejo: {bth.mgmt}</div>
+                        <div className="text-[10px] text-slate-500 mt-1.5 leading-snug">Fuente secundaria: PathologyOutlines.com (Suzuki A, Bychkov A; act. 12-jun-2025), resumen de Ali SZ, et al. Thyroid 2023;33:1039. Se recomienda calcular el ROM institucional.</div>
+                      </div>
+                    )}
                     <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-950">
                       <strong className="block mb-1">Nota de Transición ATA 2025 (R9, R10):</strong>
                       Una vez confirmado el diagnóstico de cáncer diferenciado de tiroides (Bethesda VI o molecular positivo), <b>no se recomienda</b> medir Tg ni TgAb preoperatorias de rutina (R9) ni la evaluación genómica de rutina antes de la cirugía; si el perfil ya se conoce, puede considerarse para informar la extensión quirúrgica (R10). Proceda a la pestaña <b>3. Cirugía Preoperatoria</b>.

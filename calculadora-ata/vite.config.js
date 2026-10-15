@@ -7,7 +7,8 @@ export default defineConfig({
   base: './',
   plugins: [
     react(),
-    VitePWA({
+    // PREVIEW=1 genera una vista previa sin service worker (p. ej. para incrustar en un solo archivo)
+    !process.env.PREVIEW && VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg'],
       manifest: {

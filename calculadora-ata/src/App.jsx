@@ -443,22 +443,8 @@ function evaluateDynamic(d, initialTier) {
   return { cat, tier, reason, residualRisk, tshGoal, actionPlan };
 }
 
-export default function App() {
-  const today = new Date();
-  const defaultDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
-  const [activeTab, setActiveTab] = useState('postop'); // 'postop' | 'dynamic' | 'surgery' | 'nodule'
-  const [showStudyGuide, setShowStudyGuide] = useState(false);
-  const [copyFeedback, setCopyFeedback] = useState(null);
-
-  // Estado Identificación / Fecha Investigación
-  const [patientMeta, setPatientMeta] = useState({
-    id: '',
-    fecha: defaultDate,
-  });
-
-  // 1. Estado Posoperatorio (ATA 2025 Fig. 2 + AJCC 8)
-  const [postop, setPostop] = useState({
+// --- Estados iniciales (también usados por «Nuevo paciente») ---
+const INITIAL_POSTOP = {
     ageGroup: 'lt55', // 'lt55' | '55to70' | 'gt70'
     histo: 'ptc_clasico',
     highGradeFeatures: false,
@@ -472,10 +458,8 @@ export default function App() {
     lnrHigh: false,
     metastasis: 'm0', // 'm0' | 'm1'
     mol: 'none', // 'none' | 'braf' | 'tert_combo'
-  });
-
-  // 2. Estado Seguimiento Dinámico y Valores Bioquímicos Exactos (Tabla 9)
-  const [dynamic, setDynamic] = useState({
+  };
+const INITIAL_DYNAMIC = {
     surgeryType: 'tt_rai', // 'tt_rai' | 'tt_norai' | 'hemi'
     tshExact: '',
     tgBasal: '',
@@ -484,21 +468,67 @@ export default function App() {
     tgAb: 'neg', // 'neg' | 'stable' | 'rising'
     imaging: 'neg', // 'neg' | 'nonspec' | 'structural'
     hemiLobe: 'normal', // 'normal' | 'suspicious'
-  });
-
-  // 3. Estado Cirugía Preoperatoria (Tabla 5, R11-R25)
-  const [surg, setSurg] = useState({
+  };
+const INITIAL_SURG = {
     cT: 't1a',
     laterality: 'uni',
     cN: 'n0',
     cM: 'm0',
     posteriorAbutment: 'no',
+  };
+const INITIAL_NODULE = {
+    comp: 'solid', echo: 2, shape: 0, margin: 0, foci: { macro: false, rim: false, punct: false }, sizeCm: '1.6', bethesda: 'none'
+  };
+
+export default function App() {
+  const today = new Date();
+  const defaultDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+
+  const [activeTab, setActiveTab] = useState('postop'); // 'postop' | 'dynamic' | 'surgery' | 'nodule'
+  const [undoSnap, setUndoSnap] = useState(null);
+  const [showStudyGuide, setShowStudyGuide] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState(null);
+
+  // Estado Identificación / Fecha Investigación
+  const [patientMeta, setPatientMeta] = useState({
+    id: '',
+    fecha: defaultDate,
   });
 
+  // 1. Estado Posoperatorio (ATA 2025 Fig. 2 + AJCC 8)
+  const [postop, setPostop] = useState(INITIAL_POSTOP);
+
+
+  // 2. Estado Seguimiento Dinámico y Valores Bioquímicos Exactos (Tabla 9)
+  const [dynamic, setDynamic] = useState(INITIAL_DYNAMIC);
+
+
+  // 3. Estado Cirugía Preoperatoria (Tabla 5, R11-R25)
+  const [surg, setSurg] = useState(INITIAL_SURG);
+
+
   // 4. Estado Nódulo (TI-RADS + Bethesda 2023)
-  const [nodule, setNodule] = useState({
-    comp: 'solid', echo: 2, shape: 0, margin: 0, foci: { macro: false, rim: false, punct: false }, sizeCm: '1.6', bethesda: 'none'
-  });
+  const [nodule, setNodule] = useState(INITIAL_NODULE);
+
+
+  const resetAll = () => {
+    setUndoSnap({ patientMeta, postop, dynamic, surg, nodule, activeTab });
+    setPatientMeta({ id: '', fecha: defaultDate });
+    setPostop(INITIAL_POSTOP);
+    setDynamic(INITIAL_DYNAMIC);
+    setSurg(INITIAL_SURG);
+    setNodule(INITIAL_NODULE);
+    setActiveTab('postop');
+    window.scrollTo({ top: 0 });
+    clearTimeout(window.__undoTimer);
+    window.__undoTimer = setTimeout(() => setUndoSnap(null), 8000);
+  };
+  const undoReset = () => {
+    if (!undoSnap) return;
+    setPatientMeta(undoSnap.patientMeta); setPostop(undoSnap.postop); setDynamic(undoSnap.dynamic);
+    setSurg(undoSnap.surg); setNodule(undoSnap.nodule); setActiveTab(undoSnap.activeTab);
+    setUndoSnap(null);
+  };
 
   const postopRes = useMemo(() => evaluatePostop(postop), [postop]);
   const dynRes = useMemo(() => evaluateDynamic(dynamic, postopRes.tier), [dynamic, postopRes.tier]);
@@ -611,94 +641,81 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans pb-28 lg:pb-16">
-      {/* ENCABEZADO OFICIAL */}
-      <header className="bg-slate-900 text-white py-5 px-4 sm:px-6 border-b-4 border-teal-600 shadow-md">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 bg-teal-900/80 text-teal-200 border border-teal-700 px-2.5 py-0.5 rounded text-xs font-mono uppercase tracking-widest mb-1.5">
-              <span>DTC · ATA 2025 AUDITADA</span>
-              <span>•</span>
-              <span>DOI: 10.1177/10507256251363120</span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white">
-              ThyroidScore Pro · Suite Clínica e Investigación
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-0.5">
-              Verificada con <b>Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985</b> + Corrigendum <b>Thyroid 2025;35(11):1350</b> (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña 4: ACR TI-RADS 2017 (JACR 2017;14:587–595) y Bethesda 2023 (resumen PathologyOutlines)
-            </p>
+      {/* ENCABEZADO COMPACTO */}
+      <header className="bg-slate-900 text-white px-4 py-2 border-b-4 border-teal-600">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-x-3 gap-y-2">
+          <div className="min-w-0 mr-auto">
+            <h1 className="text-base sm:text-lg font-extrabold tracking-tight leading-tight">ThyroidScore · ATA 2025</h1>
+            <p className="hidden sm:block text-[11px] text-slate-400 leading-tight truncate">Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985 · Corrigendum 35(11):1350</p>
           </div>
-
-          {/* BARRA DE DATOS DE REGISTRO / FECHA */}
-          <div className="bg-slate-800/90 p-3 rounded-xl border border-slate-700 flex flex-wrap items-center gap-3">
-            <div>
-              <label className="block text-[10px] font-bold uppercase text-teal-300 tracking-wider">Fecha Evaluación</label>
-              <input
-                type="date"
-                value={patientMeta.fecha}
-                onChange={(e) => setPatientMeta({ ...patientMeta, fecha: e.target.value })}
-                className="mt-0.5 bg-slate-900 text-white text-xs font-mono px-2.5 py-1.5 rounded border border-slate-600 focus:border-teal-400 focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-[10px] font-bold uppercase text-teal-300 tracking-wider">ID / Código (Opcional)</label>
-              <input
-                type="text"
-                placeholder="Ej. PAC-042"
-                value={patientMeta.id}
-                onChange={(e) => setPatientMeta({ ...patientMeta, id: e.target.value })}
-                className="mt-0.5 bg-slate-900 text-white text-xs font-mono px-2.5 py-1.5 rounded border border-slate-600 w-28 focus:border-teal-400 focus:outline-none"
-              />
-            </div>
+          <div className="flex items-center gap-2 order-3 sm:order-none w-full sm:w-auto">
+            <input
+              type="date"
+              aria-label="Fecha de evaluación"
+              value={patientMeta.fecha}
+              onChange={(e) => setPatientMeta({ ...patientMeta, fecha: e.target.value })}
+              className="flex-1 sm:flex-none min-w-0 bg-slate-800 text-white text-xs font-mono px-2 py-1.5 rounded-lg border border-slate-600 focus:border-teal-400 focus:outline-none"
+            />
+            <input
+              type="text"
+              aria-label="ID o código del paciente (opcional)"
+              placeholder="ID (opcional)"
+              value={patientMeta.id}
+              onChange={(e) => setPatientMeta({ ...patientMeta, id: e.target.value })}
+              className="flex-1 sm:flex-none min-w-0 sm:w-32 bg-slate-800 text-white text-xs font-mono px-2 py-1.5 rounded-lg border border-slate-600 focus:border-teal-400 focus:outline-none"
+            />
           </div>
+          <button
+            onClick={() => setShowStudyGuide(!showStudyGuide)}
+            aria-label="Guía de estudio ATA 2025"
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-colors ${showStudyGuide ? 'bg-amber-300 text-amber-950 border-amber-300' : 'bg-transparent text-amber-200 border-amber-400/60 hover:bg-amber-400/10'}`}
+          >
+            <IconBook /> <span className="hidden sm:inline">Guía</span>
+          </button>
+          <button
+            onClick={resetAll}
+            aria-label="Nuevo paciente (borra todos los datos)"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-600 hover:bg-teal-500 text-white"
+          >
+            <IconReset /> <span className="sm:hidden">Nuevo</span><span className="hidden sm:inline">Nuevo paciente</span>
+          </button>
         </div>
       </header>
 
       {/* NAVEGACIÓN DE PESTAÑAS CLÍNICAS */}
-      <div className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-2">
-          <div className="flex gap-1.5 overflow-x-auto lg:flex-wrap min-w-0 [scrollbar-width:none]">
+      <nav className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 grid grid-cols-4 gap-1 sm:gap-1.5">
+          {[
+            { id: 'postop', icon: <IconShield />, l: 'Patología', s: 'Riesgo · Fig. 2' },
+            { id: 'dynamic', icon: <IconActivity />, l: 'Seguimiento', s: 'Respuesta · Tabla 9' },
+            { id: 'surgery', icon: <IconScalpel />, l: 'Cirugía', s: 'Preoperatoria · Tabla 5' },
+            { id: 'nodule', icon: <IconSearch />, l: 'Nódulo', s: 'TI-RADS · Bethesda' },
+          ].map(t => (
             <button
-              onClick={() => setActiveTab('postop')}
-              className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${
-                activeTab === 'postop' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              key={t.id}
+              onClick={() => { setActiveTab(t.id); window.scrollTo({ top: 0 }); }}
+              aria-current={activeTab === t.id ? 'page' : undefined}
+              className={`flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-2 rounded-lg font-bold transition-all ${
+                activeTab === t.id ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
               }`}
             >
-              <IconShield /> 1. Estratificación Posoperatoria (Fig. 2)
+              {t.icon}
+              <span className="flex flex-col items-center sm:items-start leading-tight">
+                <span className="text-[11px] sm:text-sm">{t.l}</span>
+                <span className={`hidden md:block text-[10px] font-semibold ${activeTab === t.id ? 'text-teal-100' : 'text-slate-400'}`}>{t.s}</span>
+              </span>
             </button>
-            <button
-              onClick={() => setActiveTab('dynamic')}
-              className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${
-                activeTab === 'dynamic' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <IconActivity /> 2. Seguimiento y Labs Exactos (Tabla 9)
-            </button>
-            <button
-              onClick={() => setActiveTab('surgery')}
-              className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${
-                activeTab === 'surgery' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <IconScalpel /> 3. Cirugía Preoperatoria (Tabla 5)
-            </button>
-            <button
-              onClick={() => setActiveTab('nodule')}
-              className={`shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs sm:text-sm font-bold transition-all ${
-                activeTab === 'nodule' ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-              }`}
-            >
-              <IconSearch /> 4. Nódulo (TI-RADS / Bethesda)
-            </button>
-          </div>
-
-          <button
-            onClick={() => setShowStudyGuide(!showStudyGuide)}
-            className="shrink-0 whitespace-nowrap flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-100 text-amber-900 border border-amber-300 hover:bg-amber-200 transition-colors"
-          >
-            <IconBook /> <span className="hidden sm:inline">{showStudyGuide ? 'Ocultar Guía ATA 2025' : 'Ver Guía de Estudio'}</span><span className="sm:hidden">Guía</span>
-          </button>
+          ))}
         </div>
-      </div>
+      </nav>
+
+      {/* AVISO DESHACER «NUEVO PACIENTE» */}
+      {undoSnap && (
+        <div className="fixed left-1/2 -translate-x-1/2 top-3 z-50 flex items-center gap-3 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg">
+          Datos borrados para el siguiente paciente.
+          <button onClick={undoReset} className="font-black text-teal-300 underline">Deshacer</button>
+        </div>
+      )}
 
       {/* CONTENIDO PRINCIPAL */}
       <main className="max-w-7xl mx-auto px-4 pt-5">
@@ -748,11 +765,7 @@ export default function App() {
                         1. Edad (Para AJCC 8.ª Ed. y Dosimetría R55)
                       </h3>
                       <button
-                        onClick={() => setPostop({
-                          ageGroup: 'lt55', histo: 'ptc_clasico', highGradeFeatures: false, follPattern: 'mi',
-                          size: '1to2', ete: 'none', margins: 'r0', vi: 'none', focality: 'uni',
-                          nodes: 'n0', lnrHigh: false, metastasis: 'm0', mol: 'none'
-                        })}
+                        onClick={() => setPostop(INITIAL_POSTOP)}
                         className="text-xs font-bold text-slate-500 hover:text-teal-700 flex items-center gap-1"
                       >
                         <IconReset /> Reiniciar
@@ -1101,91 +1114,10 @@ export default function App() {
               ) : (
                 /* ==================== FORMULARIO DE SEGUIMIENTO DINÁMICO Y LABS EXACTOS ==================== */
                 <div className="space-y-4">
-                  <div className="bg-white p-5 rounded-2xl border-2 border-teal-600 shadow-sm">
-                    <h3 className="text-sm font-black uppercase text-teal-900 mb-1">
-                      1. Registro de Valores Bioquímicos Exactos (Con Referencias Permanentes)
-                    </h3>
-                    <p className="text-xs text-slate-500 mb-4">
-                      Introduce los valores numéricos de tu paciente. Estos alimentan automáticamente la clasificación de la Tabla 9 y se exportan a tus columnas de investigación en Excel.
-                    </p>
-
-                    <div className="grid sm:grid-cols-2 gap-4">
-                      {/* TSH */}
-                      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">TSH Sérica (mUI/L)</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          placeholder="Ej: 0.15"
-                          value={dynamic.tshExact}
-                          onChange={(e) => setDynamic({ ...dynamic, tshExact: e.target.value })}
-                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
-                        />
-                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
-                          <div><b>Meta de TSH según respuesta (Tabla 9):</b></div>
-                          <div><b>• Excelente / Indeterminada:</b> dentro del rango normal de referencia</div>
-                          <div><b>• Bioquímica / Estructural incompleta:</b> por debajo del rango normal (individualizar; meta óptima no establecida)</div>
-                        </div>
-                      </div>
-
-                      {/* Tg Basal */}
-                      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">Tiroglobulina (Tg) NO Estimulada (ng/mL)</label>
-                        <input
-                          type="number"
-                          step="0.01"
-                          placeholder="Ej: 0.08"
-                          value={dynamic.tgBasal}
-                          onChange={(e) => setDynamic({ ...dynamic, tgBasal: e.target.value })}
-                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
-                        />
-                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
-                          <div><b>• TT + RAI:</b> Excelente &lt;0.2 | Indet. 0.2–1.0 | Incomp. &gt;1.0</div>
-                          <div><b>• TT sin RAI:</b> Excelente &lt;2.5 | Indet. 2.5–5.0 | Incomp. &gt;5.0</div>
-                          <div><b>• Estándar ensayo:</b> Calibrado BCR457 (R47A)</div>
-                        </div>
-                      </div>
-
-                      {/* Tg Estimulada */}
-                      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">Tg Estimulada (rhTSH o Suspensión) (ng/mL)</label>
-                        <input
-                          type="number"
-                          step="0.1"
-                          placeholder="Opcional — Ej: 0.8"
-                          value={dynamic.tgStim}
-                          onChange={(e) => setDynamic({ ...dynamic, tgStim: e.target.value })}
-                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
-                        />
-                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
-                          <div><b>• TT + RAI (Tabla 9):</b> Excelente &lt;1.0 | Indet. 1.0–10.0 | Incomp. &gt;10.0</div>
-                          <div><b>• R58A (Sin foco en imagen):</b> Observar si &lt;10 (suspensión) o &lt;5 (rhTSH)</div>
-                        </div>
-                      </div>
-
-                      {/* TgAb Exacto */}
-                      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">Anticuerpos Anti-Tg (TgAb) (UI/mL)</label>
-                        <input
-                          type="number"
-                          step="0.1"
-                          placeholder="Ej: 12.0"
-                          value={dynamic.tgAbExact}
-                          onChange={(e) => setDynamic({ ...dynamic, tgAbExact: e.target.value })}
-                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
-                        />
-                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
-                          <div><b>• Interpretación (R47E):</b> La tendencia de TgAb seriados con el mismo ensayo puede ser útil; los IMA/RIA de Tg suelen afectarse por TgAb; la imagen es la modalidad primaria de vigilancia en este grupo.</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* PARÁMETROS CLÍNICOS TABLA 9 */}
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
                       <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
-                        2. Tratamiento Inicial Recibido por el Paciente (Define los umbrales de Tabla 9)
+                        1. Tratamiento inicial recibido (define los umbrales de Tabla 9)
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-2">
                         {[
@@ -1206,9 +1138,97 @@ export default function App() {
                       </div>
                     </div>
 
+                  </div>
+
+                  <div className="bg-white p-5 rounded-2xl border-2 border-teal-600 shadow-sm">
+                    <h3 className="text-sm font-black uppercase text-teal-900 mb-1">
+                      2. Valores de laboratorio
+                    </h3>
+                    <p className="text-xs text-slate-500 mb-4">
+                      Clasifican la respuesta (Tabla 9) en tiempo real y se incluyen en la nota y en la fila de Excel.
+                    </p>
+
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {/* TSH */}
+                      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        <label className="block text-xs font-black text-slate-700 uppercase">TSH Sérica (mUI/L)</label>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          step="0.01"
+                          placeholder="Ej: 0.15"
+                          value={dynamic.tshExact}
+                          onChange={(e) => setDynamic({ ...dynamic, tshExact: e.target.value })}
+                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
+                        />
+                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
+                          <div><b>Meta de TSH según respuesta (Tabla 9):</b></div>
+                          <div><b>• Excelente / Indeterminada:</b> dentro del rango normal de referencia</div>
+                          <div><b>• Bioquímica / Estructural incompleta:</b> por debajo del rango normal (individualizar; meta óptima no establecida)</div>
+                        </div>
+                      </div>
+
+                      {/* Tg Basal */}
+                      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        <label className="block text-xs font-black text-slate-700 uppercase">Tiroglobulina (Tg) NO Estimulada (ng/mL)</label>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          step="0.01"
+                          placeholder="Ej: 0.08"
+                          value={dynamic.tgBasal}
+                          onChange={(e) => setDynamic({ ...dynamic, tgBasal: e.target.value })}
+                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
+                        />
+                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
+                          <div><b>• TT + RAI:</b> Excelente &lt;0.2 | Indet. 0.2–1.0 | Incomp. &gt;1.0</div>
+                          <div><b>• TT sin RAI:</b> Excelente &lt;2.5 | Indet. 2.5–5.0 | Incomp. &gt;5.0</div>
+                          <div><b>• Estándar ensayo:</b> Calibrado BCR457 (R47A)</div>
+                        </div>
+                      </div>
+
+                      {/* Tg Estimulada */}
+                      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        <label className="block text-xs font-black text-slate-700 uppercase">Tg Estimulada (rhTSH o Suspensión) (ng/mL)</label>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          step="0.1"
+                          placeholder="Opcional — Ej: 0.8"
+                          value={dynamic.tgStim}
+                          onChange={(e) => setDynamic({ ...dynamic, tgStim: e.target.value })}
+                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
+                        />
+                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
+                          <div><b>• TT + RAI (Tabla 9):</b> Excelente &lt;1.0 | Indet. 1.0–10.0 | Incomp. &gt;10.0</div>
+                          <div><b>• R58A (Sin foco en imagen):</b> Observar si &lt;10 (suspensión) o &lt;5 (rhTSH)</div>
+                        </div>
+                      </div>
+
+                      {/* TgAb Exacto */}
+                      <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                        <label className="block text-xs font-black text-slate-700 uppercase">Anticuerpos Anti-Tg (TgAb) (UI/mL)</label>
+                        <input
+                          type="number"
+                          inputMode="decimal"
+                          step="0.1"
+                          placeholder="Ej: 12.0"
+                          value={dynamic.tgAbExact}
+                          onChange={(e) => setDynamic({ ...dynamic, tgAbExact: e.target.value })}
+                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
+                        />
+                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
+                          <div><b>• Interpretación (R47E):</b> La tendencia de TgAb seriados con el mismo ensayo puede ser útil; los IMA/RIA de Tg suelen afectarse por TgAb; la imagen es la modalidad primaria de vigilancia en este grupo.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* PARÁMETROS CLÍNICOS TABLA 9 */}
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                     <div>
                       <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
-                        3. Estado / Tendencia Cualitativa de Anticuerpos (TgAb)
+                        3. Tendencia de anticuerpos (TgAb)
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-2">
                         {[
@@ -1231,7 +1251,7 @@ export default function App() {
 
                     <div>
                       <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
-                        4. Estudios de Imagen (Ultrasonido Cervical / Rastreo / TC / PET)
+                        4. Imagen (US cervical / rastreo / TC / PET)
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-2">
                         {[
@@ -1324,7 +1344,12 @@ export default function App() {
                           <p className="text-slate-600 mt-1 leading-snug">{postopRes.rai.goal}</p>
                         </div>
 
-                        <div className="bg-white/75 p-3 rounded-xl border border-black/5 space-y-1.5 text-[11px] leading-snug">
+                        <details className="bg-white/75 rounded-xl border border-black/5 text-[11px] leading-snug group">
+                          <summary className="cursor-pointer select-none p-3 font-black text-slate-700 list-none flex items-center justify-between">
+                            Preparación, rastreo post-terapia y controles (R29–R38, R47C)
+                            <span className="text-slate-400 group-open:rotate-180 transition-transform">▾</span>
+                          </summary>
+                          <div className="px-3 pb-3 space-y-1.5">
                           <div>
                             <strong className="text-slate-900">• Evaluación pre-RAI (R29, R30A, R31B):</strong> Medir Tg/TgAb a las <b>6–12 semanas</b> post-cirugía (mediana hasta el nadir de Tg: 12 semanas). Si Tg supera el rango excelente o hay TgAb, hacer US cervical antes del I-131.
                           </div>
@@ -1334,7 +1359,8 @@ export default function App() {
                           <div>
                             <strong className="text-slate-900">• Intervalos de US y Labs (R31C, R47C):</strong> Primer US cervical a los <b>6–12 meses</b> de la terapia inicial. Medir Tg/TgAb (siempre juntos, ensayo BCR457) cada <b>6–12 meses</b> (con mayor frecuencia en riesgo Intermedio-Alto y Alto).
                           </div>
-                        </div>
+                          </div>
+                        </details>
                       </div>
                     )}
                   </div>
@@ -1638,6 +1664,9 @@ export default function App() {
             </div>
           </div>
         )}
+        <footer className="mt-8 pt-4 border-t border-slate-200 text-[11px] text-slate-500 leading-relaxed">
+          <b>Fuentes verificadas:</b> Ringel MD, Sosa JA, et al. 2025 ATA Management Guidelines for Adult Patients with DTC. Thyroid 2025;35(8):841–985 (DOI: 10.1177/10507256251363120) + Corrigendum Thyroid 2025;35(11):1350 (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña Nódulo: ACR TI-RADS 2017 (Tessler FN, et al. JACR 2017;14:587–595) y Bethesda 2023 (resumen PathologyOutlines de Ali SZ, et al. Thyroid 2023;33:1039). Herramienta de apoyo; no sustituye el juicio clínico. Los datos no salen del dispositivo.
+        </footer>
       </main>
 
       {/* BARRA DE RESULTADO FLOTANTE (solo móvil/tablet) */}
@@ -1650,7 +1679,15 @@ export default function App() {
             <span className="block text-[10px] font-mono uppercase tracking-wider opacity-90">Riesgo ATA · p{postopRes.pT} · {dynRes.cat}</span>
             <span className="block text-sm font-black truncate">{postopRes.label} ({postopRes.pct})</span>
           </span>
-          <span className="shrink-0 text-xs font-bold bg-white/20 px-3 py-1.5 rounded-lg">Ver resultado ↓</span>
+          <span className="shrink-0 text-xs font-bold bg-white/20 px-3 py-1.5 rounded-lg">Ver ↓</span>
+        </button>
+      )}
+      {(activeTab === 'postop' || activeTab === 'dynamic') && (
+        <button
+          onClick={() => handleExport('emr')}
+          className="lg:hidden fixed right-3 z-50 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] flex items-center gap-1.5 bg-slate-900 text-white text-xs font-black px-3.5 py-2.5 rounded-full shadow-lg"
+        >
+          <IconCopy /> {copyFeedback === 'emr' ? '¡Nota copiada!' : 'Copiar nota'}
         </button>
       )}
     </div>

@@ -10,6 +10,10 @@ const IconExcel = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" heigh
 const IconBook = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
 const IconReset = () => <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
 
+// --- Aclaraciones de siglas ganglionares (AJCC 8.ª, Tabla 6 del artículo ATA 2025) ---
+const TIP_N1A = 'N1a: metástasis en ganglios del nivel VI o VII (pretraqueales, paratraqueales, prelaríngeos/Delphian o del mediastino superior), uni o bilaterales (Tabla 6). Prefijo «c» (clínico): evidentes en el examen clínico o la ecografía antes de la cirugía, o claramente sospechadas por el cirujano. Prefijo «p» (patológico): confirmadas en el estudio histopatológico de la pieza.';
+const TIP_N1B = 'cN1b: metástasis en ganglios cervicales laterales (niveles I, II, III, IV o V), uni, bilaterales o contralaterales, o en ganglios retrofaríngeos (Tabla 6), evidentes en el examen clínico o la ecografía antes de la cirugía, o claramente sospechadas por el cirujano.';
+
 // --- Círculo «!» con la definición de siglas: toque en móvil, hover o foco en PC ---
 function InfoTip({ text, label }) {
   const [pos, setPos] = useState(null);
@@ -69,9 +73,9 @@ const HISTO_OPTIONS = [
   { id: 'ptc_sclerosing', group: 'ptc_agg', label: 'Esclerosante Difuso', full: 'PTC Subtipo Agresivo: Esclerosante Difuso' },
   { id: 'ptc_solid', group: 'ptc_agg', label: 'Sólido / Trabecular', full: 'PTC Subtipo Agresivo: Sólido / Trabecular' },
   // Espectro Folicular y Oncocítico (Vías separadas Fig. 2)
-  { id: 'ftc', group: 'foll', label: 'FTC (Folicular)', full: 'Carcinoma Folicular de Tiroides (FTC)' },
+  { id: 'ftc', group: 'foll', label: 'FTC (Folicular)', full: 'Carcinoma Folicular de Tiroides (FTC)', info: 'FTC: carcinoma folicular de tiroides (follicular thyroid carcinoma).' },
   { id: 'iefvptc', group: 'foll', label: 'IEFVPTC (Folicular Encapsulado Invasivo)', full: 'Variante Folicular Encapsulada Invasiva de PTC (IEFVPTC)', info: 'IEFVPTC: variante folicular encapsulada invasiva del carcinoma papilar de tiroides (invasive encapsulated follicular variant of papillary thyroid carcinoma).' },
-  { id: 'otc', group: 'otc', label: 'OTC (Oncocítico / Hürthle)', full: 'Carcinoma Oncocítico de Tiroides (OTC, ≥75% células oncocíticas)' },
+  { id: 'otc', group: 'otc', label: 'OTC (Oncocítico / Hürthle)', full: 'Carcinoma Oncocítico de Tiroides (OTC, ≥75% células oncocíticas)', info: 'OTC: carcinoma oncocítico de tiroides (oncocytic thyroid carcinoma), también llamado de células de Hürthle. Según la OMS, neoplasia compuesta por ≥75% de células oncocíticas.' },
   // Alto Grado (Alto Riesgo directo)
   { id: 'dhgtc_pdtc', group: 'high_grade', label: 'Alto Grado (DHGTC / PDTC)', full: 'Carcinoma Diferenciado de Alto Grado (DHGTC) o Pobremente Diferenciado (PDTC - Turín)', info: 'DHGTC: carcinoma de tiroides diferenciado de alto grado (differentiated high-grade thyroid carcinoma). PDTC: carcinoma de tiroides pobremente diferenciado (poorly differentiated thyroid carcinoma; criterios de Turín).' },
   // Especiales / Síndromes / Bajo potencial maligno
@@ -625,10 +629,10 @@ export default function App() {
       out += `• Indicación: ${postopRes.rai.rec}\n`;
       out += `• Actividad sugerida: ${postopRes.rai.act}\n`;
       out += `• Objetivo: ${postopRes.rai.goal}\n`;
-      if (!postopRes.isNIFTP) out += `• Preparación y Rastreo: Estímulo preferido con rhTSH (meta TSH >30 mUI/L, R34) y dieta baja en yodo por 1-2 semanas (R35). Realizar Rastreo Corporal Post-Terapia (RxWBS ± SPECT/CT) a los 2–10 días de la dosis (R37, R38).\n`;
+      if (!postopRes.isNIFTP) out += `• Preparación y Rastreo: Estímulo preferido con rhTSH (meta TSH >30 µUI/mL, R34) y dieta baja en yodo por 1-2 semanas (R35). Realizar Rastreo Corporal Post-Terapia (RxWBS ± SPECT/CT) a los 2–10 días de la dosis (R37, R38).\n`;
       out += `\n`;
       out += `3. EVALUACIÓN DINÁMICA Y VIGILANCIA [Tabla 9 / Fig. 6 / R45-R48]:\n`;
-      out += `• Laboratorios registrados: TSH: ${dynamic.tshExact || 'N/D'} mUI/L | Tg basal: ${dynamic.tgBasal || 'N/D'} ng/mL | Tg estim: ${dynamic.tgStim || 'N/D'} ng/mL | TgAb: ${dynamic.tgAbExact || 'N/D'} UI/mL (${dynamic.tgAb})\n`;
+      out += `• Laboratorios registrados: TSH: ${dynamic.tshExact || 'N/D'} µUI/mL | Tg basal: ${dynamic.tgBasal || 'N/D'} ng/mL | Tg estim: ${dynamic.tgStim || 'N/D'} ng/mL | TgAb: ${dynamic.tgAbExact || 'N/D'} UI/mL (${dynamic.tgAb})\n`;
       out += `• Categoría de Respuesta: ${dynRes.cat}\n`;
       out += `• Riesgo Residual Re-estimado (Fig. 6): ${dynRes.residualRisk}\n`;
       out += `• Meta de TSH: ${dynRes.tshGoal}\n`;
@@ -642,7 +646,7 @@ export default function App() {
         'Tamano', 'ETE', 'Estadio_pT', 'Margenes', 'Invasion_Vascular', 'Focalidad',
         'Ganglios_N', 'LNR_Alto', 'Metastasis_M', 'Molecular', 'Riesgo_ATA2025',
         'Porcentaje_Recurrencia', 'Estadio_AJCC8', 'Ind_RAI', 'Dosis_RAI',
-        'Tipo_Cirugia_Seg', 'TSH_Exacta_mUIL', 'Tg_Basal_ngmL', 'Tg_Estim_ngmL',
+        'Tipo_Cirugia_Seg', 'TSH_Exacta_uUImL', 'Tg_Basal_ngmL', 'Tg_Estim_ngmL',
         'TgAb_Exacto_UImL', 'Tendencia_TgAb', 'Imagen_Seg', 'Respuesta_Dinamica_Tabla9',
         'Riesgo_Residual_Fig6'
       ];
@@ -1026,21 +1030,23 @@ export default function App() {
                       <div className="grid sm:grid-cols-2 gap-2">
                         {[
                           { v: 'n0', l: 'pN0 / cN0 [Bajo]' },
-                          { v: 'n1a_micro', l: 'pN1a micrometástasis (≤ 5 ganglios, todos ≤ 2 mm) [Bajo; cuenta como N1 en AJCC]' },
-                          { v: 'n1a_mod', l: 'cN1a, o pN1a (> 5 ganglios o foco > 2 mm) [Bajo–Intermedio]' },
-                          { v: 'n1b_lat', l: 'cN1b lateral clínicamente evidente (< 3 cm) [Intermedio–Alto]' },
+                          { v: 'n1a_micro', l: 'pN1a micrometástasis (≤ 5 ganglios, todos ≤ 2 mm) [Bajo; cuenta como N1 en AJCC]', tip: TIP_N1A, tl: 'pN1a' },
+                          { v: 'n1a_mod', l: 'cN1a, o pN1a (> 5 ganglios o foco > 2 mm) [Bajo–Intermedio]', tip: TIP_N1A, tl: 'cN1a y pN1a' },
+                          { v: 'n1b_lat', l: 'cN1b lateral clínicamente evidente (< 3 cm) [Intermedio–Alto]', tip: TIP_N1B, tl: 'cN1b' },
                           { v: 'big3cm', l: 'Cualquier ganglio metastásico ≥ 3 cm (cN1) [Alto Riesgo]' },
                           { v: 'ene', l: 'Extensión extranodal (ENE) del tumor metastásico [Alto Riesgo]' }
                         ].map(o => (
+                          <div key={o.v} className="flex items-center gap-1">
                           <button
-                            key={o.v}
                             onClick={() => setPostop({ ...postop, nodes: o.v })}
-                            className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
+                            className={`flex-1 h-full p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
                               postop.nodes === o.v ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                             }`}
                           >
                             {o.l}
                           </button>
+                          {o.tip ? <InfoTip text={o.tip} label={o.tl} /> : <span className="w-[18px] shrink-0" />}
+                          </div>
                         ))}
                       </div>
                       <label className="mt-2.5 inline-flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
@@ -1209,7 +1215,7 @@ export default function App() {
                     <div className="grid sm:grid-cols-2 gap-4">
                       {/* TSH */}
                       <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">TSH Sérica (mUI/L)</label>
+                        <label className="block text-xs font-black text-slate-700 uppercase">TSH Sérica (µUI/mL = mUI/L)</label>
                         <input
                           type="number"
                           inputMode="decimal"
@@ -1505,7 +1511,10 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Ganglios Clínicos (cN)</label>
+                  <div className="flex items-center gap-1.5 mb-1.5">
+                    <label className="block text-xs font-bold uppercase text-slate-500">Ganglios Clínicos (cN)</label>
+                    <InfoTip text={TIP_N1A + ' ' + TIP_N1B} label="cN1a y cN1b" />
+                  </div>
                   <select
                     value={surg.cN}
                     onChange={(e) => setSurg({ ...surg, cN: e.target.value })}

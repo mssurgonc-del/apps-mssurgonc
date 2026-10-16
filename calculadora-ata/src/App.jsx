@@ -10,6 +10,52 @@ const IconExcel = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" heigh
 const IconBook = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
 const IconReset = () => <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>;
 
+// --- Círculo «!» con la definición de siglas: toque en móvil, hover o foco en PC ---
+function InfoTip({ text, label }) {
+  const [pos, setPos] = useState(null);
+  const btnRef = React.useRef(null);
+  const show = () => {
+    const r = btnRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const w = Math.min(288, window.innerWidth - 16);
+    setPos({ top: r.bottom + 6, left: Math.max(8, Math.min(r.left + r.width / 2 - w / 2, window.innerWidth - w - 8)), w });
+  };
+  const hide = () => setPos(null);
+  React.useEffect(() => {
+    if (!pos) return;
+    const close = (e) => { if (e.type !== 'pointerdown' || !btnRef.current?.contains(e.target)) hide(); };
+    window.addEventListener('scroll', close, true);
+    window.addEventListener('pointerdown', close);
+    return () => { window.removeEventListener('scroll', close, true); window.removeEventListener('pointerdown', close); };
+  }, [pos]);
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        aria-label={`Qué significa ${label}`}
+        aria-expanded={!!pos}
+        onClick={(e) => { e.stopPropagation(); pos ? hide() : show(); }}
+        onMouseEnter={(e) => { if (window.matchMedia('(hover: hover)').matches) show(); }}
+        onMouseLeave={(e) => { if (window.matchMedia('(hover: hover)').matches) hide(); }}
+        onBlur={hide}
+        className="shrink-0 w-[18px] h-[18px] rounded-full bg-slate-200 hover:bg-teal-600 hover:text-white text-slate-700 text-[11px] font-black leading-none flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+      >
+        !
+      </button>
+      {pos && (
+        <span
+          role="tooltip"
+          style={{ top: pos.top, left: pos.left, width: pos.w }}
+          className="fixed z-50 bg-slate-900 text-white text-[11px] font-medium leading-snug p-2.5 rounded-lg shadow-lg"
+        >
+          {text}
+        </span>
+      )}
+    </>
+  );
+}
+
 // --- DICCIONARIOS OMS 2022/2025 (Tabla 3 ATA 2025) ---
 const HISTO_OPTIONS = [
   // PTC Bajo Grado
@@ -24,13 +70,13 @@ const HISTO_OPTIONS = [
   { id: 'ptc_solid', group: 'ptc_agg', label: 'Sólido / Trabecular', full: 'PTC Subtipo Agresivo: Sólido / Trabecular' },
   // Espectro Folicular y Oncocítico (Vías separadas Fig. 2)
   { id: 'ftc', group: 'foll', label: 'FTC (Folicular)', full: 'Carcinoma Folicular de Tiroides (FTC)' },
-  { id: 'iefvptc', group: 'foll', label: 'IEFVPTC (Folicular Encapsulado Invasivo)', full: 'Variante Folicular Encapsulada Invasiva de PTC (IEFVPTC)' },
+  { id: 'iefvptc', group: 'foll', label: 'IEFVPTC (Folicular Encapsulado Invasivo)', full: 'Variante Folicular Encapsulada Invasiva de PTC (IEFVPTC)', info: 'IEFVPTC: variante folicular encapsulada invasiva del carcinoma papilar de tiroides (invasive encapsulated follicular variant of papillary thyroid carcinoma).' },
   { id: 'otc', group: 'otc', label: 'OTC (Oncocítico / Hürthle)', full: 'Carcinoma Oncocítico de Tiroides (OTC, ≥75% células oncocíticas)' },
   // Alto Grado (Alto Riesgo directo)
-  { id: 'dhgtc_pdtc', group: 'high_grade', label: 'Alto Grado (DHGTC / PDTC)', full: 'Carcinoma Diferenciado de Alto Grado (DHGTC) o Pobremente Diferenciado (PDTC - Turín)' },
+  { id: 'dhgtc_pdtc', group: 'high_grade', label: 'Alto Grado (DHGTC / PDTC)', full: 'Carcinoma Diferenciado de Alto Grado (DHGTC) o Pobremente Diferenciado (PDTC - Turín)', info: 'DHGTC: carcinoma de tiroides diferenciado de alto grado (differentiated high-grade thyroid carcinoma). PDTC: carcinoma de tiroides pobremente diferenciado (poorly differentiated thyroid carcinoma; criterios de Turín).' },
   // Especiales / Síndromes / Bajo potencial maligno
-  { id: 'cmtc', group: 'special', label: 'Cribriforme-Morular (CMTC)', full: 'Carcinoma Tiroides Cribriforme-Morular (Asociado a gen APC / Poliposis Familiar)' },
-  { id: 'niftp', group: 'benign_pot', label: 'NIFTP / FT-UMP / HTT', full: 'Neoplasia Folicular No Invasiva (NIFTP) o Potencial Maligno Incierto (FT-UMP / HTT)' },
+  { id: 'cmtc', group: 'special', label: 'Cribriforme-Morular (CMTC)', full: 'Carcinoma Tiroides Cribriforme-Morular (Asociado a gen APC / Poliposis Familiar)', info: 'CMTC: carcinoma de tiroides cribriforme-morular (cribriform-morular thyroid carcinoma).' },
+  { id: 'niftp', group: 'benign_pot', label: 'NIFTP / FT-UMP / HTT', full: 'Neoplasia Folicular No Invasiva (NIFTP) o Potencial Maligno Incierto (FT-UMP / HTT)', info: 'NIFTP: neoplasia folicular no invasiva con rasgos nucleares de tipo papilar (noninvasive follicular thyroid neoplasm with papillary-like nuclear features). FT-UMP: tumor folicular de potencial maligno incierto (follicular tumor of uncertain malignant potential). HTT: tumor trabecular hialinizante (hyalinizing trabecular tumor).' },
 ];
 
 // Bethesda 2023 (3.ª ed.). Fuente: Suzuki A, Bychkov A. Bethesda system diagnostic categories. PathologyOutlines.com
@@ -800,6 +846,7 @@ export default function App() {
                         <span className="text-[11px] font-bold text-emerald-700 uppercase block mb-1">PTC — Subtipos No Agresivos</span>
                         <div className="flex flex-wrap gap-1.5">
                           {HISTO_OPTIONS.filter(h => h.group === 'ptc_low').map(h => (
+                            <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
                               onClick={() => setPostop({ ...postop, histo: h.id })}
@@ -809,6 +856,8 @@ export default function App() {
                             >
                               {h.label}
                             </button>
+                            {h.info && <InfoTip text={h.info} label={h.label} />}
+                            </span>
                           ))}
                         </div>
                       </div>
@@ -817,6 +866,7 @@ export default function App() {
                         <span className="text-[11px] font-bold text-orange-700 uppercase block mb-1">PTC — Subtipos Agresivos (Intermedio–Alto directo)</span>
                         <div className="flex flex-wrap gap-1.5">
                           {HISTO_OPTIONS.filter(h => h.group === 'ptc_agg').map(h => (
+                            <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
                               onClick={() => setPostop({ ...postop, histo: h.id })}
@@ -826,6 +876,8 @@ export default function App() {
                             >
                               {h.label}
                             </button>
+                            {h.info && <InfoTip text={h.info} label={h.label} />}
+                            </span>
                           ))}
                         </div>
                       </div>
@@ -834,6 +886,7 @@ export default function App() {
                         <span className="text-[11px] font-bold text-blue-800 uppercase block mb-1">Espectro Folicular (FTC / IEFVPTC) y Oncocítico (OTC)</span>
                         <div className="flex flex-wrap gap-1.5">
                           {HISTO_OPTIONS.filter(h => h.group === 'foll' || h.group === 'otc').map(h => (
+                            <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
                               onClick={() => setPostop({ ...postop, histo: h.id })}
@@ -843,6 +896,8 @@ export default function App() {
                             >
                               {h.label}
                             </button>
+                            {h.info && <InfoTip text={h.info} label={h.label} />}
+                            </span>
                           ))}
                         </div>
                       </div>
@@ -851,6 +906,7 @@ export default function App() {
                         <span className="text-[11px] font-bold text-red-700 uppercase block mb-1">Alto Grado / Especiales / Bajo Potencial (R1)</span>
                         <div className="flex flex-wrap gap-1.5">
                           {HISTO_OPTIONS.filter(h => ['high_grade', 'special', 'benign_pot'].includes(h.group)).map(h => (
+                            <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
                               onClick={() => setPostop({ ...postop, histo: h.id })}
@@ -860,6 +916,8 @@ export default function App() {
                             >
                               {h.label}
                             </button>
+                            {h.info && <InfoTip text={h.info} label={h.label} />}
+                            </span>
                           ))}
                         </div>
                       </div>

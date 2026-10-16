@@ -508,6 +508,7 @@ const INITIAL_POSTOP = {
     lnrHigh: false,
     metastasis: 'm0', // 'm0' | 'm1'
     mol: 'none', // 'none' | 'braf' | 'tert_combo'
+    coexist: [], // subtipos de PTC coexistentes: solo documentación, no entra al cálculo
   };
 const INITIAL_DYNAMIC = {
     surgeryType: 'tt_rai', // 'tt_rai' | 'tt_norai' | 'hemi'
@@ -622,6 +623,7 @@ export default function App() {
       out += `──────────────────────────────────────────────────\n`;
       out += `1. ESTRATIFICACIÓN POSOPERATORIA INICIAL (ATA 2025 Fig. 2 & AJCC 8.ª Ed.):\n`;
       out += `• Histotipo (OMS 5.ª ed.): ${postopRes.histObj?.full || 'NIFTP'}\n`;
+      if (isPTCMain && coexistLabels.length) out += `• Componentes coexistentes (documentación; no modifican el riesgo calculado): ${coexistLabels.join(', ')}\n`;
       out += `• Estadio Anatómico T: p${postopRes.pT} | Mortalidad (AJCC 8.ª): ${postopRes.ajccStage}\n`;
       out += `• RIESGO DE RECURRENCIA ESTRUCTURAL ATA 2025: ${postopRes.label} (${postopRes.pct})\n`;
       out += `• Factores determinantes:\n  ${postopRes.drivers.join('\n  ')}\n\n`;
@@ -644,7 +646,7 @@ export default function App() {
       const headers = [
         'Fecha', 'ID_Paciente', 'Grupo_Edad', 'Histologia_OMS2025', 'Patron_Folicular',
         'Tamano', 'ETE', 'Estadio_pT', 'Margenes', 'Invasion_Vascular', 'Focalidad',
-        'Ganglios_N', 'LNR_Alto', 'Metastasis_M', 'Molecular', 'Riesgo_ATA2025',
+        'Ganglios_N', 'LNR_Alto', 'Metastasis_M', 'Molecular', 'Componentes_Coexistentes', 'Riesgo_ATA2025',
         'Porcentaje_Recurrencia', 'Estadio_AJCC8', 'Ind_RAI', 'Dosis_RAI',
         'Tipo_Cirugia_Seg', 'TSH_Exacta_uUImL', 'Tg_Basal_ngmL', 'Tg_Estim_ngmL',
         'TgAb_Exacto_UImL', 'Tendencia_TgAb', 'Imagen_Seg', 'Respuesta_Dinamica_Tabla9',
@@ -666,6 +668,7 @@ export default function App() {
         postop.lnrHigh ? 'Si' : 'No',
         postop.metastasis,
         postop.mol,
+        isPTCMain && coexistLabels.length ? coexistLabels.join(' + ') : 'Ninguno',
         postopRes.label,
         postopRes.pct,
         postopRes.ajccStage,
@@ -685,6 +688,8 @@ export default function App() {
     }
   };
 
+  const coexistLabels = postop.coexist.map(id => HISTO_OPTIONS.find(h => h.id === id)?.label).filter(Boolean);
+  const isPTCMain = ['ptc_low', 'ptc_agg'].includes(HISTO_OPTIONS.find(h => h.id === postop.histo)?.group);
   const curStyle = TIER_STYLES[postopRes.tier] || TIER_STYLES.low;
   const dynStyle = TIER_STYLES[dynRes.tier] || TIER_STYLES.low;
   const isFollSelected = postop.histo === 'ftc' || postop.histo === 'iefvptc' || postop.histo === 'otc';
@@ -853,7 +858,7 @@ export default function App() {
                             <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
-                              onClick={() => setPostop({ ...postop, histo: h.id })}
+                              onClick={() => setPostop({ ...postop, histo: h.id, coexist: postop.coexist.filter(c => c !== h.id) })}
                               className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                                 postop.histo === h.id ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
@@ -873,7 +878,7 @@ export default function App() {
                             <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
-                              onClick={() => setPostop({ ...postop, histo: h.id })}
+                              onClick={() => setPostop({ ...postop, histo: h.id, coexist: postop.coexist.filter(c => c !== h.id) })}
                               className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                                 postop.histo === h.id ? 'bg-orange-600 border-orange-600 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
@@ -893,7 +898,7 @@ export default function App() {
                             <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
-                              onClick={() => setPostop({ ...postop, histo: h.id })}
+                              onClick={() => setPostop({ ...postop, histo: h.id, coexist: postop.coexist.filter(c => c !== h.id) })}
                               className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                                 postop.histo === h.id ? 'bg-blue-700 border-blue-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
@@ -913,7 +918,7 @@ export default function App() {
                             <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
-                              onClick={() => setPostop({ ...postop, histo: h.id })}
+                              onClick={() => setPostop({ ...postop, histo: h.id, coexist: postop.coexist.filter(c => c !== h.id) })}
                               className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
                                 postop.histo === h.id ? 'bg-slate-900 border-slate-900 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
@@ -937,6 +942,28 @@ export default function App() {
                         />
                         <span>Rasgos de alto grado en el informe: ≥5 mitosis/2 mm² o necrosis tumoral (DHGTC) → Alto Riesgo</span>
                       </label>
+                    )}
+
+                    {isPTCMain && (
+                      <div className="mt-3 pt-3 border-t border-slate-100">
+                        <span className="text-[11px] font-black uppercase text-slate-600 block">Componentes coexistentes (opcional, solo documentación)</span>
+                        <span className="text-[11px] text-slate-500 block mb-1.5 leading-snug">No modifica el riesgo calculado. Si el componente agresivo alcanza el criterio de subtipo en el informe, selecciónelo arriba como histología principal.</span>
+                        <div className="flex flex-wrap gap-1.5">
+                          {HISTO_OPTIONS.filter(h => ['ptc_low', 'ptc_agg'].includes(h.group) && h.id !== postop.histo).map(h => {
+                            const on = postop.coexist.includes(h.id);
+                            return (
+                              <button
+                                key={h.id}
+                                aria-pressed={on}
+                                onClick={() => setPostop({ ...postop, coexist: on ? postop.coexist.filter(c => c !== h.id) : [...postop.coexist, h.id] })}
+                                className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all ${on ? 'bg-slate-700 border-slate-700 text-white' : 'bg-white border-slate-300 border-dashed text-slate-600 hover:bg-slate-50'}`}
+                              >
+                                {on ? '✓ ' : '+ '}{h.label}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     )}
 
                     {/* Sub-selector exclusivo si elige FTC / IEFVPTC / OTC */}
@@ -1382,6 +1409,11 @@ export default function App() {
                           <li key={i} className="leading-snug">{d}</li>
                         ))}
                       </ul>
+                      {isPTCMain && coexistLabels.length > 0 && (
+                        <div className="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-600 leading-snug">
+                          <b>Componentes coexistentes (documentación, no modifican el riesgo):</b> {coexistLabels.join(', ')}
+                        </div>
+                      )}
                     </div>
 
                     {/* ALERTAS DE COHERENCIA O GENÉTICA */}

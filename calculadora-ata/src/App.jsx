@@ -44,7 +44,7 @@ const BETHESDA = {
   '4': { label: 'IV — Neoplasia folicular', rom: '23 – 34% (NIFTP = maligno) o 23% (NIFTP ≠ maligno)', mgmt: 'Lobectomía diagnóstica o prueba molecular.' },
   '4o': { label: 'IV — Neoplasia folicular oncocítica', rom: '25 – 50%', mgmt: 'Lobectomía diagnóstica o prueba molecular.' },
   '5': { label: 'V — Sospechosa de malignidad', rom: '74% (NIFTP = maligno) o 65% (NIFTP ≠ maligno)', mgmt: 'Cirugía (habitualmente).' },
-  '6': { label: 'VI — Maligna', rom: '97 – 100% (NIFTP = maligno) o 94% (NIFTP ≠ maligno)', mgmt: 'Cirugía (habitualmente). Para cáncer diferenciado, ver pestaña 3 (ATA 2025).' },
+  '6': { label: 'VI — Maligna', rom: '97 – 100% (NIFTP = maligno) o 94% (NIFTP ≠ maligno)', mgmt: 'Cirugía (habitualmente). Para cáncer diferenciado, ver pestaña Cirugía (ATA 2025).' },
 };
 
 // --- ACR TI-RADS 2017 (Tessler FN, et al. J Am Coll Radiol 2017;14:587-595, Fig. 1) ---
@@ -686,10 +686,10 @@ export default function App() {
       <nav className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 grid grid-cols-4 gap-1 sm:gap-1.5">
           {[
+            { id: 'nodule', icon: <IconSearch />, l: 'Nódulo', s: 'TI-RADS · Bethesda' },
+            { id: 'surgery', icon: <IconScalpel />, l: 'Cirugía', s: 'Preoperatoria · Tabla 5' },
             { id: 'postop', icon: <IconShield />, l: 'Patología', s: 'Riesgo · Fig. 2' },
             { id: 'dynamic', icon: <IconActivity />, l: 'Seguimiento', s: 'Respuesta · Tabla 9' },
-            { id: 'surgery', icon: <IconScalpel />, l: 'Cirugía', s: 'Preoperatoria · Tabla 5' },
-            { id: 'nodule', icon: <IconSearch />, l: 'Nódulo', s: 'TI-RADS · Bethesda' },
           ].map(t => (
             <button
               key={t.id}
@@ -1656,7 +1656,7 @@ export default function App() {
                     )}
                     <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-950">
                       <strong className="block mb-1">Nota de Transición ATA 2025 (R9, R10):</strong>
-                      Una vez confirmado el diagnóstico de cáncer diferenciado de tiroides (Bethesda VI o molecular positivo), <b>no se recomienda</b> medir Tg ni TgAb preoperatorias de rutina (R9) ni la evaluación genómica de rutina antes de la cirugía; si el perfil ya se conoce, puede considerarse para informar la extensión quirúrgica (R10). Proceda a la pestaña <b>3. Cirugía Preoperatoria</b>.
+                      Una vez confirmado el diagnóstico de cáncer diferenciado de tiroides (Bethesda VI o molecular positivo), <b>no se recomienda</b> medir Tg ni TgAb preoperatorias de rutina (R9) ni la evaluación genómica de rutina antes de la cirugía; si el perfil ya se conoce, puede considerarse para informar la extensión quirúrgica (R10). Continúe en la pestaña <b>Cirugía</b>.
                     </div>
                   </>
                 );

@@ -687,9 +687,9 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 grid grid-cols-4 gap-1 sm:gap-1.5">
           {[
             { id: 'nodule', icon: <IconSearch />, l: 'Nódulo', s: 'TI-RADS · Bethesda' },
-            { id: 'surgery', icon: <IconScalpel />, l: 'Cirugía', s: 'Preoperatoria · Tabla 5' },
-            { id: 'postop', icon: <IconShield />, l: 'Patología', s: 'Riesgo · Fig. 2' },
-            { id: 'dynamic', icon: <IconActivity />, l: 'Seguimiento', s: 'Respuesta · Tabla 9' },
+            { id: 'surgery', icon: <IconScalpel />, l: 'Cirugía', s: 'Preoperatoria' },
+            { id: 'postop', icon: <IconShield />, l: 'Patología', s: 'Riesgo' },
+            { id: 'dynamic', icon: <IconActivity />, l: 'Seguimiento', s: 'Respuesta' },
           ].map(t => (
             <button
               key={t.id}

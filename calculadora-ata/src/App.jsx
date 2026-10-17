@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { RECS } from './recs.js';
 
 // --- ICONOS VECTORIALES INTEGRADOS (Cero dependencias externas) ---
 const IconShield = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
@@ -13,6 +14,100 @@ const IconReset = () => <svg xmlns="http://www.w3.org/2000/svg" width="15" heigh
 // --- Aclaraciones de siglas ganglionares (AJCC 8.ª, Tabla 6 del artículo ATA 2025) ---
 const TIP_N1A = 'N1a: metástasis en ganglios del nivel VI o VII (pretraqueales, paratraqueales, prelaríngeos/Delphian o del mediastino superior), uni o bilaterales. Prefijo «c» (clínico): evidentes en el examen clínico o la ecografía antes de la cirugía, o claramente sospechadas por el cirujano. Prefijo «p» (patológico): confirmadas en el estudio histopatológico de la pieza.';
 const TIP_N1B = 'cN1b: metástasis en ganglios cervicales laterales (niveles I, II, III, IV o V), uni, bilaterales o contralaterales, o en ganglios retrofaríngeos, evidentes en el examen clínico o la ecografía antes de la cirugía, o claramente sospechadas por el cirujano.';
+
+// --- Códigos de recomendación (R32A, R15C…): al tocarlos muestran el texto de la guía ---
+function RecTip({ code }) {
+  const rec = RECS[code] || RECS[code.replace(/[A-H]$/, '')];
+  const [pos, setPos] = useState(null);
+  const btnRef = React.useRef(null);
+  const tipRef = React.useRef(null);
+  const timer = React.useRef(null);
+  const hoverable = () => window.matchMedia('(hover: hover)').matches;
+  const show = () => {
+    clearTimeout(timer.current);
+    const r = btnRef.current?.getBoundingClientRect();
+    if (!r) return;
+    const w = Math.min(360, window.innerWidth - 16);
+    const left = Math.max(8, Math.min(r.left + r.width / 2 - w / 2, window.innerWidth - w - 8));
+    const below = window.innerHeight - r.bottom - 12;
+    const above = r.top - 12;
+    const placeBelow = below >= 220 || below >= above;
+    const maxH = Math.max(140, Math.min(420, placeBelow ? below : above));
+    setPos(placeBelow ? { top: r.bottom + 6, left, w, maxH } : { bottom: window.innerHeight - r.top + 6, left, w, maxH });
+  };
+  const hide = () => { clearTimeout(timer.current); setPos(null); };
+  const hideSoon = () => { clearTimeout(timer.current); timer.current = setTimeout(() => setPos(null), 250); };
+  React.useEffect(() => {
+    if (!pos) return;
+    const inside = (t) => btnRef.current?.contains(t) || tipRef.current?.contains(t);
+    const onDown = (e) => { if (!inside(e.target)) hide(); };
+    const onScroll = (e) => { if (!tipRef.current?.contains(e.target)) hide(); };
+    window.addEventListener('pointerdown', onDown);
+    window.addEventListener('scroll', onScroll, true);
+    return () => { window.removeEventListener('pointerdown', onDown); window.removeEventListener('scroll', onScroll, true); };
+  }, [pos]);
+  if (!rec) return code;
+  return (
+    <>
+      <button
+        ref={btnRef}
+        type="button"
+        aria-label={`Ver recomendación ${code}`}
+        aria-expanded={!!pos}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); pos ? hide() : show(); }}
+        onMouseEnter={() => { if (hoverable()) show(); }}
+        onMouseLeave={() => { if (hoverable()) hideSoon(); }}
+        className="inline p-0 m-0 bg-transparent border-0 font-[inherit] text-[inherit] leading-[inherit] underline decoration-dotted decoration-2 underline-offset-2 decoration-teal-500 cursor-help hover:text-teal-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 rounded-sm"
+      >
+        {code}
+      </button>
+      {pos && (
+        <span
+          ref={tipRef}
+          role="tooltip"
+          onMouseEnter={() => clearTimeout(timer.current)}
+          onMouseLeave={() => { if (hoverable()) hideSoon(); }}
+          style={{ top: pos.top, bottom: pos.bottom, left: pos.left, width: pos.w, maxHeight: pos.maxH }}
+          className="fixed z-50 block overflow-y-auto overscroll-contain bg-slate-900 text-white text-left font-sans text-[11.5px] font-normal normal-case tracking-normal leading-snug p-3 rounded-lg shadow-xl"
+        >
+          <span className="block text-[10px] font-mono font-bold uppercase tracking-wider text-teal-300 mb-1">Recomendación {code} · ATA 2025</span>
+          <span className="block">{rec.es}</span>
+          <span className="block mt-2 pt-2 border-t border-white/15 text-[10.5px] italic text-slate-300">Texto original: {rec.en}</span>
+        </span>
+      )}
+    </>
+  );
+}
+
+// Convierte los códigos R del texto en RecTip. No entra en botones, campos ni componentes.
+const REC_RE = /R\d{1,2}(?:\.\d)?[A-H]?/g;
+function splitRecs(str) {
+  const out = [];
+  let last = 0, m;
+  REC_RE.lastIndex = 0;
+  while ((m = REC_RE.exec(str))) {
+    const code = m[0];
+    const prev = str[m.index - 1] || '';
+    const next = str[m.index + code.length] || '';
+    if (/[A-Za-z0-9.]/.test(prev) || /[a-z0-9]/.test(next) || /^R[0-2]$/.test(code) || !(RECS[code] || RECS[code.replace(/[A-H]$/, '')])) continue;
+    if (m.index > last) out.push(str.slice(last, m.index));
+    out.push(<RecTip key={m.index} code={code} />);
+    last = m.index + code.length;
+  }
+  if (!out.length) return str;
+  if (last < str.length) out.push(str.slice(last));
+  return out;
+}
+const SKIP_TAGS = new Set(['button', 'option', 'select', 'textarea', 'input']);
+function linkRecs(node) {
+  if (typeof node === 'string') return splitRecs(node);
+  if (Array.isArray(node)) return node.map(linkRecs);
+  if (!React.isValidElement(node)) return node;
+  if (node.type === React.Fragment) return React.cloneElement(node, undefined, ...React.Children.toArray(node.props.children).map(linkRecs));
+  if (typeof node.type !== 'string' || SKIP_TAGS.has(node.type) || node.props.children == null) return node;
+  const kids = React.Children.toArray(node.props.children).map(linkRecs);
+  return React.cloneElement(node, undefined, ...kids);
+}
 
 // --- Círculo «!» con la definición de siglas: toque en móvil, hover o foco en PC ---
 function InfoTip({ text, label }) {
@@ -773,7 +868,7 @@ export default function App() {
       )}
 
       {/* CONTENIDO PRINCIPAL */}
-      <main className="max-w-7xl mx-auto px-4 pt-5">
+      {linkRecs(<main className="max-w-7xl mx-auto px-4 pt-5">
         
         {/* GUÍA DE ESTUDIO DESPLEGABLE */}
         {showStudyGuide && (
@@ -1442,7 +1537,7 @@ export default function App() {
 
                         <details className="bg-white/75 rounded-xl border border-black/5 text-[11px] leading-snug group">
                           <summary className="cursor-pointer select-none p-3 font-black text-slate-700 list-none flex items-center justify-between">
-                            Preparación, rastreo post-terapia y controles (R29–R38, R47C)
+                            <span>Preparación, rastreo post-terapia y controles (R29–R38, R47C)</span>
                             <span className="text-slate-400 group-open:rotate-180 transition-transform">▾</span>
                           </summary>
                           <div className="px-3 pb-3 space-y-1.5">
@@ -1766,7 +1861,7 @@ export default function App() {
         <footer className="mt-8 pt-4 border-t border-slate-200 text-[11px] text-slate-500 leading-relaxed">
           <b>Fuentes verificadas:</b> Ringel MD, Sosa JA, et al. 2025 ATA Management Guidelines for Adult Patients with DTC. Thyroid 2025;35(8):841–985 (DOI: 10.1177/10507256251363120) + Corrigendum Thyroid 2025;35(11):1350 (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña Nódulo: ACR TI-RADS 2017 (Tessler FN, et al. JACR 2017;14:587–595) y Bethesda 2023 (resumen PathologyOutlines de Ali SZ, et al. Thyroid 2023;33:1039). Herramienta de apoyo; no sustituye el juicio clínico. Los datos no salen del dispositivo.
         </footer>
-      </main>
+      </main>)}
 
       {/* BARRA DE RESULTADO FLOTANTE (solo móvil/tablet) */}
       {(activeTab === 'postop' || activeTab === 'dynamic') && (

@@ -260,6 +260,9 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
 
 /* ---------- Document preview (letter size) ---------- */
 #docWrap{overflow-x:auto;padding:6px 0;}
+/* En pantallas angostas la hoja carta se reduce para verse completa (no afecta la impresión) */
+.doc-fit{overflow:hidden !important;}
+.doc-fit > .doc-page{transform:scale(var(--docScale,1));transform-origin:top left;margin:0;}
 .doc-page{
   width:8.5in;min-height:11in;background:#fff;margin:0 auto;
   padding:0.65in 0.7in;
@@ -521,7 +524,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
         <button class="btn" onclick="saveToHistorial()">💾 Guardar en historial</button>
       </div>
       <div class="btn-row">
-        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs)</button>
+        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs + Cita)</button>
       </div>
       <div class="hint" style="margin-top:8px;">"Compartir imagen del documento" te deja elegir la app (WhatsApp, WA Business, etc.) y manda el documento real, con membrete y todo. "Descargar imagen" la guarda para adjuntarla vos.</div>
     </div>
@@ -629,7 +632,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
         <button class="btn" onclick="saveIndToHistorial()">💾 Guardar en historial</button>
       </div>
       <div class="btn-row">
-        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs)</button>
+        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs + Cita)</button>
       </div>
       <div class="hint" style="margin-top:8px;">"Compartir imagen del documento" te deja elegir la app (WhatsApp, WA Business, etc.) y manda el documento real, con membrete y todo. "Descargar imagen" la guarda para adjuntarla vos.</div>
     </div>
@@ -747,7 +750,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
         <button class="btn" onclick="saveLabToHistorial()">💾 Guardar en historial</button>
       </div>
       <div class="btn-row">
-        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs)</button>
+        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs + Cita)</button>
       </div>
       <div class="hint" style="margin-top:8px;">"Compartir imagen del documento" te deja elegir la app (WhatsApp, WA Business, etc.) y manda el documento real, con membrete y todo. "Descargar imagen" la guarda para adjuntarla vos.</div>
     </div>
@@ -807,6 +810,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
           </div>
         </div>
         <button class="btn" onclick="saveCitToHistorial()">💾 Guardar en historial</button>
+        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs + Cita)</button>
       </div>
       <div class="hint" style="margin-top:8px;">"Compartir imagen del documento" te deja elegir la app (WhatsApp, WA Business, etc.) y manda el documento real, con membrete y todo. "Descargar imagen" la guarda para adjuntarla vos.</div>
     </div>
@@ -3826,7 +3830,7 @@ function renderAdminCombos(){
     const itemsHTML = items.map((it,idx)=>`
       <div class="admin-combo-item">
         <div class="aci-top">
-          <div class="aci-name">${it.generico}</div>
+          <div class="aci-name">${it.generico}${(m=>m ? ` <span class="hint" style="font-weight:400;">· ${m.presentacion} ${m.concentracion} · ${m.via}</span>` : '')(resolveComboMed(it))}</div>
           <button class="btn btn-sm btn-danger" onclick="adminDeleteComboItem('${escapeAttr(cirugia)}',${idx})">✕</button>
         </div>
         <div class="aci-fields">
@@ -3865,7 +3869,7 @@ function adminAddMedToCombo(cirugia, medId){
   const med = medsDB.find(m=>m.id===medId);
   if(!med) return;
   if(!combos[cirugia]) combos[cirugia] = [];
-  combos[cirugia].push({generico: med.generico, dosis:'1 '+(med.presentacion||'unidad'), frecuencia:'c/8h', duracion:'5 días', cantidad:''});
+  combos[cirugia].push({medId: med.id, generico: med.generico, presentacion: med.presentacion, concentracion: med.concentracion, dosis:'1 '+(med.presentacion||'unidad'), frecuencia:'c/8h', duracion:'5 días', cantidad:''});
   saveJSON(LS_KEYS.combos, combos);
   renderAdminCombos();
   showToast('Medicamento agregado a la plantilla ✅');
@@ -4192,11 +4196,32 @@ function deleteCurrentConditionType(ctx){
 }
 
 let lastAppliedRxCirugia = null;
+/* Un genérico puede tener varias presentaciones (ej. ketorolaco tableta y ampolla). La plantilla guarda el
+   id del medicamento; las plantillas antiguas solo tienen el genérico, así que se elige la presentación que
+   coincide con la dosis escrita ("1 tableta (10mg)" → Tableta 10 mg) en lugar de la primera de la lista. */
+const PRESENTACION_KW = [['tableta','tableta'],['cápsula','cápsula'],['capsula','cápsula'],['ampolla','ampolla'],
+  ['suspensión','suspensión'],['suspension','suspensión'],['jarabe','jarabe'],['crema','crema'],['jeringa','jeringa'],['solución','solución'],['frasco','frasco']];
+function resolveComboMed(item){
+  if(item.medId){ const m = medsDB.find(x=>x.id===item.medId); if(m) return m; }
+  const cands = medsDB.filter(m=>m.generico===item.generico);
+  if(cands.length<=1) return cands[0];
+  const norm = t=>String(t||'').toLowerCase().replace(/\s+/g,'');
+  if(item.presentacion){
+    const exact = cands.find(m=>m.presentacion===item.presentacion && (!item.concentracion || m.concentracion===item.concentracion));
+    if(exact) return exact;
+  }
+  const dosis = String(item.dosis||'').toLowerCase();
+  const kw = (PRESENTACION_KW.find(([k])=>dosis.includes(k))||[])[1];
+  let pool = kw ? cands.filter(m=>m.presentacion.toLowerCase().includes(kw)) : cands;
+  if(!pool.length) pool = cands;
+  const conc = pool.find(m=>{ const c = norm(m.concentracion).split('/')[0]; return c && norm(dosis).includes(c); });
+  return conc || pool[0];
+}
 function applyCombo(cirugia, updateTracking=true){
   const combo = combos[cirugia];
   if(!combo) return;
   combo.forEach(item=>{
-    const med = medsDB.find(m=>m.generico===item.generico) || {generico:item.generico, comercial:'', presentacion:'', concentracion:'', via:''};
+    const med = resolveComboMed(item) || {generico:item.generico, comercial:'', presentacion:'', concentracion:'', via:''};
     currentRxItems.push({
       medId: med.id||null, generico: med.generico, comercial: med.comercial, presentacion: med.presentacion,
       concentracion: med.concentracion, via: med.via,
@@ -4233,7 +4258,8 @@ function saveCurrentAsTemplate(){
   const cirugia = document.getElementById('rxCirugia').value;
   const doSave = ()=>{
     combos[cirugia] = currentRxItems.map(it=>({
-      generico: it.generico, dosis: it.dosis, frecuencia: it.frecuencia, duracion: it.duracion, cantidad: it.cantidad
+      medId: it.medId||null, generico: it.generico, presentacion: it.presentacion, concentracion: it.concentracion,
+      dosis: it.dosis, frecuencia: it.frecuencia, duracion: it.duracion, cantidad: it.cantidad
     }));
     saveJSON(LS_KEYS.combos, combos);
     renderComboChips();
@@ -4663,14 +4689,18 @@ async function shareAltaCompleta(){
     if(currentLabItems.length>0){
       partes.push({spec: buildLabImageSpec(), nombre: 'laboratorio'});
     }
+    if(document.getElementById('citFecha').value){
+      partes.push({spec: buildCitImageSpec(), nombre: 'cita'});
+    }
     if(partes.length===0){
-      showToast('No hay nada cargado todavía en Receta, Indicaciones ni Laboratorios');
+      showToast('No hay nada cargado todavía en Receta, Indicaciones, Laboratorios ni Cita');
       return;
     }
     const nombrePac = filenameSafe(
       document.getElementById('rxPacNombre').value ||
       document.getElementById('indPacNombre').value ||
-      document.getElementById('labPacNombre').value
+      document.getElementById('labPacNombre').value ||
+      document.getElementById('citPacNombre').value
     );
     const files = [];
     for(const p of partes){
@@ -6210,6 +6240,31 @@ function fichaCapture(prefix){
   window[fn] = function(){ const r = orig.apply(this, arguments); fichaCapture(prefix); return r; };
 });
 
+
+/* ============================================================
+   VISTA PREVIA AJUSTADA AL ANCHO DE LA PANTALLA
+   ============================================================ */
+function fitDocPages(){
+  document.querySelectorAll('.doc-page').forEach(page=>{
+    const wrap = page.parentElement;
+    if(!wrap || !wrap.offsetParent) return; // pestaña oculta
+    wrap.classList.remove('doc-fit'); wrap.style.height = '';
+    const avail = wrap.clientWidth, natural = page.offsetWidth;
+    if(natural && avail < natural - 1){
+      const sc = avail / natural;
+      wrap.classList.add('doc-fit');
+      wrap.style.setProperty('--docScale', sc);
+      wrap.style.height = Math.ceil(page.offsetHeight * sc) + 'px';
+    }
+  });
+}
+let fitDocRaf = 0;
+function scheduleFitDocPages(){ cancelAnimationFrame(fitDocRaf); fitDocRaf = requestAnimationFrame(fitDocPages); }
+const fitDocObserver = new MutationObserver(scheduleFitDocPages);
+document.querySelectorAll('.doc-page').forEach(p=>fitDocObserver.observe(p, {childList:true, subtree:true, characterData:true}));
+window.addEventListener('resize', scheduleFitDocPages);
+document.querySelectorAll('#tabs button, #bottomnav button').forEach(b=>b.addEventListener('click', scheduleFitDocPages));
+
 /* ============================================================
    INIT
    ============================================================ */
@@ -6233,6 +6288,7 @@ renderLabCondComboChips();
 renderLabDoc();
 populateCitaHoras();
 renderCitDoc();
+scheduleFitDocPages();
 
 if(!doctorConfig.nombre){
   openConfigModal();

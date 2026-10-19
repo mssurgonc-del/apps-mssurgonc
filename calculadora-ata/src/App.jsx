@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { RECS } from './recs.js';
 import {
   HISTO_OPTIONS, BETHESDA, TIRADS_COMP, TIRADS_FOCI,
-  evaluateTirads, evaluatePostop, evaluateDynamic,
+  evaluateTirads, evaluatePostop, evaluateDynamic, evaluateSurgery, SURG_LABELS,
   INITIAL_POSTOP, INITIAL_DYNAMIC, INITIAL_SURG, INITIAL_NODULE,
 } from './logic.js';
 
@@ -220,6 +220,7 @@ export default function App() {
   };
 
   const postopRes = useMemo(() => evaluatePostop(postop), [postop]);
+  const surgRes = useMemo(() => evaluateSurgery(surg), [surg]);
   const dynRes = useMemo(() => evaluateDynamic(dynamic, postopRes.tier), [dynamic, postopRes.tier]);
 
   const copyTextSafe = (text, mode) => {
@@ -280,6 +281,37 @@ export default function App() {
       out += `──────────────────────────────────────────────────\n`;
       out += `Ref: Ringel MD, Sosa JA, et al. 2025 ATA Management Guidelines for Adult Patients with DTC. Thyroid 2025;35(8):841-985. Corrigendum: Thyroid 2025;35(11):1350 (doi: 10.1177/10507256251387671). Aplica a adultos con cáncer diferenciado de tiroides.`;
       copyTextSafe(out, 'emr');
+    } else if (mode === 'preop') {
+      const t = evaluateTirads(nodule);
+      const bth = BETHESDA[nodule.bethesda];
+      const L = SURG_LABELS;
+      let out = `📋 EVALUACIÓN PREOPERATORIA — NÓDULO / CÁNCER DE TIROIDES\n`;
+      out += `📅 Fecha: ${patientMeta.fecha}${patientMeta.id ? ` | ID: ${patientMeta.id}` : ''}\n`;
+      out += `──────────────────────────────────────────────────\n`;
+      out += `1. ECOGRAFÍA (ACR TI-RADS 2017):\n`;
+      out += `• Puntaje: ${t.pts} → ${t.level} (${t.name}); riesgo de cáncer en la serie del comité: ${t.risk}\n`;
+      out += `• Diámetro máximo: ${nodule.sizeCm || 'N/D'} cm\n`;
+      out += `• Conducta: ${t.rec}${t.followUp ? ' ' + t.followUp : ''}\n`;
+      if (t.notes.length) out += `• Notas: ${t.notes.join(' ')}\n`;
+      out += `\n2. CITOLOGÍA (Bethesda 2023):\n`;
+      if (bth.rom) {
+        out += `• Categoría: ${bth.label}\n`;
+        out += `• Riesgo de malignidad: ${bth.rom}\n`;
+        out += `• Manejo: ${bth.mgmt}\n`;
+      } else {
+        out += `• Sin citología registrada.\n`;
+      }
+      out += `\n3. PLAN QUIRÚRGICO (ATA 2025):\n`;
+      out += `• Estadio clínico: ${L.cT[surg.cT]} | ${L.cN[surg.cN]} | ${L.cM[surg.cM]}\n`;
+      out += `• Lóbulo contralateral: ${L.laterality[surg.laterality]} | ${L.posteriorAbutment[surg.posteriorAbutment]}\n`;
+      out += `• Recomendación: ${surgRes.rec}\n`;
+      if (surgRes.m1Note) out += `• cM1: ${surgRes.m1Note}\n`;
+      if (surgRes.activeSurveillance) out += `• Alternativas no quirúrgicas (cT1aN0M0): ${surgRes.activeSurveillance}\n`;
+      out += `• Manejo ganglionar: ${surgRes.nodal}\n`;
+      out += `• Con diagnóstico confirmado: no se recomienda Tg/TgAb preoperatoria de rutina (R9) ni evaluación genómica de rutina (R10).\n`;
+      out += `──────────────────────────────────────────────────\n`;
+      out += `Ref: Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841-985 (+ corrigendum 35(11):1350) · Tessler FN, et al. J Am Coll Radiol 2017;14:587-595 · Bethesda 2023 (Ali SZ, et al. Thyroid 2023;33:1039; vía PathologyOutlines). Aplica a adultos con cáncer diferenciado de tiroides.`;
+      copyTextSafe(out, 'preop');
     } else if (mode === 'excel') {
       const headers = [
         'Fecha', 'ID_Paciente', 'Grupo_Edad', 'Histologia_OMS2025', 'Patron_Folicular',
@@ -1261,40 +1293,25 @@ export default function App() {
             <div className="lg:col-span-5 bg-teal-950 text-white p-5 rounded-2xl shadow-lg space-y-3 text-xs leading-relaxed">
               <div className="text-[10px] font-mono uppercase text-teal-300">Recomendación Quirúrgica · ATA 2025</div>
               <div className="text-xl font-black text-white">
-                {(surg.cT === 't3a' || surg.cT === 't3b' || surg.cT === 't4' || surg.cN !== 'n0' || surg.cM === 'm1')
-                  ? 'Tiroidectomía Total [R15C]'
-                  : surg.laterality === 'bil'
-                  ? 'Tiroidectomía Total (cáncer bilateral) [R15A]'
-                  : surg.laterality === 'nod'
-                  ? 'Lobectomía o Tiroidectomía Total (nodularidad contralateral sospechosa) [R15B; en cT1 «other indications», R15A]'
-                  : surg.cT === 't2'
-                  ? 'Lobectomía (Preferida por menor morbilidad) o Tiroidectomía Total [R15B]'
-                  : 'Lobectomía Tiroidea (u Opciones No Quirúrgicas si es cT1a) [R15A / R11]'}
+                {surgRes.rec}
               </div>
 
-              {surg.cM === 'm1' && (
+              {surgRes.m1Note && (
                 <div className="bg-red-900/60 p-3 rounded-xl border border-red-700">
                   <strong className="text-red-200 block mb-1">cM1 (R15C, R32D):</strong>
-                  La cirugía inicial debe incluir tiroidectomía total para permitir I-131 terapéutico. No candidato a vigilancia activa ni ablación percutánea (R11 se limita a cT1aN0M0).
+                  {surgRes.m1Note}
                 </div>
               )}
 
-              {surg.cT === 't1a' && surg.cN === 'n0' && surg.cM === 'm0' && surg.laterality === 'uni' && (
+              {surgRes.activeSurveillance && (
                 <div className="bg-teal-900/80 p-3 rounded-xl border border-teal-700">
                   <strong className="text-teal-200 block mb-1">Alternativas No Quirúrgicas en cT1aN0M0 (R11–R14):</strong>
-                  {surg.posteriorAbutment === 'yes'
-                    ? '⚠️ La vigilancia activa de tumores de localización posterior puede ser inapropiada por riesgo de invasión de estructuras vitales; estos casos fueron excluidos de los estudios.'
-                    : '• Vigilancia Activa (R11A) con US cada 6 meses por 1–2 años y luego anual (R12), sin medir Tg sérica (R13). Indicar cirugía si hay metástasis ganglionar nueva comprobada por biopsia, crecimiento ≥3 mm, metástasis a distancia, ETE, crecimiento posterior, ansiedad, imposibilidad de seguimiento o preferencia (R14). También puede considerarse Ablación Percutánea por RFA/MWA/LA (R11B).'}
+                  {surg.posteriorAbutment === 'yes' ? '⚠️ ' : '• '}{surgRes.activeSurveillance}
                 </div>
               )}
 
               <div className="bg-white/10 p-3 rounded-xl space-y-1.5">
-                <div><b>• Manejo Ganglionar (R19, R20):</b> {
-                  surg.cN === 'n1b' ? 'Disección terapéutica lateral compartimental (niveles IIa, III, IV y Vb) + disección central ipsilateral acompañante (R20B/C).' :
-                  surg.cN === 'n1a' ? 'Disección central terapéutica (nivel VI y VII superior) acompañando a la tiroidectomía (R20A).' :
-                  (surg.cT === 't1a' || surg.cT === 't1b' || surg.cT === 't2') ? 'NO realizar disección central profiláctica de rutina en cT1–T2 cN0 (R19A - Fuerte).' :
-                  'En PTC cN0 con T3–T4, o si la información servirá para planear la terapia, puede considerarse disección central profiláctica, sopesando los riesgos según evolucionen durante la tiroidectomía (R19B).'
-                }</div>
+                <div><b>• Manejo Ganglionar (R19, R20):</b> {surgRes.nodal}</div>
                 <div><b>• Estándares Perioperatorios (R6, R8, R22–R25):</b> Referir a cirujano de alto volumen (&gt;25–50 tiroidectomías/año, R6). Solicitar TC con contraste IV si hay sospecha invasiva (el yodo se depura en 4–6 semanas, R8). Evaluar la voz en todos (R22A); laringoscopía si hay disfonía, cirugía cervical o torácica alta previa, ETE posterior o metástasis ganglionares centrales o yugulares extensas (R22B). Estimular vago/NLR antes de resecar el lóbulo contralateral para evitar parálisis bilateral (R23D). Suplementar calcio/vitamina D dirigido por PTH y evitar drenajes de rutina (R24B, R25).</div>
               </div>
             </div>
@@ -1478,6 +1495,16 @@ export default function App() {
             </div>
           );
         })()}
+        {['nodule', 'bethesda', 'surgery'].includes(activeTab) && (
+          <div className="mt-4 hidden lg:flex justify-end">
+            <button
+              onClick={() => handleExport('preop')}
+              className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-5 rounded-xl font-black text-sm shadow-md"
+            >
+              <IconCopy /> {copyFeedback === 'preop' ? '¡Nota preoperatoria copiada!' : 'Copiar nota preoperatoria (TI-RADS + Bethesda + Cirugía)'}
+            </button>
+          </div>
+        )}
         <footer className="mt-8 pt-4 border-t border-slate-200 text-[11px] text-slate-500 leading-relaxed">
           <b>Fuentes verificadas:</b> Ringel MD, Sosa JA, et al. 2025 ATA Management Guidelines for Adult Patients with DTC. Thyroid 2025;35(8):841–985 (DOI: 10.1177/10507256251363120) + Corrigendum Thyroid 2025;35(11):1350 (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña TI-RADS: ACR TI-RADS 2017 (Tessler FN, et al. JACR 2017;14:587–595) · Pestaña Bethesda: Bethesda 2023 (resumen PathologyOutlines de Ali SZ, et al. Thyroid 2023;33:1039). Alcance: adultos con cáncer diferenciado de tiroides; no aplica a medular, anaplásico, linfoma ni pediatría. Herramienta de apoyo; no sustituye el juicio clínico. Los datos no salen del dispositivo.
         </footer>
@@ -1502,6 +1529,14 @@ export default function App() {
           className="lg:hidden fixed right-3 z-50 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] flex items-center gap-1.5 bg-slate-900 text-white text-xs font-black px-3.5 py-2.5 rounded-full shadow-lg"
         >
           <IconCopy /> {copyFeedback === 'emr' ? '¡Nota copiada!' : 'Copiar nota'}
+        </button>
+      )}
+      {['nodule', 'bethesda', 'surgery'].includes(activeTab) && (
+        <button
+          onClick={() => handleExport('preop')}
+          className="lg:hidden fixed right-3 z-50 bottom-[calc(1rem+env(safe-area-inset-bottom))] flex items-center gap-1.5 bg-slate-900 text-white text-xs font-black px-3.5 py-2.5 rounded-full shadow-lg"
+        >
+          <IconCopy /> {copyFeedback === 'preop' ? '¡Nota copiada!' : 'Copiar nota preop.'}
         </button>
       )}
     </div>

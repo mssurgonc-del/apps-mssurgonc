@@ -466,3 +466,37 @@ export const INITIAL_SURG = {
 export const INITIAL_NODULE = {
     comp: 'solid', echo: 2, shape: 0, margin: 0, foci: { macro: false, rim: false, punct: false }, sizeCm: '1.6', bethesda: 'none'
   };
+
+// --- Planificación quirúrgica preoperatoria (ATA 2025: R11–R25, R15A–C, R19–R20) ---
+export const SURG_LABELS = {
+  cT: { t1a: 'cT1a (≤ 1 cm)', t1b: 'cT1b (> 1 – 2 cm)', t2: 'cT2 (> 2 – 4 cm)', t3a: 'cT3a (> 4 cm)', t3b: 'cT3b (ETE macroscópica a pretiroideos)', t4: 'cT4 (ETE macroscópica a tráquea, laringe, NLR, etc.)' },
+  cN: { n0: 'cN0', n1a: 'cN1a (central)', n1b: 'cN1b (lateral)' },
+  cM: { m0: 'cM0', m1: 'cM1' },
+  laterality: { uni: 'Unilateral, sin nódulos contralaterales sospechosos', bil: 'Cáncer bilateral', nod: 'Nódulos contralaterales sospechosos' },
+  posteriorAbutment: { no: 'Alejado de cápsula posterior / tráquea / NLR', yes: 'Adyacente a cápsula posterior / tráquea / NLR' },
+};
+
+export function evaluateSurgery(g) {
+  const rec = (g.cT === 't3a' || g.cT === 't3b' || g.cT === 't4' || g.cN !== 'n0' || g.cM === 'm1')
+    ? 'Tiroidectomía Total [R15C]'
+    : g.laterality === 'bil'
+    ? 'Tiroidectomía Total (cáncer bilateral) [R15A]'
+    : g.laterality === 'nod'
+    ? 'Lobectomía o Tiroidectomía Total (nodularidad contralateral sospechosa) [R15B; en cT1 «other indications», R15A]'
+    : g.cT === 't2'
+    ? 'Lobectomía (Preferida por menor morbilidad) o Tiroidectomía Total [R15B]'
+    : 'Lobectomía Tiroidea (u Opciones No Quirúrgicas si es cT1a) [R15A / R11]';
+  const m1Note = g.cM === 'm1'
+    ? 'La cirugía inicial debe incluir tiroidectomía total para permitir I-131 terapéutico. No candidato a vigilancia activa ni ablación percutánea (R11 se limita a cT1aN0M0).'
+    : null;
+  const activeSurveillance = (g.cT === 't1a' && g.cN === 'n0' && g.cM === 'm0' && g.laterality === 'uni')
+    ? (g.posteriorAbutment === 'yes'
+      ? 'La vigilancia activa de tumores de localización posterior puede ser inapropiada por riesgo de invasión de estructuras vitales; estos casos fueron excluidos de los estudios.'
+      : 'Vigilancia Activa (R11A) con US cada 6 meses por 1–2 años y luego anual (R12), sin medir Tg sérica (R13). Indicar cirugía si hay metástasis ganglionar nueva comprobada por biopsia, crecimiento ≥3 mm, metástasis a distancia, ETE, crecimiento posterior, ansiedad, imposibilidad de seguimiento o preferencia (R14). También puede considerarse Ablación Percutánea por RFA/MWA/LA (R11B).')
+    : null;
+  const nodal = g.cN === 'n1b' ? 'Disección terapéutica lateral compartimental (niveles IIa, III, IV y Vb) + disección central ipsilateral acompañante (R20B/C).'
+    : g.cN === 'n1a' ? 'Disección central terapéutica (nivel VI y VII superior) acompañando a la tiroidectomía (R20A).'
+    : (g.cT === 't1a' || g.cT === 't1b' || g.cT === 't2') ? 'NO realizar disección central profiláctica de rutina en cT1–T2 cN0 (R19A - Fuerte).'
+    : 'En PTC cN0 con T3–T4, o si la información servirá para planear la terapia, puede considerarse disección central profiláctica, sopesando los riesgos según evolucionen durante la tiroidectomía (R19B).';
+  return { rec, m1Note, activeSurveillance, nodal };
+}

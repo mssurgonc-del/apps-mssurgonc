@@ -2,8 +2,8 @@
 // Fuentes: ATA 2025 (Fig. 2, Fig. 6, Tablas 6, 9 y 10, R32, R48, R55A) y ACR TI-RADS 2017 (Fig. 1).
 import { describe, it, expect } from 'vitest';
 import {
-  evaluatePostop, evaluateDynamic, evaluateTirads,
-  INITIAL_POSTOP, INITIAL_DYNAMIC, INITIAL_NODULE,
+  evaluatePostop, evaluateDynamic, evaluateTirads, evaluateSurgery,
+  INITIAL_POSTOP, INITIAL_DYNAMIC, INITIAL_NODULE, INITIAL_SURG,
 } from './logic.js';
 
 const post = (over) => evaluatePostop({ ...INITIAL_POSTOP, ...over });
@@ -207,4 +207,32 @@ describe('ACR TI-RADS 2017 (Fig. 1)', () => {
   });
   it('1 punto → alerta (no corresponde a ningún nivel)', () =>
     expect(tr({ comp: 'cystic', echo: 1 }).notes.join(' ')).toContain('1 punto'));
+});
+
+const sg = (over) => evaluateSurgery({ ...INITIAL_SURG, ...over });
+describe('Planificación quirúrgica (R11, R15, R19, R20)', () => {
+  it('cT1aN0M0 unilateral → lobectomía y alternativas no quirúrgicas', () => {
+    const r = sg({});
+    expect(r.rec).toContain('Lobectomía');
+    expect(r.activeSurveillance).toContain('R11A');
+  });
+  it('cT1a posterior → vigilancia activa puede ser inapropiada', () =>
+    expect(sg({ posteriorAbutment: 'yes' }).activeSurveillance).toContain('inapropiada'));
+  it('cT2N0 → lobectomía preferida o tiroidectomía total (R15B)', () => expect(sg({ cT: 't2' }).rec).toContain('R15B'));
+  it('cT3a, cT3b, cT4, cN1 o cM1 → tiroidectomía total (R15C)', () => {
+    for (const o of [{ cT: 't3a' }, { cT: 't3b' }, { cT: 't4' }, { cN: 'n1a' }, { cN: 'n1b' }, { cM: 'm1' }]) expect(sg(o).rec).toContain('R15C');
+  });
+  it('cM1 → sin vigilancia activa y con nota de I-131', () => {
+    const r = sg({ cM: 'm1' });
+    expect(r.activeSurveillance).toBeNull();
+    expect(r.m1Note).toContain('I-131');
+  });
+  it('Cáncer bilateral → tiroidectomía total (R15A)', () => expect(sg({ cT: 't1b', laterality: 'bil' }).rec).toContain('cáncer bilateral'));
+  it('Nódulos contralaterales sospechosos → lobectomía o TT', () => expect(sg({ cT: 't2', laterality: 'nod' }).rec).toContain('Lobectomía o Tiroidectomía Total'));
+  it('Manejo ganglionar: cN0 cT1–T2 sin profiláctica (R19A); cN1a central (R20A); cN1b lateral (R20B/C); T3–T4 cN0 considerar (R19B)', () => {
+    expect(sg({ cT: 't1b' }).nodal).toContain('R19A');
+    expect(sg({ cN: 'n1a' }).nodal).toContain('R20A');
+    expect(sg({ cN: 'n1b' }).nodal).toContain('R20B');
+    expect(sg({ cT: 't3a' }).nodal).toContain('R19B');
+  });
 });

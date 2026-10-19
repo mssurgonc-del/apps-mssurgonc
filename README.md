@@ -32,10 +32,12 @@ No envía datos a ningún servidor; todo se calcula en el navegador.
 ## Alta Quirúrgica: cifrado y sincronización
 
 - Archivo único: `alta-quirurgica/index.html` (HTML + JS sin compilación).
-- Todo lo guardado (historial, plantillas, perfil, firma) va en una bóveda cifrada con AES-GCM; la clave
-  se deriva del PIN (PBKDF2-SHA256, 600 000 iteraciones). Sin el PIN los datos no se pueden recuperar.
-- Al abrirla por primera vez migra los datos de la versión anterior (sin cifrar) y los borra tras verificar la bóveda.
-- Sincronización opcional con Google Drive (`drive.appdata`, carpeta oculta de la app): solo se sube el archivo cifrado.
+- Abre sin PIN. Todo lo guardado (historial, plantillas, perfil, firma) va en una bóveda AES-GCM cuya clave
+  queda en el propio dispositivo; la protección real del equipo es su bloqueo de pantalla.
+- Al abrirla por primera vez migra los datos de la versión sin cifrar y los borra tras verificar la bóveda.
+  Quien había creado un PIN en la v19 lo escribe una última vez.
+- Sincronización opcional con Google Drive (`drive.appdata`, carpeta oculta de la app): se sube cifrada con una
+  clave de sincronización (PBKDF2-SHA256, 600 000 iteraciones) que se escribe una vez por dispositivo.
   Los historiales se combinan por id entre dispositivos y respetan los borrados.
 - Requisito en Google Cloud Console (proyecto del ID de cliente OAuth): agregar
   `https://mssurgonc-del.github.io` como *Authorized JavaScript origin* y el permiso `.../auth/drive.appdata`.

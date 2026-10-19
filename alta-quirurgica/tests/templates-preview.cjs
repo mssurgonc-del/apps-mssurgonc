@@ -3,7 +3,7 @@ const ok=(c,m)=>{console.log((c?'ok: ':'FAIL: ')+m); if(!c) process.exitCode=1;}
 (async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',ignoreDefaultArgs:['--headless=old'],args:['--no-sandbox','--headless=new']});
 const ctx=await b.newContext({viewport:{width:390,height:844}});await ctx.route('https://accounts.google.com/**',r=>r.fulfill({body:''}));
 const pg=await ctx.newPage();const errs=[];pg.on('pageerror',e=>errs.push(e.message));
-await pg.goto(process.env.BASE || 'http://localhost:8765/');await pg.fill('#vlNew1','246810');await pg.fill('#vlNew2','246810');await pg.click('#vlSetupBtn');await pg.waitForTimeout(2500);
+await pg.goto(process.env.BASE || 'http://localhost:8765/');await pg.waitForFunction(()=>{ try{ return Array.isArray(historial); }catch(e){ return false; } });
 await pg.evaluate(()=>closeConfigModal());
 const rx=()=>pg.evaluate(()=>currentRxItems.map(i=>i.generico+'|'+i.presentacion+' '+i.concentracion+'|'+i.via));
 await pg.selectOption('#rxCirugia','Tiroidectomía total'); let r=await rx(); console.log(r);

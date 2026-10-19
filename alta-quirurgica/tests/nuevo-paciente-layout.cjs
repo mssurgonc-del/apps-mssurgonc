@@ -4,7 +4,7 @@ const BASE=process.env.BASE||'http://localhost:8765/';
 (async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',ignoreDefaultArgs:['--headless=old'],args:['--no-sandbox','--headless=new']});
 const ctx=await b.newContext({viewport:{width:390,height:844}});await ctx.route('https://accounts.google.com/**',r=>r.fulfill({body:''}));
 const pg=await ctx.newPage();const errs=[];pg.on('pageerror',e=>errs.push(e.message));
-await pg.goto(BASE);await pg.fill('#vlNew1','246810');await pg.fill('#vlNew2','246810');await pg.click('#vlSetupBtn');await pg.waitForTimeout(2500);
+await pg.goto(BASE);await pg.waitForFunction(()=>{ try{ return Array.isArray(historial); }catch(e){ return false; } });
 await pg.evaluate(()=>closeConfigModal());
 // paciente 1 completo
 await pg.fill('#rxPacNombre','María López');await pg.fill('#rxPacEdad','52');await pg.fill('#rxPacDx','Ca papilar de tiroides');

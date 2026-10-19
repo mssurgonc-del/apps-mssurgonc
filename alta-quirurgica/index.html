@@ -911,7 +911,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
     <div class="admin-tabs">
       <button class="admin-tab-btn active" id="cfgTabBtnPerfil" onclick="switchConfigTab('perfil')">Perfil</button>
       <button class="admin-tab-btn" id="cfgTabBtnApariencia" onclick="switchConfigTab('apariencia')">Apariencia</button>
-      <button class="admin-tab-btn" id="cfgTabBtnSeguridad" onclick="switchConfigTab('seguridad')">Seguridad</button>
+      <button class="admin-tab-btn" id="cfgTabBtnSeguridad" onclick="switchConfigTab('seguridad')">Sincronización</button>
       <button class="admin-tab-btn" id="cfgTabBtnMedicamentos" onclick="switchConfigTab('medicamentos')">Medicamentos</button>
       <button class="admin-tab-btn" id="cfgTabBtnPlantillas" onclick="plantillasFilterKey=null; switchConfigTab('plantillas');">Plantillas</button>
       <button class="admin-tab-btn" id="cfgTabBtnRespaldo" onclick="switchConfigTab('respaldo')">Respaldo</button>
@@ -964,21 +964,9 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
     </div>
 
     <div id="cfgTabSeguridad" style="display:none;">
-      <div class="hint" style="margin-top:0;">🔐 Sus datos (historial, plantillas, perfil y firma) están <b>cifrados</b> con su PIN. Sin el PIN no se pueden leer. <b>Si olvida el PIN, no hay forma de recuperarlos</b>: anótelo en un lugar seguro.</div>
-      <div class="btn-row" style="margin-top:6px;">
-        <button class="btn btn-sm" onclick="Vault.lock()">🔒 Bloquear ahora</button>
-      </div>
-      <label style="margin-top:16px;font-weight:700;font-size:15px;">Cambiar PIN</label>
-      <label for="cpCur">PIN actual</label>
-      <input type="password" inputmode="numeric" id="cpCur" autocomplete="current-password">
-      <div class="grid2">
-        <div><label for="cpNew1">PIN nuevo (mín. 6)</label><input type="password" inputmode="numeric" id="cpNew1" autocomplete="new-password"></div>
-        <div><label for="cpNew2">Confirmar</label><input type="password" inputmode="numeric" id="cpNew2" autocomplete="new-password"></div>
-      </div>
-      <div class="btn-row"><button class="btn btn-primary btn-sm" onclick="Vault.changePin()">Cambiar PIN</button></div>
-
+      <div class="hint" style="margin-top:0;">La app abre sin PIN. Sus datos quedan en este dispositivo; protéjalo con el bloqueo de pantalla del teléfono o de la PC.</div>
       <label style="margin-top:16px;font-weight:700;font-size:15px;">Sincronización con Google Drive</label>
-      <div class="hint" style="margin-top:0;">Mantiene un solo historial entre su teléfono y su PC. Drive solo recibe el archivo cifrado, en una carpeta oculta de la app. Use el mismo PIN en ambos dispositivos.</div>
+      <div class="hint" style="margin-top:0;">Mantiene un solo historial entre su teléfono y su PC. Drive recibe una copia cifrada con su <b>clave de sincronización</b>, en una carpeta oculta de la app. La clave se escribe una sola vez en cada dispositivo.</div>
       <div id="syncOffBox">
         <details style="margin:6px 0;"><summary class="hint" style="cursor:pointer;">ID de cliente de Google (avanzado)</summary>
           <input type="text" id="syncClientId" spellcheck="false" style="font-size:12px;">
@@ -991,6 +979,15 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
           <button class="btn btn-primary btn-sm" onclick="Vault.syncTap()">⟳ Sincronizar ahora</button>
           <button class="btn btn-sm btn-danger" onclick="Vault.disconnect()">Desconectar</button>
         </div>
+        <details style="margin-top:10px;"><summary class="hint" style="cursor:pointer;">Cambiar clave de sincronización</summary>
+          <label for="cpCur">Clave actual</label>
+          <input type="password" id="cpCur" autocomplete="current-password">
+          <div class="grid2">
+            <div><label for="cpNew1">Clave nueva (mín. 6)</label><input type="password" id="cpNew1" autocomplete="new-password"></div>
+            <div><label for="cpNew2">Confirmar</label><input type="password" id="cpNew2" autocomplete="new-password"></div>
+          </div>
+          <div class="btn-row"><button class="btn btn-primary btn-sm" onclick="Vault.changePin()">Cambiar clave</button></div>
+        </details>
       </div>
     </div>
 
@@ -1067,21 +1064,11 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
 <div id="vaultLock" style="display:none;position:fixed;inset:0;background:var(--topbar-bg);z-index:500;align-items:center;justify-content:center;flex-direction:column;color:#fff;padding:20px;text-align:center;overflow:auto;">
   <div style="font-size:40px;margin-bottom:6px;">🔒</div>
   <h2 style="color:#fff;margin-bottom:14px;">Alta Quirúrgica</h2>
-  <div id="vlUnlock" style="display:none;">
+  <div id="vlUnlock">
+    <div style="font-size:14px;margin-bottom:10px;max-width:320px;">Ingrese su PIN <b>una última vez</b>. Desde ahora la app abrirá sin PIN en este dispositivo.</div>
     <input type="password" inputmode="numeric" id="vlPin" placeholder="PIN" autocomplete="current-password" aria-label="PIN"
       style="width:180px;text-align:center;font-size:22px;letter-spacing:6px;padding:10px;border-radius:8px;border:none;">
-    <div><button class="btn btn-accent btn-sm" style="margin-top:10px;" id="vlUnlockBtn">Desbloquear</button></div>
-  </div>
-  <div id="vlSetup" style="display:none;max-width:340px;">
-    <div style="font-size:14px;margin-bottom:10px;opacity:.95;">Cree un PIN de al menos 6 dígitos. Con él se cifran sus datos. <b>Si lo olvida, no se pueden recuperar.</b></div>
-    <div id="vlLegacyNote" style="display:none;font-size:13px;margin-bottom:10px;background:rgba(255,255,255,.12);padding:8px;border-radius:8px;">Se cifrarán los datos que ya tiene en este dispositivo (historial, plantillas, perfil y firma). Este PIN reemplaza al anterior.</div>
-    <input type="password" inputmode="numeric" id="vlNew1" placeholder="PIN nuevo" autocomplete="new-password" aria-label="PIN nuevo"
-      style="width:200px;text-align:center;font-size:20px;letter-spacing:4px;padding:9px;border-radius:8px;border:none;margin-bottom:8px;">
-    <input type="password" inputmode="numeric" id="vlNew2" placeholder="Confirmar PIN" autocomplete="new-password" aria-label="Confirmar PIN"
-      style="width:200px;text-align:center;font-size:20px;letter-spacing:4px;padding:9px;border-radius:8px;border:none;">
-    <div><button class="btn btn-accent btn-sm" style="margin-top:10px;" id="vlSetupBtn">Crear PIN y entrar</button></div>
-    <div style="margin-top:18px;font-size:13px;opacity:.9;">¿Ya usa la app en otro dispositivo con Google Drive?</div>
-    <button class="btn btn-sm" style="margin-top:6px;" id="vlRestoreBtn">☁️ Traer mis datos desde Google Drive</button>
+    <div><button class="btn btn-accent btn-sm" style="margin-top:10px;" id="vlUnlockBtn">Abrir</button></div>
   </div>
   <div id="vlMsg" style="font-size:13px;margin-top:10px;min-height:16px;"></div>
   <div id="vlBusy" style="display:none;font-size:12px;opacity:.8;">Un momento…</div>
@@ -1114,22 +1101,22 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
 /* ============================================================
    BÓVEDA CIFRADA + SINCRONIZACIÓN CON GOOGLE DRIVE
    - Todos los datos de la app (historial, plantillas, perfil y firma) se guardan
-     cifrados con AES-GCM; la clave sale del PIN (PBKDF2-SHA256, 600 000 iteraciones).
+     cifrados con AES-GCM. La app abre sin PIN: la clave queda guardada en el dispositivo.
+   - Para sincronizar, la clave se deriva de la clave de sincronización (PBKDF2-SHA256, 600 000 iteraciones).
    - Google Drive (carpeta oculta de la app, appDataFolder) solo recibe el archivo cifrado.
-   - El script principal se ejecuta después de desbloquear y usa `appStore`
+   - El script principal se ejecuta después de abrir la bóveda y usa `appStore`
      en lugar de localStorage.
    ============================================================ */
 (function(){
 'use strict';
 const VAULT_KEY = 'altaApp_vault';
-const SESSION_KEY = 'altaApp_session';
+const DEVICE_KEY = 'altaApp_deviceKey'; // clave de cifrado de este dispositivo
 const SYNC_CFG_KEY = 'altaApp_syncCfg';
 const DEFAULT_CLIENT_ID = '266998813950-67td3qs5eotb6gn4nu5q326ium1bm6p1.apps.googleusercontent.com';
 const DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.appdata';
 const REMOTE_NAME = 'alta-quirurgica-vault.json';
 const ITER = 600000;
-const MIN_PIN = 6;
-const AUTOLOCK_MS = 30*60*1000;
+const MIN_CLAVE = 6;
 /* Claves antiguas (versión sin cifrar) que se migran a la bóveda */
 const LEGACY_KEYS = ['altaApp_doctorConfig','altaApp_medDB','altaApp_medCombos','altaApp_historialRecetas',
   'altaApp_customSurgeryTypes','altaApp_indicacionesTemplates','altaApp_historialIndicaciones','altaApp_labDB',
@@ -1166,7 +1153,7 @@ async function decryptVault(key, vault){
 }
 
 /* ---------- Estado en memoria ---------- */
-let key = null, saltB64 = null, pinMem = null;
+let key = null, saltB64 = null, claveMem = null;
 const oldKeys = {}; // sal → clave anterior, tras cambiar el PIN en este dispositivo
 let data = {items:{}, tomb:{}};
 let launching = false, launched = false, userTyped = false;
@@ -1228,10 +1215,10 @@ function persistNow(){
   }).catch(e=>console.error(e));
   return persistChain;
 }
-async function saveSessionKey(){
-  try{ sessionStorage.setItem(SESSION_KEY, JSON.stringify({k: toB64(await crypto.subtle.exportKey('raw', key)), salt: saltB64})); }catch(e){}
+async function saveDeviceKey(){
+  lsSet(DEVICE_KEY, JSON.stringify({k: toB64(await crypto.subtle.exportKey('raw', key)), salt: saltB64}));
 }
-async function adoptKey(newKey, newSalt){ key = newKey; saltB64 = newSalt; await saveSessionKey(); await persistNow(); }
+async function adoptKey(newKey, newSalt){ key = newKey; saltB64 = newSalt; await persistNow(); await saveDeviceKey(); }
 
 /* ---------- Combinar datos de dos dispositivos ---------- */
 function mergeData(local, remote){
@@ -1374,16 +1361,16 @@ async function keyForRemote(remoteVault){
   if(oldKeys[remoteVault.salt]){
     try{ await decryptVault(oldKeys[remoteVault.salt], remoteVault); return {k: oldKeys[remoteVault.salt], adopt:false}; }catch(e){}
   }
-  if(pinMem){
-    try{ const k = await deriveKey(pinMem, fromB64(remoteVault.salt)); await decryptVault(k, remoteVault); return {k, adopt:true}; }catch(e){}
+  if(claveMem){
+    try{ const k = await deriveKey(claveMem, fromB64(remoteVault.salt)); await decryptVault(k, remoteVault); return {k, adopt:true}; }catch(e){}
   }
-  const pin = await askPin('Los datos en Google Drive usan otro PIN (el del otro dispositivo, o lo cambió allá). Ingréselo para combinarlos.');
+  const pin = await askPin('La copia en Google Drive usa otra clave de sincronización (la cambió en su otro dispositivo). Ingrese la clave nueva.');
   if(!pin) return null;
-  try{ const k = await deriveKey(pin, fromB64(remoteVault.salt)); await decryptVault(k, remoteVault); pinMem = pin; return {k, adopt:true}; }
-  catch(e){ toast('PIN incorrecto para los datos de Drive'); return null; }
+  try{ const k = await deriveKey(pin, fromB64(remoteVault.salt)); await decryptVault(k, remoteVault); claveMem = pin; return {k, adopt:true}; }
+  catch(e){ toast('Clave de sincronización incorrecta'); return null; }
 }
 function onRemoteChanges(){
-  // La app tiene sus datos en memoria: recarga para mostrarlos (la clave de sesión evita pedir el PIN).
+  // La app tiene sus datos en memoria: recarga para mostrarlos.
   if(!userTyped){ location.reload(); return; }
   const bar = document.getElementById('vaultUpdateBar');
   if(bar) bar.style.display = 'flex';
@@ -1398,7 +1385,7 @@ function setSyncState(s){
     const map = {
       off:['',''], syncing:['☁️ …','Sincronizando'], ok:['☁️ ✓','Sincronizado '+hm],
       needtap:['☁️ Tocar','Toque para sincronizar con Google Drive'], offline:['☁️ Sin red','Sin conexión: se sincroniza al volver'],
-      error:['☁️ ⚠️','Error al sincronizar: toque para reintentar'], pinmismatch:['☁️ PIN','Drive usa otro PIN: toque para ingresarlo']
+      error:['☁️ ⚠️','Error al sincronizar: toque para reintentar'], pinmismatch:['☁️ Clave','Drive usa otra clave de sincronización: toque para ingresarla']
     };
     const [txt, title] = map[s] || ['',''];
     chip.textContent = txt; chip.title = title; chip.setAttribute('aria-label', title);
@@ -1408,7 +1395,7 @@ function setSyncState(s){
   if(st) st.textContent = !syncCfg.enabled ? 'Desconectado.' :
     ({ok:'✅ Sincronizado ' + (lastSyncAt ? lastSyncAt.toLocaleString('es-HN') : ''), syncing:'Sincronizando…',
       needtap:'Conectado. Toque “Sincronizar ahora” para renovar el acceso.', offline:'Sin conexión.',
-      error:'⚠️ Error en la última sincronización.', pinmismatch:'Drive usa otro PIN.'}[syncState] || '');
+      error:'⚠️ Error en la última sincronización.', pinmismatch:'Drive usa otra clave de sincronización.'}[syncState] || '');
 }
 async function chipTap(){
   if(!syncCfg.enabled) return;
@@ -1417,7 +1404,10 @@ async function chipTap(){
 }
 
 /* ============================================================
-   DESBLOQUEO / CREACIÓN DEL PIN
+   APERTURA SIN PIN
+   La clave de cifrado queda guardada en este dispositivo, así que la app abre directo.
+   La copia en Google Drive va cifrada con la clave de sincronización, que se escribe
+   una sola vez en cada dispositivo que se conecta.
    ============================================================ */
 function hasLegacy(){ return LEGACY_KEYS.some(k=>lsGet(k)!==null); }
 function legacyItems(){
@@ -1435,91 +1425,41 @@ function toast(msg){
 }
 function lockMsg(m, isErr){ const e = el('vlMsg'); e.textContent = m || ''; e.style.color = isErr ? '#F3A9A9' : '#fff'; }
 function busy(on){ el('vlBusy').style.display = on ? 'block' : 'none'; document.querySelectorAll('#vaultLock button').forEach(b=>b.disabled = on); }
+function showLock(){ el('vaultLock').style.display = 'flex'; lockMsg(''); setTimeout(()=>el('vlPin').focus(), 50); }
 
-function showLock(mode){
-  const scr = el('vaultLock'); scr.style.display = 'flex';
-  el('vlUnlock').style.display = mode==='unlock' ? 'block' : 'none';
-  el('vlSetup').style.display = mode==='setup' ? 'block' : 'none';
-  el('vlLegacyNote').style.display = mode==='setup' && hasLegacy() ? 'block' : 'none';
-  lockMsg('');
-  setTimeout(()=>{ const i = mode==='unlock' ? el('vlPin') : el('vlNew1'); if(i) i.focus(); }, 50);
-}
-
+/* Solo para quien ya había creado un PIN en la versión anterior: se pide una última vez. */
 async function unlockSubmit(){
   const pin = el('vlPin').value.trim();
   if(!pin) return;
-  // Pedir el acceso a Google aquí, mientras dura el toque del usuario.
-  const tokenP = syncCfg.enabled && !haveToken() && gisReady() ? requestToken(false).catch(()=>null) : null;
   busy(true); lockMsg('Abriendo…');
   try{
     const vault = JSON.parse(lsGet(VAULT_KEY));
     const k = await deriveKey(pin, fromB64(vault.salt));
     data = await decryptVault(k, vault);
-    key = k; saltB64 = vault.salt; pinMem = pin;
-    await saveSessionKey();
+    key = k; saltB64 = vault.salt; claveMem = pin;
+    await saveDeviceKey();
     el('vlPin').value = '';
     launch();
-    if(tokenP) tokenP.then(()=>syncNow()); else syncNow();
+    syncNow();
   }catch(e){
     busy(false); lockMsg('PIN incorrecto', true); el('vlPin').value = ''; el('vlPin').focus();
   }
 }
 
-function pinValid(p1, p2){
-  if(p1.length < MIN_PIN){ lockMsg(`El PIN debe tener al menos ${MIN_PIN} caracteres`, true); return false; }
-  if(p1 !== p2){ lockMsg('Los PIN no coinciden', true); return false; }
-  return true;
-}
-async function setupSubmit(){
-  const p1 = el('vlNew1').value.trim(), p2 = el('vlNew2').value.trim();
-  if(!pinValid(p1, p2)) return;
-  busy(true); lockMsg('Cifrando sus datos…');
-  try{
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-    key = await deriveKey(p1, salt); saltB64 = toB64(salt); pinMem = p1;
-    data = {items: legacyItems(), tomb:{}};
-    await persistNow();
-    // Verificar que la bóveda se puede abrir antes de borrar los datos sin cifrar.
-    const check = await decryptVault(key, JSON.parse(lsGet(VAULT_KEY)));
-    if(JSON.stringify(check.items) !== JSON.stringify(data.items)) throw new Error('verificación');
-    removeLegacy();
-    await saveSessionKey();
-    launch();
-  }catch(e){
-    console.error(e); busy(false); lockMsg('No se pudo crear la bóveda: ' + e.message, true);
-  }
+/* Primera apertura en este dispositivo: crea la bóveda y cifra los datos de la versión anterior. */
+async function createVault(){
+  key = await crypto.subtle.generateKey({name:'AES-GCM', length:256}, true, ['encrypt','decrypt']);
+  saltB64 = toB64(crypto.getRandomValues(new Uint8Array(16)));
+  data = {items: legacyItems(), tomb:{}};
+  await persistNow();
+  // Verificar que la bóveda se puede abrir antes de borrar los datos sin cifrar.
+  const check = await decryptVault(key, JSON.parse(lsGet(VAULT_KEY)));
+  if(JSON.stringify(check.items) !== JSON.stringify(data.items)) throw new Error('verificación');
+  removeLegacy();
+  await saveDeviceKey();
 }
 
-/* Dispositivo nuevo: traer los datos desde Google Drive con el PIN del otro dispositivo. */
-async function restoreFromDrive(){
-  const tokenP = requestToken(true); // dentro del toque
-  busy(true); lockMsg('Conectando con Google…');
-  try{
-    await tokenP;
-    const id = await remoteFind();
-    if(!id){ busy(false); lockMsg('No hay datos de esta app en esa cuenta de Google. Cree un PIN para empezar aquí.', true); return; }
-    const remoteVault = await remoteDownload(id);
-    busy(false);
-    const pin = await askPin('Ingrese el PIN que usa en el otro dispositivo.');
-    if(!pin){ lockMsg(''); return; }
-    busy(true); lockMsg('Descifrando…');
-    const k = await deriveKey(pin, fromB64(remoteVault.salt));
-    let remote;
-    try{ remote = await decryptVault(k, remoteVault); }catch(e){ busy(false); lockMsg('PIN incorrecto', true); return; }
-    key = k; saltB64 = remoteVault.salt; pinMem = pin;
-    data = mergeData({items: legacyItems(), tomb:{}}, remote);
-    await persistNow();
-    removeLegacy();
-    syncCfg.enabled = true; saveSyncCfg();
-    await saveSessionKey();
-    launch();
-    syncNow();
-  }catch(e){
-    console.error(e); busy(false); lockMsg('No se pudo restaurar: ' + e.message, true);
-  }
-}
-
-/* Diálogo de PIN reutilizable (devuelve el PIN o null) */
+/* Diálogo de clave reutilizable (devuelve el texto o null) */
 function askPin(message){
   return new Promise(res=>{
     const box = el('vaultAsk');
@@ -1533,6 +1473,17 @@ function askPin(message){
     el('vaskPin').onkeydown = e=>{ if(e.key==='Enter') done(el('vaskPin').value.trim() || null); };
   });
 }
+async function askNewClave(){
+  for(;;){
+    const c1 = await askPin(`Cree una clave de sincronización (mínimo ${MIN_CLAVE} caracteres). La escribirá una sola vez en cada dispositivo que conecte. Si la olvida, la copia de Drive no se puede abrir.`);
+    if(!c1) return null;
+    if(c1.length < MIN_CLAVE){ toast(`La clave debe tener al menos ${MIN_CLAVE} caracteres`); continue; }
+    const c2 = await askPin('Repita la clave de sincronización.');
+    if(!c2) return null;
+    if(c1 === c2) return c1;
+    toast('Las claves no coinciden. Intente de nuevo.');
+  }
+}
 
 /* ---------- Arranque de la app principal ---------- */
 function launch(){
@@ -1545,26 +1496,25 @@ function launch(){
   try{ document.body.appendChild(s); } finally { launching = false; }
   launched = true;
   setSyncState(syncCfg.enabled ? (haveToken() ? 'ok' : 'needtap') : 'off');
-  document.addEventListener('input', ()=>{ userTyped = true; }, true);
+  // Solo cuenta lo escrito en Receta, Indicaciones, Labs o Cita (no en Ajustes ni en el diálogo de la clave).
+  document.addEventListener('input', e=>{ if(e.target.closest && e.target.closest('.view')) userTyped = true; }, true);
 }
 
-/* ---------- Acciones desde Ajustes → Seguridad ---------- */
+/* ---------- Acciones desde Ajustes → Sincronización ---------- */
 const Vault = {
-  lock(){
-    persistNow().then(()=>{ try{ sessionStorage.removeItem(SESSION_KEY); sessionStorage.removeItem(TOKEN_KEY); }catch(e){} location.reload(); });
-  },
   async changePin(){
+    if(!syncCfg.enabled){ toast('Primero conecte Google Drive'); return; }
     const cur = el('cpCur').value.trim(), n1 = el('cpNew1').value.trim(), n2 = el('cpNew2').value.trim();
-    if(n1.length < MIN_PIN){ toast(`El PIN nuevo debe tener al menos ${MIN_PIN} caracteres`); return; }
-    if(n1 !== n2){ toast('Los PIN nuevos no coinciden'); return; }
+    if(n1.length < MIN_CLAVE){ toast(`La clave nueva debe tener al menos ${MIN_CLAVE} caracteres`); return; }
+    if(n1 !== n2){ toast('Las claves nuevas no coinciden'); return; }
     try{ await decryptVault(await deriveKey(cur, fromB64(saltB64)), JSON.parse(lsGet(VAULT_KEY))); }
-    catch(e){ toast('PIN actual incorrecto'); return; }
+    catch(e){ toast('Clave actual incorrecta'); return; }
     const salt = crypto.getRandomValues(new Uint8Array(16));
     oldKeys[saltB64] = key;
     await adoptKey(await deriveKey(n1, salt), toB64(salt));
-    pinMem = n1;
+    claveMem = n1;
     ['cpCur','cpNew1','cpNew2'].forEach(i=>el(i).value='');
-    toast('PIN cambiado ✅' + (syncCfg.enabled ? ' — en el otro dispositivo se le pedirá el nuevo PIN' : ''));
+    toast('Clave cambiada ✅ — en el otro dispositivo se le pedirá la nueva una vez');
     scheduleSync();
   },
   async connect(){
@@ -1572,16 +1522,42 @@ const Vault = {
     if(cid && cid !== syncCfg.clientId){ syncCfg.clientId = cid; tokenClient = null; }
     const p = requestToken(true); // dentro del toque
     try{ await p; }catch(e){ toast('No se pudo conectar con Google: ' + e.message); return; }
+    let llegaron = false;
+    try{
+      const id = await remoteFind();
+      if(id){
+        // Ya hay datos de otro dispositivo: se combinan con los de aquí.
+        const rv = await remoteDownload(id);
+        let k = null, remote = null;
+        for(;;){
+          const c = await askPin('En esta cuenta de Google ya hay datos de la app. Ingrese la clave de sincronización que creó en su otro dispositivo.');
+          if(!c) return;
+          try{ k = await deriveKey(c, fromB64(rv.salt)); remote = await decryptVault(k, rv); claveMem = c; break; }
+          catch(e){ toast('Clave incorrecta'); }
+        }
+        const merged = mergeData(data, remote);
+        llegaron = !sameItems(merged, data);
+        data = merged;
+        await adoptKey(k, rv.salt);
+      } else {
+        const c = await askNewClave();
+        if(!c) return;
+        claveMem = c;
+        const salt = crypto.getRandomValues(new Uint8Array(16));
+        await adoptKey(await deriveKey(c, salt), toB64(salt));
+      }
+    }catch(e){ toast('No se pudo conectar con Drive: ' + e.message); return; }
     syncCfg.enabled = true; saveSyncCfg();
     Vault.renderSettings();
     await syncNow();
     if(syncState === 'ok') toast('Google Drive conectado ✅');
+    if(llegaron) onRemoteChanges();
   },
   disconnect(){
     if(token && gisReady()) try{ google.accounts.oauth2.revoke(token, ()=>{}); }catch(e){}
     token = null; try{ sessionStorage.removeItem(TOKEN_KEY); }catch(e){} syncCfg.enabled = false; saveSyncCfg();
     Vault.renderSettings(); setSyncState('off');
-    toast('Desconectado. Sus datos siguen cifrados en este dispositivo y en Drive.');
+    toast('Desconectado. Sus datos siguen en este dispositivo y cifrados en Drive.');
   },
   syncTap: chipTap,
   reloadNow(){ persistNow().then(()=>location.reload()); },
@@ -1595,15 +1571,9 @@ const Vault = {
 };
 window.Vault = Vault;
 
-/* ---------- Bloqueo automático tras 30 min en segundo plano ---------- */
-let hiddenAt = 0;
 document.addEventListener('visibilitychange', ()=>{
   if(!launched) return;
-  if(document.hidden){ hiddenAt = Date.now(); persistNow(); }
-  else {
-    if(hiddenAt && Date.now() - hiddenAt > AUTOLOCK_MS){ Vault.lock(); return; }
-    syncNow();
-  }
+  if(document.hidden) persistNow(); else syncNow();
 });
 window.addEventListener('online', ()=>{ if(launched) syncNow(); });
 window.addEventListener('pagehide', ()=>{ if(launched) persistNow(); });
@@ -1611,33 +1581,33 @@ window.addEventListener('pagehide', ()=>{ if(launched) persistNow(); });
 /* ---------- Inicio ---------- */
 async function boot(){
   el('vlPin').addEventListener('keydown', e=>{ if(e.key==='Enter') unlockSubmit(); });
-  el('vlNew2').addEventListener('keydown', e=>{ if(e.key==='Enter') setupSubmit(); });
   el('vlUnlockBtn').onclick = unlockSubmit;
-  el('vlSetupBtn').onclick = setupSubmit;
-  el('vlRestoreBtn').onclick = restoreFromDrive;
   if(!(window.crypto && crypto.subtle)){
-    el('vaultLock').style.display = 'flex';
-    lockMsg('Este navegador no permite cifrado aquí. Abra la app desde su dirección https://', true);
+    el('vaultLock').style.display = 'flex'; el('vlUnlock').style.display = 'none';
+    lockMsg('Este navegador no permite guardar datos cifrados aquí. Abra la app desde su dirección https://', true);
     return;
   }
-  const vaultStr = lsGet(VAULT_KEY);
-  if(vaultStr){
-    // ¿Recarga dentro de la misma sesión? Reusar la clave sin pedir el PIN.
-    try{
-      const sess = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null');
+  try{
+    const vaultStr = lsGet(VAULT_KEY);
+    if(vaultStr){
       const vault = JSON.parse(vaultStr);
-      if(sess && sess.salt === vault.salt){
-        const k = await crypto.subtle.importKey('raw', fromB64(sess.k), 'AES-GCM', true, ['encrypt','decrypt']);
-        data = await decryptVault(k, vault);
-        key = k; saltB64 = vault.salt;
-        launch();
-        syncNow();
+      const dk = JSON.parse(lsGet(DEVICE_KEY) || 'null');
+      if(dk && dk.salt === vault.salt){
+        key = await crypto.subtle.importKey('raw', fromB64(dk.k), 'AES-GCM', true, ['encrypt','decrypt']);
+        data = await decryptVault(key, vault);
+        saltB64 = vault.salt;
+        launch(); syncNow();
         return;
       }
-    }catch(e){ try{ sessionStorage.removeItem(SESSION_KEY); }catch(_){} }
-    showLock('unlock');
-  } else {
-    showLock('setup');
+      showLock(); // bóveda creada con PIN en la versión anterior
+      return;
+    }
+    await createVault();
+    launch(); syncNow();
+  }catch(e){
+    console.error(e);
+    el('vaultLock').style.display = 'flex'; el('vlUnlock').style.display = 'none';
+    lockMsg('No se pudieron abrir los datos de este dispositivo: ' + e.message, true);
   }
 }
 if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot); else boot();
@@ -1764,7 +1734,7 @@ const DEFAULT_COMBOS = {
   "Tiroidectomía total": [
     {generico:"Acetaminofén (Paracetamol)", dosis:"1 tableta", frecuencia:"c/8h", duracion:"5 días", cantidad:"15 tabletas"},
     {generico:"Ketorolaco trometamina", dosis:"1 tableta (10mg)", frecuencia:"c/8h si dolor", duracion:"3 días", cantidad:"9 tabletas"},
-    {generico:"Carbonato de calcio + Vitamina D", dosis:"1 tableta", frecuencia:"c/12h", duracion:"10 días", cantidad:"20 tabletas"}
+    {generico:"Carbonato de calcio + Vitamina D", dosis:"1 tableta", frecuencia:"", duracion:"", cantidad:""}
   ],
   "Tiroidectomía parcial (lobectomía)": [
     {generico:"Acetaminofén (Paracetamol)", dosis:"1 tableta", frecuencia:"c/8h", duracion:"4 días", cantidad:"12 tabletas"}
@@ -3457,6 +3427,17 @@ if(!appStore.getItem('altaApp_calcioDuracionV1')){
   }));
   if(cambio) saveJSON(LS_KEYS.combos, combos);
   appStore.setItem('altaApp_calcioDuracionV1', '1');
+}
+/* Calcio: frecuencia, cantidad y duración las escribe el médico en cada receta */
+if(!appStore.getItem('altaApp_calcioLibreV2')){
+  let cambio = false;
+  Object.values(combos).forEach(items=>items.forEach(it=>{
+    if(it.generico==='Carbonato de calcio + Vitamina D' && it.frecuencia==='c/12h' && /^10 días/.test(it.duracion||'') && it.cantidad==='20 tabletas'){
+      it.frecuencia = ''; it.duracion = ''; it.cantidad = ''; cambio = true;
+    }
+  }));
+  if(cambio) saveJSON(LS_KEYS.combos, combos);
+  appStore.setItem('altaApp_calcioLibreV2', '1');
 }
 let indicacionesTemplates = loadJSON(LS_KEYS.indicaciones, null);
 if(!indicacionesTemplates){ indicacionesTemplates = DEFAULT_INDICACIONES; saveJSON(LS_KEYS.indicaciones, indicacionesTemplates); }

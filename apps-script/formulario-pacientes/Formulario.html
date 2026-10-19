@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --azul: #1a5f7a;
+      --azul-oscuro: #0f3d4f;
+      --gris-texto: #2a2a2a;
+      --gris-borde: #d6dde0;
+      --fondo: #f4f7f8;
+      --verde: #1e7a3c;
+      --rojo: #b3261e;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--fondo);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+      color: var(--gris-texto);
+    }
+    .contenedor {
+      max-width: 480px;
+      margin: 0 auto;
+      padding: 20px 16px 48px;
+    }
+    .encabezado {
+      text-align: center;
+      padding: 8px 0 20px;
+    }
+    .encabezado h1 {
+      font-size: 19px;
+      line-height: 1.35;
+      margin: 0 0 4px;
+      color: var(--azul-oscuro);
+    }
+    .encabezado p {
+      font-size: 14px;
+      color: #5a6a70;
+      margin: 0;
+    }
+    .tarjeta {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+    label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      margin: 18px 0 8px;
+      color: var(--azul-oscuro);
+    }
+    label:first-of-type { margin-top: 0; }
+    .ayuda {
+      font-size: 13px;
+      color: #70828a;
+      font-weight: 400;
+      display: block;
+      margin-top: 2px;
+    }
+    input[type="text"],
+    input[type="date"],
+    input[type="url"],
+    select {
+      width: 100%;
+      padding: 14px 12px;
+      font-size: 16px;
+      border: 1.5px solid var(--gris-borde);
+      border-radius: 10px;
+      background: #fff;
+      color: var(--gris-texto);
+      font-family: inherit;
+    }
+    input[type="file"] {
+      width: 100%;
+      font-size: 15px;
+      padding: 10px 0;
+    }
+    .boton-archivo {
+      display: block;
+      width: 100%;
+      padding: 16px 12px;
+      font-size: 16px;
+      font-weight: 600;
+      text-align: center;
+      border: 2px dashed var(--azul);
+      border-radius: 10px;
+      background: #eef7fa;
+      color: var(--azul);
+      cursor: pointer;
+    }
+    #nombreArchivoElegido {
+      display: block;
+      margin-top: 8px;
+      font-size: 14px;
+      color: var(--verde);
+      font-weight: 600;
+    }
+    .fila-consentimiento {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 22px;
+      padding: 14px;
+      background: #f8fafb;
+      border-radius: 10px;
+    }
+    .fila-consentimiento input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .fila-consentimiento span {
+      font-size: 13.5px;
+      line-height: 1.45;
+      color: #44535a;
+    }
+    .boton-enviar {
+      width: 100%;
+      margin-top: 24px;
+      padding: 17px;
+      font-size: 17px;
+      font-weight: 700;
+      color: #fff;
+      background: var(--azul);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    .boton-enviar:disabled { background: #9db4bc; }
+    .mensaje {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14.5px;
+      line-height: 1.4;
+      display: none;
+    }
+    .mensaje.error {
+      display: block;
+      background: #fcebea;
+      color: var(--rojo);
+      border: 1px solid #f2c6c3;
+    }
+    .pantalla-exito {
+      text-align: center;
+      padding: 40px 10px;
+    }
+    .pantalla-exito .icono { font-size: 52px; }
+    .pantalla-exito h2 {
+      color: var(--verde);
+      font-size: 20px;
+      margin: 12px 0 8px;
+    }
+    .pantalla-exito p {
+      font-size: 15px;
+      color: #44535a;
+      line-height: 1.5;
+    }
+    .oculto { display: none !important; }
+    .separador-o {
+      text-align: center;
+      color: #9aa8ad;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 14px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <div class="encabezado">
+      <h1>Dr. Manuel Salinas<br>Suba sus exámenes antes de su cita</h1>
+      <p>Esto nos ayuda a atenderle mejor</p>
+    </div>
+
+    <div class="tarjeta" id="tarjetaFormulario">
+      <form id="formularioExamenes">
+        <label for="nombrePaciente">Nombre completo del paciente
+          <span class="ayuda">Escríbalo igual a como aparece en su cédula</span>
+        </label>
+        <input type="text" id="nombrePaciente" required autocomplete="name">
+
+        <label for="fechaCita">Fecha de su cita</label>
+        <input type="date" id="fechaCita" required>
+
+        <label for="tipoExamen">Tipo de examen</label>
+        <select id="tipoExamen" required>
+          <option value="" disabled selected>Seleccione una opción</option>
+          <option value="Laboratorio">Laboratorio</option>
+          <option value="Ultrasonido">Ultrasonido</option>
+          <option value="Tomografía">Tomografía</option>
+          <option value="Valoración preoperatoria">Valoración preoperatoria</option>
+          <option value="Otro">Otro</option>
+        </select>
+
+        <label for="archivo">Suba su examen (foto o PDF)</label>
+        <label class="boton-archivo" for="archivo">📎 Elegir archivo</label>
+        <input type="file" id="archivo" accept="image/*,application/pdf" style="display:none">
+        <span id="nombreArchivoElegido"></span>
+
+        <div class="separador-o">— o, si es un ultrasonido/tomografía con enlace —</div>
+
+        <label for="enlace">Pegue aquí el enlace del informe
+          <span class="ayuda">Opcional. Puede subir un archivo, pegar un enlace, o ambos</span>
+        </label>
+        <input type="url" id="enlace" placeholder="https://...">
+
+        <div class="fila-consentimiento">
+          <input type="checkbox" id="consentimiento" required>
+          <span>Autorizo que esta información se use para mi atención médica con el Dr. Manuel Salinas.</span>
+        </div>
+
+        <div class="mensaje" id="mensajeError"></div>
+
+        <button type="submit" class="boton-enviar" id="botonEnviar">Enviar</button>
+      </form>
+    </div>
+
+    <div class="tarjeta pantalla-exito oculto" id="tarjetaExito">
+      <div class="icono">✅</div>
+      <h2>¡Recibido, gracias!</h2>
+      <p>Sus documentos fueron enviados correctamente al Dr. Salinas. No necesita hacer nada más.</p>
+    </div>
+  </div>
+
+  <script>
+    var ANCHO_MAXIMO_FOTO = 1600; // px, suficiente para leer un informe sin pesar demasiado
+    var CALIDAD_JPEG = 0.72;
+
+    var formulario = document.getElementById('formularioExamenes');
+    var inputArchivo = document.getElementById('archivo');
+    var etiquetaNombreArchivo = document.getElementById('nombreArchivoElegido');
+    var botonEnviar = document.getElementById('botonEnviar');
+    var mensajeError = document.getElementById('mensajeError');
+
+    inputArchivo.addEventListener('change', function () {
+      if (inputArchivo.files.length > 0) {
+        etiquetaNombreArchivo.textContent = '✓ ' + inputArchivo.files[0].name;
+      } else {
+        etiquetaNombreArchivo.textContent = '';
+      }
+    });
+
+    formulario.addEventListener('submit', function (evento) {
+      evento.preventDefault();
+      ocultarError();
+
+      var nombrePaciente = document.getElementById('nombrePaciente').value.trim();
+      var fechaCita = document.getElementById('fechaCita').value;
+      var tipoExamen = document.getElementById('tipoExamen').value;
+      var enlace = document.getElementById('enlace').value.trim();
+      var consentimiento = document.getElementById('consentimiento').checked;
+      var archivo = inputArchivo.files[0] || null;
+
+      if (!nombrePaciente || !fechaCita || !tipoExamen) {
+        mostrarError('Por favor complete nombre, fecha de la cita y tipo de examen.');
+        return;
+      }
+      if (!consentimiento) {
+        mostrarError('Debe aceptar el uso de su información para continuar.');
+        return;
+      }
+      if (!archivo && !enlace) {
+        mostrarError('Suba un archivo o pegue un enlace.');
+        return;
+      }
+
+      deshabilitarEnvio(true);
+
+      prepararArchivo(archivo, function (archivoListo) {
+        google.script.run
+          .withSuccessHandler(function (respuesta) {
+            deshabilitarEnvio(false);
+            if (respuesta.ok) {
+              mostrarExito();
+            } else {
+              mostrarError(respuesta.mensaje || 'No se pudo completar el envío. Intente de nuevo.');
+            }
+          })
+          .withFailureHandler(function () {
+            deshabilitarEnvio(false);
+            mostrarError('Hubo un problema de conexión. Por favor intente de nuevo.');
+          })
+          .procesarEnvio({
+            nombrePaciente: nombrePaciente,
+            fechaCita: fechaCita,
+            tipoExamen: tipoExamen,
+            enlace: enlace,
+            consentimiento: consentimiento,
+            archivo: archivoListo
+          });
+      }, function () {
+        deshabilitarEnvio(false);
+        mostrarError('No se pudo leer el archivo seleccionado. Intente con otra foto.');
+      });
+    });
+
+    /**
+     * Si es una foto, la comprime antes de enviarla (más rápido con mala
+     * señal). Si es un PDF, se envía tal cual. Si no hay archivo, continúa
+     * sin él (el paciente solo pegó un enlace).
+     */
+    function prepararArchivo(archivo, listo, error) {
+      if (!archivo) {
+        listo(null);
+        return;
+      }
+      if (archivo.type.indexOf('image/') !== 0) {
+        var lectorPdf = new FileReader();
+        lectorPdf.onload = function () {
+          listo({
+            base64: lectorPdf.result.split(',')[1],
+            nombre: archivo.name,
+            tipoMime: archivo.type || 'application/pdf'
+          });
+        };
+        lectorPdf.onerror = error;
+        lectorPdf.readAsDataURL(archivo);
+        return;
+      }
+
+      var lectorImagen = new FileReader();
+      lectorImagen.onload = function () {
+        var imagen = new Image();
+        imagen.onload = function () {
+          var escala = Math.min(1, ANCHO_MAXIMO_FOTO / imagen.width);
+          var lienzo = document.createElement('canvas');
+          lienzo.width = Math.round(imagen.width * escala);
+          lienzo.height = Math.round(imagen.height * escala);
+          var contexto = lienzo.getContext('2d');
+          contexto.drawImage(imagen, 0, 0, lienzo.width, lienzo.height);
+          var dataUrlComprimido = lienzo.toDataURL('image/jpeg', CALIDAD_JPEG);
+          listo({
+            base64: dataUrlComprimido.split(',')[1],
+            nombre: archivo.name.replace(/\.[^.]+$/, '') + '.jpg',
+            tipoMime: 'image/jpeg'
+          });
+        };
+        imagen.onerror = error;
+        imagen.src = lectorImagen.result;
+      };
+      lectorImagen.onerror = error;
+      lectorImagen.readAsDataURL(archivo);
+    }
+
+    function mostrarError(texto) {
+      mensajeError.textContent = texto;
+      mensajeError.className = 'mensaje error';
+    }
+    function ocultarError() {
+      mensajeError.className = 'mensaje';
+      mensajeError.textContent = '';
+    }
+    function deshabilitarEnvio(deshabilitado) {
+      botonEnviar.disabled = deshabilitado;
+      botonEnviar.textContent = deshabilitado ? 'Enviando...' : 'Enviar';
+    }
+    function mostrarExito() {
+      document.getElementById('tarjetaFormulario').className = 'tarjeta oculto';
+      document.getElementById('tarjetaExito').className = 'tarjeta pantalla-exito';
+    }
+  </script>
+</body>
+</html>

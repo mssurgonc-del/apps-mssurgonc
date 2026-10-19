@@ -31,6 +31,8 @@ jobs:
         run: |
           mkdir -p site/calculadora-ata
           cp -r calculadora-ata/dist/. site/calculadora-ata/
+          mkdir -p site/alta-quirurgica
+          cp alta-quirurgica/index.html site/alta-quirurgica/index.html
           cp index.html site/index.html
       - uses: actions/upload-pages-artifact@v3
         with:

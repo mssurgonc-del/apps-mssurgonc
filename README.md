@@ -13,7 +13,11 @@ cd calculadora-ata
 npm install
 npm run dev      # http://localhost:5173
 npm run build    # genera dist/
+npm test         # 57 casos de referencia del motor clínico (src/logic.test.js)
 ```
+
+La lógica clínica vive en `src/logic.js`, separada de la interfaz. Las pruebas corren en cada push
+(`.github/workflows/tests.yml`) y el despliegue a Pages se detiene si alguna falla.
 
 ## Publicación
 

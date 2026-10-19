@@ -21,7 +21,7 @@ ok((await pg.textContent('#labDocPage')).includes('Tomar el: jueves, 29 de octub
 await pg.evaluate(()=>switchView('citas')); await pg.fill('#citFecha','2026-10-30');
 // duración con lista
 await pg.evaluate(()=>switchView('receta'));
-ok(await pg.evaluate(()=>document.querySelector('#recetaItems input[list=duracionOpts]')!==null && document.querySelectorAll('#duracionOpts option').length===8),'duración con lista de opciones');
+ok(await pg.evaluate(()=>document.querySelector('#recetaItems input[list=duracionOpts]')!==null && document.querySelectorAll('#duracionOpts option').length===10),'duración con lista de opciones');
 await pg.evaluate(()=>{ const i=document.querySelector('#recetaItems input[list=duracionOpts]'); i.value='7 días'; i.dispatchEvent(new Event('change')); });
 ok(await pg.evaluate(()=>currentRxItems[0].duracion==='7 días'),'duración elegida queda en la receta');
 // guardar receta manualmente antes -> no debe duplicar

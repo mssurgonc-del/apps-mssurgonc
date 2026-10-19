@@ -1098,7 +1098,9 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
   <option value="Dosis única"></option><option value="3 días"></option><option value="5 días"></option>
   <option value="7 días"></option><option value="10 días"></option><option value="14 días"></option>
   <option value="21 días"></option><option value="Uso continuo"></option>
+  <option value="1 caja"></option><option value="1 frasco"></option>
 </datalist>
+<datalist id="cantidadOpts"><option value="1 caja"></option><option value="1 frasco"></option></datalist>
 <!-- Deshacer "Nuevo paciente" -->
 <div id="newPacBar"><span id="newPacMsg"></span><button class="btn btn-sm" onclick="deshacerNuevoPaciente()">Deshacer</button></div>
 <!-- Aviso: llegaron datos de otro dispositivo -->
@@ -1762,7 +1764,7 @@ const DEFAULT_COMBOS = {
   "Tiroidectomía total": [
     {generico:"Acetaminofén (Paracetamol)", dosis:"1 tableta", frecuencia:"c/8h", duracion:"5 días", cantidad:"15 tabletas"},
     {generico:"Ketorolaco trometamina", dosis:"1 tableta (10mg)", frecuencia:"c/8h si dolor", duracion:"3 días", cantidad:"9 tabletas"},
-    {generico:"Carbonato de calcio + Vitamina D", dosis:"1 tableta", frecuencia:"c/12h", duracion:"10 días (ajustar según calcio sérico)", cantidad:"20 tabletas"}
+    {generico:"Carbonato de calcio + Vitamina D", dosis:"1 tableta", frecuencia:"c/12h", duracion:"10 días", cantidad:"20 tabletas"}
   ],
   "Tiroidectomía parcial (lobectomía)": [
     {generico:"Acetaminofén (Paracetamol)", dosis:"1 tableta", frecuencia:"c/8h", duracion:"4 días", cantidad:"12 tabletas"}
@@ -3447,6 +3449,15 @@ if(!appStore.getItem('altaApp_medsMigratedV3')){
 }
 let combos = loadJSON(LS_KEYS.combos, null);
 if(!combos){ combos = DEFAULT_COMBOS; saveJSON(LS_KEYS.combos, combos); }
+/* El calcio se trata como cualquier medicamento: la duración impresa es solo "10 días" */
+if(!appStore.getItem('altaApp_calcioDuracionV1')){
+  let cambio = false;
+  Object.values(combos).forEach(items=>items.forEach(it=>{
+    if(it.duracion && /\(ajustar según calcio sérico\)/.test(it.duracion)){ it.duracion = it.duracion.replace(/\s*\(ajustar según calcio sérico\)/, ''); cambio = true; }
+  }));
+  if(cambio) saveJSON(LS_KEYS.combos, combos);
+  appStore.setItem('altaApp_calcioDuracionV1', '1');
+}
 let indicacionesTemplates = loadJSON(LS_KEYS.indicaciones, null);
 if(!indicacionesTemplates){ indicacionesTemplates = DEFAULT_INDICACIONES; saveJSON(LS_KEYS.indicaciones, indicacionesTemplates); }
 let historial = loadJSON(LS_KEYS.historial, []);
@@ -4384,7 +4395,7 @@ function renderRxItems(){
         <div><label>Dosis</label><input type="text" value="${it.dosis||''}" onchange="updateRxField(${idx},'dosis',this.value)"></div>
         <div><label>Frecuencia</label><input type="text" value="${it.frecuencia||''}" onchange="updateRxField(${idx},'frecuencia',this.value)"></div>
         <div><label>Duración</label><input type="text" list="duracionOpts" value="${it.duracion||''}" onchange="updateRxField(${idx},'duracion',this.value)"></div>
-        <div><label>Cantidad a dispensar</label><input type="text" value="${it.cantidad||''}" onchange="updateRxField(${idx},'cantidad',this.value)"></div>
+        <div><label>Cantidad a dispensar</label><input type="text" list="cantidadOpts" value="${it.cantidad||''}" onchange="updateRxField(${idx},'cantidad',this.value)"></div>
       </div>
     </div>`).join('');
   renderDoc();

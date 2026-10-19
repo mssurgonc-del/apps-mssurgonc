@@ -40,7 +40,9 @@ No envía datos a ningún servidor; todo se calcula en el navegador.
 - Requisito en Google Cloud Console (proyecto del ID de cliente OAuth): agregar
   `https://mssurgonc-del.github.io` como *Authorized JavaScript origin* y el permiso `.../auth/drive.appdata`.
 - Prueba de extremo a extremo (Drive simulado): servir la carpeta con `python3 -m http.server 8765` dentro de
-  `alta-quirurgica/` y correr `node tests/e2e.cjs` (requiere `playwright-core` y Chromium).
+  `alta-quirurgica/` y correr `node tests/e2e.cjs`, `node tests/templates-preview.cjs` y
+  `node tests/nuevo-paciente-layout.cjs` (requieren `playwright-core` y Chromium).
+- «＋ Nuevo» guarda en el Historial lo que haya en cada pestaña (sin duplicar) y deja todo en blanco; se puede deshacer 8 s.
 
 > Herramienta de apoyo a la decisión. No sustituye el juicio clínico ni la lectura de la guía original
 > (Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985; corrigendum Thyroid 2025;35(11):1350).

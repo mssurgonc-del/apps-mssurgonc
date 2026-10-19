@@ -117,6 +117,28 @@ a{color:var(--heading-ink);}
 #tabs button.soon::after{content:" (pronto)";font-size:10px;}
 
 main{max-width:900px;margin:0 auto;padding:16px;}
+/* PC: formulario a la izquierda, documento fijo a la derecha */
+@media (min-width:1100px){
+  main{max-width:1500px;}
+  .view.with-doc.active{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:0 18px;align-items:start;}
+  .view.with-doc > .card{grid-column:1;}
+  .view.with-doc > .card.doc-card{grid-column:2;grid-row:1 / span 30;position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;margin-top:0;}
+}
+/* Línea compacta con los datos del paciente (Indicaciones, Labs, Cita) */
+.pac-summary{display:flex;align-items:center;gap:8px;width:100%;background:none;border:none;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer;}
+.pac-summary .ps-text{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.pac-summary .ps-edit{font-size:13px;color:var(--accent);flex:0 0 auto;}
+.pac-card.collapsed > :not(.pac-summary){display:none !important;}
+.pac-card:not(.collapsed) > .pac-summary{margin-bottom:8px;}
+/* Opciones de plantilla agrupadas */
+details.tpl-opts{margin-top:8px;}
+details.tpl-opts > summary{cursor:pointer;font-size:13px;font-weight:600;color:var(--accent);list-style:none;padding:6px 0;}
+details.tpl-opts > summary::-webkit-details-marker{display:none;}
+details.tpl-opts[open] > summary{margin-bottom:2px;}
+/* Barra para deshacer "Nuevo paciente" */
+#newPacBar{display:none;position:fixed;left:12px;right:12px;bottom:140px;z-index:450;background:#123648;color:#fff;border-radius:10px;padding:10px 12px;gap:10px;align-items:center;justify-content:space-between;box-shadow:0 4px 14px rgba(0,0,0,.25);font-size:14px;max-width:520px;margin:0 auto;}
+#newPacBtn{background:rgba(255,255,255,.14);border:none;color:#fff;height:36px;padding:0 10px;border-radius:9px;font-size:13px;font-weight:600;white-space:nowrap;margin-left:6px;}
+.doc-lab-tomar{font-family:var(--sans);font-size:13px;margin:4px 0 14px;padding:8px 10px;border:1px solid #ccc;border-radius:6px;flex:0 0 auto;}
 .view{display:none;}
 .view.active{display:block;}
 
@@ -404,6 +426,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
     <div class="sub" id="topbarDoctorName">Tocá ⚙️ para configurar tu perfil</div>
   </div>
   <button id="syncChip" onclick="Vault.syncTap()" style="display:none;margin-left:auto;background:rgba(255,255,255,.14);border:none;color:#fff;height:36px;padding:0 10px;border-radius:9px;font-size:13px;align-items:center;white-space:nowrap;"></button>
+  <button id="newPacBtn" onclick="nuevoPaciente()" title="Nuevo paciente: guarda lo actual en el historial y deja todo en blanco" aria-label="Nuevo paciente">＋ Nuevo</button>
   <button id="gearBtn" onclick="openConfigModal()" title="Ajustes / Perfil" aria-label="Ajustes">⚙️</button>
 </div>
 
@@ -418,7 +441,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
 <main>
 
   <!-- ============ RECETA ============ -->
-  <section class="view active" id="view-receta">
+  <section class="view with-doc active" id="view-receta">
 
     <div class="card">
       <h2><span class="eyebrow">Fase 1</span>Datos del paciente</h2>
@@ -455,6 +478,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
       </div>
       <div class="hint" style="margin-top:10px;">Se aplica automáticamente al elegir la cirugía. Podés editar o quitar medicamentos después.</div>
       <div class="chip-row" id="comboChips"></div>
+      <details class="tpl-opts"><summary>⋯ Opciones de plantilla</summary>
       <div class="btn-row">
         <button class="btn btn-sm" onclick="saveCurrentAsTemplate()">💾 Guardar receta actual como plantilla</button>
         <button class="btn btn-sm" onclick="jumpToPlantillaEdit('rx','cirugia', document.getElementById('rxCirugia').value)">✏️ Editar plantilla</button>
@@ -467,6 +491,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
           <button class="btn btn-sm" onclick="addAnotherRxCombo()">Agregar</button>
         </div>
       </div>
+      </details>
     </div>
 
     <div class="card">
@@ -506,7 +531,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
       </select>
     </div>
 
-    <div class="card">
+    <div class="card doc-card">
       <h2>Documento</h2>
       <div id="docWrap">
         <div class="doc-page" id="rxDocPage"></div>
@@ -532,7 +557,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
   </section>
 
   <!-- ============ INDICACIONES ============ -->
-  <section class="view" id="view-indicaciones">
+  <section class="view with-doc" id="view-indicaciones">
 
     <div class="card">
       <h2><span class="eyebrow">Fase 2</span>Datos del paciente</h2>
@@ -558,6 +583,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
       <select id="indCirugia" onchange="onIndCirugiaChange()"></select>
       <div class="hint">¿No está la cirugía que buscás? Agregala desde el módulo de Receta (botón "+ Nueva") — aparece automáticamente acá también.</div>
       <div class="chip-row" id="indComboChips"></div>
+      <details class="tpl-opts"><summary>⋯ Opciones de plantilla</summary>
       <div class="btn-row">
         <button class="btn btn-sm" onclick="saveCurrentAsIndTemplate()">💾 Guardar como plantilla de cirugía</button>
         <button class="btn btn-sm" onclick="jumpToPlantillaEdit('ind','cirugia', document.getElementById('indCirugia').value)">✏️ Editar</button>
@@ -570,6 +596,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
           <button class="btn btn-sm" onclick="addAnotherIndCombo()">Agregar</button>
         </div>
       </div>
+      </details>
       <label style="font-size:11px;margin-top:12px;">Por condición asociada</label>
       <div style="display:flex;gap:6px;align-items:flex-start;">
         <select id="indCondicion" onchange="onIndCondicionChange()" style="flex:1;"></select>
@@ -585,11 +612,13 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
         </div>
       </div>
       <div class="chip-row" id="indCondComboChips"></div>
+      <details class="tpl-opts"><summary>⋯ Opciones de plantilla</summary>
       <div class="btn-row">
         <button class="btn btn-sm" onclick="saveCurrentAsIndCondTemplate()">💾 Guardar como plantilla de condición</button>
         <button class="btn btn-sm" onclick="jumpToPlantillaEdit('ind','condicion', document.getElementById('indCondicion').value)">✏️ Editar</button>
         <button class="btn btn-sm btn-danger" onclick="deleteIndCondTemplateFor()">Eliminar</button>
       </div>
+      </details>
     </div>
 
     <div class="card">
@@ -614,7 +643,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
       </select>
     </div>
 
-    <div class="card">
+    <div class="card doc-card">
       <h2>Documento</h2>
       <div id="indDocWrap" style="overflow-x:auto;padding:6px 0;">
         <div class="doc-page" id="indDocPage"></div>
@@ -640,7 +669,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
   </section>
 
   <!-- ============ LABORATORIOS ============ -->
-  <section class="view" id="view-laboratorios">
+  <section class="view with-doc" id="view-laboratorios">
 
     <div class="card">
       <h2><span class="eyebrow">Fase 3</span>Datos del paciente</h2>
@@ -666,6 +695,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
       <select id="labCirugia" onchange="onLabCirugiaChange()"></select>
       <div class="hint">¿No está la cirugía que buscás? Agregala desde el módulo de Receta (botón "+ Nueva").</div>
       <div class="chip-row" id="labComboChips"></div>
+      <details class="tpl-opts"><summary>⋯ Opciones de plantilla</summary>
       <div class="btn-row">
         <button class="btn btn-sm" onclick="saveCurrentAsLabTemplate()">💾 Guardar como plantilla de cirugía</button>
         <button class="btn btn-sm" onclick="jumpToPlantillaEdit('lab','cirugia', document.getElementById('labCirugia').value)">✏️ Editar</button>
@@ -678,6 +708,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
           <button class="btn btn-sm" onclick="addAnotherLabCombo()">Agregar</button>
         </div>
       </div>
+      </details>
       <label style="font-size:11px;margin-top:12px;">Por condición asociada</label>
       <div style="display:flex;gap:6px;align-items:flex-start;">
         <select id="labCondicion" onchange="onLabCondicionChange()" style="flex:1;"></select>
@@ -693,11 +724,13 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
         </div>
       </div>
       <div class="chip-row" id="labCondComboChips"></div>
+      <details class="tpl-opts"><summary>⋯ Opciones de plantilla</summary>
       <div class="btn-row">
         <button class="btn btn-sm" onclick="saveCurrentAsLabCondTemplate()">💾 Guardar como plantilla de condición</button>
         <button class="btn btn-sm" onclick="jumpToPlantillaEdit('lab','condicion', document.getElementById('labCondicion').value)">✏️ Editar</button>
         <button class="btn btn-sm btn-danger" onclick="deleteLabCondTemplateFor()">Eliminar</button>
       </div>
+      </details>
     </div>
 
     <div class="card">
@@ -720,6 +753,9 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
         </div>
       </div>
 
+      <label for="labTomar">Tomar el</label>
+      <input type="date" id="labTomar" onchange="renderLabDoc()">
+      <div class="hint" style="margin-top:-4px;">Opcional. Aparece en la orden como “Tomar el: jueves 29 de octubre de 2026”.</div>
       <div id="labItems"></div>
       <div class="empty-state" id="labEmptyState">Aún no agregaste exámenes. Buscá arriba o usá una plantilla.</div>
     </div>
@@ -732,7 +768,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
       </select>
     </div>
 
-    <div class="card">
+    <div class="card doc-card">
       <h2>Documento</h2>
       <div style="overflow-x:auto;padding:6px 0;">
         <div class="doc-page" id="labDocPage"></div>
@@ -758,7 +794,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
   </section>
 
   <!-- ============ CITAS ============ -->
-  <section class="view" id="view-citas">
+  <section class="view with-doc" id="view-citas">
 
     <div class="card">
       <h2><span class="eyebrow">Fase 4</span>Datos del paciente</h2>
@@ -794,7 +830,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
       <div class="hint">Abre Google Calendar con la cita ya rellenada — solo confirmás "Guardar" ahí. No requiere iniciar sesión dentro de esta app.</div>
     </div>
 
-    <div class="card">
+    <div class="card doc-card">
       <h2>Documento</h2>
       <div style="overflow-x:auto;padding:6px 0;">
         <div class="doc-page" id="citDocPage"></div>
@@ -1058,6 +1094,13 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
     <div class="btn-row"><button class="btn btn-primary btn-sm" id="vaskOk">Aceptar</button><button class="btn btn-sm" id="vaskCancel">Cancelar</button></div>
   </div>
 </div>
+<datalist id="duracionOpts">
+  <option value="Dosis única"></option><option value="3 días"></option><option value="5 días"></option>
+  <option value="7 días"></option><option value="10 días"></option><option value="14 días"></option>
+  <option value="21 días"></option><option value="Uso continuo"></option>
+</datalist>
+<!-- Deshacer "Nuevo paciente" -->
+<div id="newPacBar"><span id="newPacMsg"></span><button class="btn btn-sm" onclick="deshacerNuevoPaciente()">Deshacer</button></div>
 <!-- Aviso: llegaron datos de otro dispositivo -->
 <div id="vaultUpdateBar" style="display:none;position:fixed;left:12px;right:12px;bottom:84px;z-index:400;background:#1f6f5c;color:#fff;border-radius:10px;padding:10px 12px;gap:10px;align-items:center;justify-content:space-between;box-shadow:0 4px 14px rgba(0,0,0,.25);font-size:14px;">
   <span>Hay datos nuevos de su otro dispositivo.</span>
@@ -3836,7 +3879,7 @@ function renderAdminCombos(){
         <div class="aci-fields">
           <input type="text" value="${it.dosis||''}" placeholder="Dosis" onchange="adminUpdateComboItem('${escapeAttr(cirugia)}',${idx},'dosis',this.value)">
           <input type="text" value="${it.frecuencia||''}" placeholder="Frecuencia" onchange="adminUpdateComboItem('${escapeAttr(cirugia)}',${idx},'frecuencia',this.value)">
-          <input type="text" value="${it.duracion||''}" placeholder="Duración" onchange="adminUpdateComboItem('${escapeAttr(cirugia)}',${idx},'duracion',this.value)">
+          <input type="text" list="duracionOpts" value="${it.duracion||''}" placeholder="Duración" onchange="adminUpdateComboItem('${escapeAttr(cirugia)}',${idx},'duracion',this.value)">
         </div>
       </div>`).join('');
     return `
@@ -4340,7 +4383,7 @@ function renderRxItems(){
       <div class="rx-fields">
         <div><label>Dosis</label><input type="text" value="${it.dosis||''}" onchange="updateRxField(${idx},'dosis',this.value)"></div>
         <div><label>Frecuencia</label><input type="text" value="${it.frecuencia||''}" onchange="updateRxField(${idx},'frecuencia',this.value)"></div>
-        <div><label>Duración</label><input type="text" value="${it.duracion||''}" onchange="updateRxField(${idx},'duracion',this.value)"></div>
+        <div><label>Duración</label><input type="text" list="duracionOpts" value="${it.duracion||''}" onchange="updateRxField(${idx},'duracion',this.value)"></div>
         <div><label>Cantidad a dispensar</label><input type="text" value="${it.cantidad||''}" onchange="updateRxField(${idx},'cantidad',this.value)"></div>
       </div>
     </div>`).join('');
@@ -5645,6 +5688,13 @@ function saveManualLab(){
   showToast('Examen agregado al catálogo ✅');
 }
 
+/* Fecha larga para el paciente: "jueves 29 de octubre de 2026" */
+function fechaLargaES(iso){
+  if(!iso) return '';
+  const d = new Date(iso+'T12:00:00');
+  return isNaN(d) ? iso : d.toLocaleDateString('es-HN', {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+}
+function labTomarTexto(){ const v = document.getElementById('labTomar').value; return v ? fechaLargaES(v) : ''; }
 function buildLabDocHTML(){
   const nombre = doctorConfig.nombre || '(configura tu nombre en Ajustes ⚙️)';
   const esp = doctorConfig.especialidad || '';
@@ -5697,6 +5747,7 @@ function buildLabDocHTML(){
       <div style="grid-column:1/-1;"><b>Diagnóstico:</b> ${pac.dx}</div>
       ${condicionLineHTML('labCondicion')}
     </div>
+    ${labTomarTexto() ? `<div class="doc-lab-tomar"><b>Tomar el:</b> ${labTomarTexto()}</div>` : ''}
     <div class="doc-lab-body">${bodyHTML}</div>
     <div class="doc-footer">
       <div style="max-width:260px;">Favor presentar esta orden en el laboratorio.</div>
@@ -5750,7 +5801,9 @@ function buildLabTextSummary(){
     edad: document.getElementById('labPacEdad').value || '?'
   };
   let txt = `*Orden de laboratorio*\nPaciente: ${pac.nombre} (${pac.edad} años)\n`;
-  txt += `Fecha: ${document.getElementById('labFecha').value}\n\n`;
+  txt += `Fecha: ${document.getElementById('labFecha').value}\n`;
+  if(labTomarTexto()) txt += `Tomar el: ${labTomarTexto()}\n`;
+  txt += `\n`;
   currentLabItems.forEach((it,i)=>{ txt += `${i+1}. ${it.nombre}\n`; });
   txt += `\n— ${doctorConfig.nombre||''}${doctorConfig.especialidad? (', '+doctorConfig.especialidad):''}`;
   return txt;
@@ -5771,6 +5824,11 @@ function buildLabImageSpec(){
     firmaTipo: document.getElementById('labFirmaTipo').value,
     footerLeft: 'Favor presentar esta orden en el laboratorio.',
     drawBody(ctx, x, y, maxWidth){
+      if(labTomarTexto()){
+        ctx.font = 'bold 13px -apple-system, Arial, sans-serif'; ctx.fillStyle = '#222222';
+        ctx.fillText('Tomar el: ' + labTomarTexto(), x, y);
+        y += 26;
+      }
       if(currentLabItems.length===0){
         ctx.font='13px -apple-system, Arial, sans-serif'; ctx.fillStyle='#888888';
         ctx.fillText('Sin exámenes agregados.', x, y);
@@ -5848,6 +5906,7 @@ function saveLabToHistorial(){
     cirugia: document.getElementById('labCirugia').value,
     condicion: document.getElementById('labCondicion').value,
     items: JSON.parse(JSON.stringify(currentLabItems)),
+    tomar: document.getElementById('labTomar').value,
     firmaTipo: document.getElementById('labFirmaTipo').value
   };
   historialLabs.unshift(entry);
@@ -5882,6 +5941,7 @@ function loadLabFromHistorial(id){
   if(h.cirugia) document.getElementById('labCirugia').value = h.cirugia;
   document.getElementById('labCondicion').value = h.condicion || 'Ninguna';
   document.getElementById('labFirmaTipo').value = h.firmaTipo || 'electronica';
+  document.getElementById('labTomar').value = h.tomar || '';
   currentLabItems = JSON.parse(JSON.stringify(h.items));
   renderLabComboChips();
   renderLabCondComboChips();
@@ -6241,6 +6301,115 @@ function fichaCapture(prefix){
 });
 
 
+
+/* ============================================================
+   LÍNEA COMPACTA DEL PACIENTE (Indicaciones, Laboratorios, Citas)
+   ============================================================ */
+const PAC_SUMMARY_VIEWS = {ind:'indPacNombre', lab:'labPacNombre', cit:'citPacNombre'};
+Object.entries(PAC_SUMMARY_VIEWS).forEach(([prefix, nameId])=>{
+  const card = document.getElementById(nameId).closest('.card');
+  card.classList.add('pac-card', 'collapsed');
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'pac-summary'; btn.id = prefix+'PacSummary';
+  btn.innerHTML = '<span class="ps-text"></span><span class="ps-edit">✏️ Editar</span>';
+  btn.addEventListener('click', ()=>{
+    const open = card.classList.toggle('collapsed') === false;
+    btn.querySelector('.ps-edit').textContent = open ? '▲ Cerrar' : '✏️ Editar';
+    if(open) document.getElementById(nameId).focus();
+  });
+  card.insertBefore(btn, card.firstChild);
+});
+function updatePacSummaries(){
+  const v = id=>document.getElementById(id).value.trim();
+  const partes = [v('rxPacNombre') || 'Paciente sin nombre'];
+  if(v('rxPacEdad')) partes.push(v('rxPacEdad')+' a');
+  partes.push(v('rxPacSexo')==='M' ? 'M' : 'F');
+  if(v('rxPacDx')) partes.push(v('rxPacDx'));
+  document.querySelectorAll('.pac-summary .ps-text').forEach(el=>{ el.textContent = '👤 ' + partes.join(' · '); });
+}
+FICHA_GROUPS.flat().forEach(id=>{
+  const e = document.getElementById(id);
+  if(e) ['input','change'].forEach(ev=>e.addEventListener(ev, ()=>setTimeout(updatePacSummaries)));
+});
+['loadFromHistorial','loadIndFromHistorial','loadLabFromHistorial','loadCitFromHistorial'].forEach(fn=>{
+  const orig = window[fn];
+  window[fn] = function(){ const r = orig.apply(this, arguments); updatePacSummaries(); return r; };
+});
+
+/* ============================================================
+   NUEVO PACIENTE — guarda en el historial lo que haya en cada pestaña
+   (para poder reenviarlo después) y deja todo en blanco. Se puede deshacer.
+   ============================================================ */
+const MODULE_SAVES = [
+  {nombre:'receta', has:()=>currentRxItems.length>0, save:()=>saveToHistorial(), list:()=>historial, key:()=>LS_KEYS.historial, set:a=>{historial=a;}},
+  {nombre:'indicaciones', has:()=>{ const t = readIndFormAsTemplate(); return !!(t.cuidadosHerida||t.dieta||t.actividad||t.signosAlarma); },
+   save:()=>saveIndToHistorial(), list:()=>historialIndicaciones, key:()=>LS_KEYS.historialIndicaciones, set:a=>{historialIndicaciones=a;}},
+  {nombre:'laboratorio', has:()=>currentLabItems.length>0, save:()=>saveLabToHistorial(), list:()=>historialLabs, key:()=>LS_KEYS.historialLabs, set:a=>{historialLabs=a;}},
+  {nombre:'cita', has:()=>!!document.getElementById('citFecha').value, save:()=>saveCitToHistorial(), list:()=>historialCitas, key:()=>LS_KEYS.historialCitas, set:a=>{historialCitas=a;}}
+];
+const sinId = h=>{ const c = {...h}; delete c.id; return JSON.stringify(c); };
+/* Guarda lo que haya en cada pestaña; no duplica si ya estaba guardado igual. Devuelve qué quedó en el historial. */
+function guardarTodoEnHistorial(){
+  const guardados = [];
+  const toastOrig = showToast; showToast = ()=>{};
+  try{
+    MODULE_SAVES.forEach(m=>{
+      if(!m.has()) return;
+      m.save();
+      const l = m.list();
+      if(l.length>1 && sinId(l[0])===sinId(l[1])){ l.shift(); saveJSON(m.key(), l); }
+      guardados.push(m.nombre);
+    });
+  } finally { showToast = toastOrig; }
+  return guardados;
+}
+const PAC_VIEW_IDS = ['view-receta','view-indicaciones','view-laboratorios','view-citas'];
+let nuevoPacSnapshot = null, nuevoPacTimer = null;
+function snapshotPaciente(){
+  const vals = {};
+  PAC_VIEW_IDS.forEach(v=>document.querySelectorAll(`#${v} input[id], #${v} select[id], #${v} textarea[id]`).forEach(e=>{ if(e.type!=='file') vals[e.id] = e.value; }));
+  return {vals, rx: JSON.parse(JSON.stringify(currentRxItems)), lab: JSON.parse(JSON.stringify(currentLabItems)),
+    lastRx: lastAppliedRxCirugia, lastInd: lastAppliedInd, lastIndCond: lastAppliedIndCond, lastLab: lastAppliedLabCirugia, lastLabCond: lastAppliedLabCondicion};
+}
+function rerenderPaciente(){
+  renderRxItems(); renderLabItems(); renderIndDoc(); renderLabDoc(); renderCitDoc();
+  renderComboChips(); renderIndComboChips(); renderIndCondComboChips(); renderLabComboChips(); renderLabCondComboChips();
+  updateDeleteSurgeryBtn(); updatePacSummaries(); scheduleFitDocPages();
+}
+function nuevoPaciente(){
+  const guardados = guardarTodoEnHistorial();
+  nuevoPacSnapshot = snapshotPaciente();
+  const hoy = today();
+  FICHA_GROUPS.flat().forEach(id=>{ const e = document.getElementById(id); if(e) e.value = ''; });
+  ['rxPacSexo','indPacSexo','labPacSexo','citPacSexo'].forEach(id=>{ document.getElementById(id).value = 'F'; });
+  ['rxFecha','indFecha','labFecha','citFechaEmision'].forEach(id=>{ document.getElementById(id).value = hoy; });
+  ['indCuidadosHerida','indDieta','indActividad','indSignosAlarma','labTomar','citFecha','citMotivo'].forEach(id=>{ document.getElementById(id).value = ''; });
+  ['rxCirugia','indCirugia','labCirugia'].forEach(id=>{ document.getElementById(id).selectedIndex = 0; });
+  ['indCondicion','labCondicion'].forEach(id=>{ document.getElementById(id).value = 'Ninguna'; });
+  document.getElementById('citHora').selectedIndex = 0;
+  currentRxItems = []; currentLabItems = [];
+  lastAppliedRxCirugia = null; lastAppliedInd = {cirugia:null, texts:null}; lastAppliedIndCond = {condicion:null, texts:null};
+  lastAppliedLabCirugia = null; lastAppliedLabCondicion = null;
+  rerenderPaciente();
+  switchView('receta');
+  document.getElementById('newPacMsg').textContent = guardados.length
+    ? `Listo. Quedó en el Historial: ${guardados.join(', ')}.`
+    : 'Listo para un nuevo paciente.';
+  const bar = document.getElementById('newPacBar'); bar.style.display = 'flex';
+  clearTimeout(nuevoPacTimer); nuevoPacTimer = setTimeout(()=>{ bar.style.display = 'none'; nuevoPacSnapshot = null; }, 8000);
+}
+function deshacerNuevoPaciente(){
+  const snap = nuevoPacSnapshot; if(!snap) return;
+  Object.entries(snap.vals).forEach(([id,v])=>{ const e = document.getElementById(id); if(e) e.value = v; });
+  currentRxItems = snap.rx; currentLabItems = snap.lab;
+  lastAppliedRxCirugia = snap.lastRx; lastAppliedInd = snap.lastInd; lastAppliedIndCond = snap.lastIndCond;
+  lastAppliedLabCirugia = snap.lastLab; lastAppliedLabCondicion = snap.lastLabCond;
+  rerenderPaciente();
+  nuevoPacSnapshot = null; clearTimeout(nuevoPacTimer);
+  document.getElementById('newPacBar').style.display = 'none';
+  showToast('Se recuperó el paciente anterior');
+}
+
 /* ============================================================
    VISTA PREVIA AJUSTADA AL ANCHO DE LA PANTALLA
    ============================================================ */
@@ -6288,6 +6457,7 @@ renderLabCondComboChips();
 renderLabDoc();
 populateCitaHoras();
 renderCitDoc();
+updatePacSummaries();
 scheduleFitDocPages();
 
 if(!doctorConfig.nombre){

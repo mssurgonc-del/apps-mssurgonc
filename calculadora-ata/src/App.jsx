@@ -5,6 +5,7 @@ import { RECS } from './recs.js';
 const IconShield = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
 const IconActivity = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>;
 const IconScalpel = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg>;
+const IconCells = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="9" r="4"/><circle cx="8" cy="9" r="1"/><circle cx="16.5" cy="15.5" r="4.5"/><circle cx="16.5" cy="15.5" r="1.2"/></svg>;
 const IconSearch = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>;
 const IconCopy = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>;
 const IconExcel = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/></svg>;
@@ -834,9 +835,10 @@ export default function App() {
 
       {/* NAVEGACIÓN DE PESTAÑAS CLÍNICAS */}
       <nav className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 grid grid-cols-4 gap-1 sm:gap-1.5">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 grid grid-cols-5 gap-1 sm:gap-1.5">
           {[
-            { id: 'nodule', icon: <IconSearch />, l: 'Nódulo', s: 'TI-RADS · Bethesda' },
+            { id: 'nodule', icon: <IconSearch />, l: 'TI-RADS', s: 'Ecografía' },
+            { id: 'bethesda', icon: <IconCells />, l: 'Bethesda', s: 'Citología' },
             { id: 'surgery', icon: <IconScalpel />, l: 'Cirugía', s: 'Preoperatoria' },
             { id: 'postop', icon: <IconShield />, l: 'Patología', s: 'Riesgo' },
             { id: 'dynamic', icon: <IconActivity />, l: 'Seguimiento', s: 'Respuesta' },
@@ -851,7 +853,7 @@ export default function App() {
             >
               {t.icon}
               <span className="flex flex-col items-center sm:items-start leading-tight">
-                <span className="text-[11px] sm:text-sm">{t.l}</span>
+                <span className="text-[10px] min-[400px]:text-[11px] sm:text-sm">{t.l}</span>
                 <span className={`hidden md:block text-[10px] font-semibold ${activeTab === t.id ? 'text-teal-100' : 'text-slate-400'}`}>{t.s}</span>
               </span>
             </button>
@@ -1806,11 +1808,13 @@ export default function App() {
                     className="w-full p-2 border rounded-lg bg-slate-50 font-semibold font-mono"
                   />
                 </div>
-                <div>
-                  <label className="font-bold text-slate-600 block mb-1">Citología Bethesda (si existe)</label>
-                  <select value={nodule.bethesda} onChange={e => setNodule({ ...nodule, bethesda: e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
-                    {Object.entries(BETHESDA).map(([k, b]) => <option key={k} value={k}>{b.label}</option>)}
-                  </select>
+                <div className="flex items-end">
+                  <button
+                    onClick={() => { setActiveTab('bethesda'); window.scrollTo({ top: 0 }); }}
+                    className="w-full p-2 rounded-lg border border-teal-300 bg-teal-50 text-teal-900 font-bold text-left hover:bg-teal-100"
+                  >
+                    {nodule.bethesda === 'none' ? 'Si se puncionó: registrar citología (Bethesda) →' : `Citología: ${BETHESDA[nodule.bethesda].label} →`}
+                  </button>
                 </div>
               </div>
             </div>
@@ -1818,7 +1822,6 @@ export default function App() {
             <div className="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3 text-xs">
               {(() => {
                 const t = evaluateTirads(nodule);
-                const bth = BETHESDA[nodule.bethesda];
                 return (
                   <>
                     <div className="p-3.5 rounded-xl bg-slate-900 text-white">
@@ -1839,27 +1842,77 @@ export default function App() {
                       <div>• PAAF de ganglios cervicales sospechosos, además de hasta 2 nódulos.</div>
                       <div>• Medir en tres ejes; el diámetro máximo define la conducta.</div>
                     </div>
-                    {bth.rom && (
-                      <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200">
-                        <span className="text-[10px] font-mono uppercase text-slate-500 block">Bethesda 2023 · Riesgo de malignidad</span>
-                        <div className="text-sm font-black text-slate-900 mt-0.5">{bth.label}</div>
-                        <div className="text-xs font-semibold text-slate-800 mt-1">ROM: {bth.rom}</div>
-                        <div className="text-xs text-slate-700 mt-1 leading-snug">Manejo: {bth.mgmt}</div>
-                        <div className="text-[10px] text-slate-500 mt-1.5 leading-snug">Fuente secundaria: PathologyOutlines.com (Suzuki A, Bychkov A; act. 12-jun-2025), resumen de Ali SZ, et al. Thyroid 2023;33:1039. Se recomienda calcular el ROM institucional.</div>
-                      </div>
-                    )}
-                    <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-950">
-                      <strong className="block mb-1">Nota de Transición ATA 2025 (R9, R10):</strong>
-                      Una vez confirmado el diagnóstico de cáncer diferenciado de tiroides (Bethesda VI o molecular positivo), <b>no se recomienda</b> medir Tg ni TgAb preoperatorias de rutina (R9) ni la evaluación genómica de rutina antes de la cirugía; si el perfil ya se conoce, puede considerarse para informar la extensión quirúrgica (R10). Continúe en la pestaña <b>Cirugía</b>.
-                    </div>
                   </>
                 );
               })()}
             </div>
           </div>
         )}
+        {/* ==================== PESTAÑA BETHESDA (citología) ==================== */}
+        {activeTab === 'bethesda' && (() => {
+          const bth = BETHESDA[nodule.bethesda];
+          const groups = [
+            { t: 'No diagnóstica / Benigna', ids: ['1', '2'] },
+            { t: 'Indeterminadas', ids: ['3n', '3o', '4', '4o'] },
+            { t: 'Sospechosa / Maligna', ids: ['5', '6'] },
+          ];
+          const tone = { none: 'bg-slate-50 border-slate-200', '1': 'bg-slate-50 border-slate-300', '2': 'bg-emerald-50 border-emerald-300', '3n': 'bg-amber-50 border-amber-300', '3o': 'bg-amber-50 border-amber-300', '4': 'bg-orange-50 border-orange-300', '4o': 'bg-orange-50 border-orange-300', '5': 'bg-red-50 border-red-300', '6': 'bg-red-50 border-red-400' }[nodule.bethesda];
+          return (
+            <div className="grid lg:grid-cols-12 gap-6">
+              <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="text-base font-black text-slate-900">Citología de tiroides (Bethesda 2023)</h2>
+                  <span className="text-[11px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">Fuente: PathologyOutlines (resumen de Ali SZ, et al.)</span>
+                </div>
+                {groups.map(g => (
+                  <div key={g.t}>
+                    <span className="text-[11px] font-black uppercase text-slate-500 tracking-wider block mb-1.5">{g.t}</span>
+                    <div className="grid sm:grid-cols-2 gap-2">
+                      {g.ids.map(id => (
+                        <button
+                          key={id}
+                          aria-pressed={nodule.bethesda === id}
+                          onClick={() => setNodule({ ...nodule, bethesda: nodule.bethesda === id ? 'none' : id })}
+                          className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
+                            nodule.bethesda === id ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                          }`}
+                        >
+                          {BETHESDA[id].label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+                <p className="text-[11px] text-slate-500 leading-snug">Toque de nuevo la categoría elegida para quitarla. El riesgo de malignidad varía según se considere a NIFTP maligno o no; se recomienda calcular el ROM institucional.</p>
+              </div>
+
+              <div className="lg:col-span-5 space-y-3 text-xs">
+                <div className={`p-4 rounded-2xl border-2 ${tone}`}>
+                  <span className="text-[10px] font-mono uppercase text-slate-500 block">Bethesda 2023 · Riesgo de malignidad</span>
+                  {bth.rom ? (
+                    <>
+                      <div className="text-lg font-black text-slate-900 mt-0.5 leading-tight">{bth.label}</div>
+                      <div className="text-sm font-bold text-slate-800 mt-2">ROM: {bth.rom}</div>
+                      <div className="text-xs text-slate-700 mt-1.5 leading-snug"><b>Manejo:</b> {bth.mgmt}</div>
+                    </>
+                  ) : (
+                    <div className="text-sm font-bold text-slate-600 mt-1">Seleccione la categoría del informe de citología.</div>
+                  )}
+                  <div className="text-[10px] text-slate-500 mt-3 leading-snug">Fuente secundaria: PathologyOutlines.com (Suzuki A, Bychkov A; act. 12-jun-2025), resumen de Ali SZ, et al. Thyroid 2023;33:1039.</div>
+                </div>
+                {(
+                  <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-950">
+                    <strong className="block mb-1">Nota de transición ATA 2025 (R9, R10):</strong>
+                    Una vez confirmado el diagnóstico de cáncer diferenciado de tiroides (Bethesda VI o molecular positivo), <b>no se recomienda</b> medir Tg ni TgAb preoperatorias de rutina (R9) ni la evaluación genómica de rutina antes de la cirugía; si el perfil ya se conoce, puede considerarse para informar la extensión quirúrgica (R10).
+                    {(nodule.bethesda === '5' || nodule.bethesda === '6') && <button onClick={() => { setActiveTab('surgery'); window.scrollTo({ top: 0 }); }} className="mt-2 block w-full text-center font-black bg-teal-700 hover:bg-teal-800 text-white rounded-lg py-2">Continuar en Cirugía →</button>}
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
         <footer className="mt-8 pt-4 border-t border-slate-200 text-[11px] text-slate-500 leading-relaxed">
-          <b>Fuentes verificadas:</b> Ringel MD, Sosa JA, et al. 2025 ATA Management Guidelines for Adult Patients with DTC. Thyroid 2025;35(8):841–985 (DOI: 10.1177/10507256251363120) + Corrigendum Thyroid 2025;35(11):1350 (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña Nódulo: ACR TI-RADS 2017 (Tessler FN, et al. JACR 2017;14:587–595) y Bethesda 2023 (resumen PathologyOutlines de Ali SZ, et al. Thyroid 2023;33:1039). Herramienta de apoyo; no sustituye el juicio clínico. Los datos no salen del dispositivo.
+          <b>Fuentes verificadas:</b> Ringel MD, Sosa JA, et al. 2025 ATA Management Guidelines for Adult Patients with DTC. Thyroid 2025;35(8):841–985 (DOI: 10.1177/10507256251363120) + Corrigendum Thyroid 2025;35(11):1350 (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña TI-RADS: ACR TI-RADS 2017 (Tessler FN, et al. JACR 2017;14:587–595) · Pestaña Bethesda: Bethesda 2023 (resumen PathologyOutlines de Ali SZ, et al. Thyroid 2023;33:1039). Herramienta de apoyo; no sustituye el juicio clínico. Los datos no salen del dispositivo.
         </footer>
       </main>)}
 

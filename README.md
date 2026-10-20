@@ -43,10 +43,10 @@ No envía datos a ningún servidor; todo se calcula en el navegador.
   `https://mssurgonc-del.github.io` como *Authorized JavaScript origin* y el permiso `.../auth/drive.appdata`.
 - Prueba de extremo a extremo (Drive simulado): servir la carpeta con `python3 -m http.server 8765` dentro de
   `alta-quirurgica/` y correr `node tests/e2e.cjs`, `node tests/templates-preview.cjs` y
-  `node tests/nuevo-paciente-layout.cjs`, `node tests/catalogo-kielsa.cjs` (requieren `playwright-core` y Chromium).
-- Catálogo Kielsa (649 productos de 86 genéricos, tomados de la búsqueda pública de kielsa.com el 19-oct-2026,
-  embebido en la página): aparece al buscar un medicamento que no está en la base; «Importar» llena el
-  formulario de «Agregar medicamento» para revisarlo. Precios de esa fecha; pueden haber cambiado.
+  `node tests/nuevo-paciente-layout.cjs`, `node tests/catalogo.cjs` (requieren `playwright-core` y Chromium).
+- Catálogo de presentaciones comerciales (645 productos de 86 genéricos, solo nombres; sin precios ni
+  referencias a farmacias en la app): aparece al buscar un medicamento que no está en la base; «Importar»
+  llena el formulario de «Agregar medicamento» para revisarlo.
 - «＋ Nuevo» guarda en el Historial lo que haya en cada pestaña (sin duplicar) y deja todo en blanco; se puede deshacer 8 s.
 
 > Herramienta de apoyo a la decisión. No sustituye el juicio clínico ni la lectura de la guía original

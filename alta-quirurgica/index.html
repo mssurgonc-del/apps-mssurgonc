@@ -1089,6 +1089,12 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
   <option value="21 días"></option><option value="Uso continuo"></option>
   <option value="1 caja"></option><option value="1 frasco"></option>
 </datalist>
+<datalist id="frecuenciaOpts">
+  <option value="Cada día"></option><option value="Cada día en ayunas"></option>
+  <option value="Cada 12 horas"></option><option value="Cada 8 horas"></option>
+  <option value="Cada 6 horas"></option><option value="Cada 4 horas"></option>
+  <option value="Dos veces al día"></option><option value="Tres veces al día"></option>
+</datalist>
 <datalist id="cantidadOpts"><option value="1 caja"></option><option value="1 frasco"></option></datalist>
 <!-- Deshacer "Nuevo paciente" -->
 <div id="newPacBar"><span id="newPacMsg"></span><button class="btn btn-sm" onclick="deshacerNuevoPaciente()">Deshacer</button></div>
@@ -3468,6 +3474,17 @@ if(!appStore.getItem(LS_KEYS.surgeryListMigrated)){
   appStore.setItem(LS_KEYS.surgeryListMigrated, '1');
 }
 
+/* Línea de indicación de un medicamento: omite lo que esté vacío y solo antepone "por" a duraciones
+   en días, semanas o meses ("por 7 días"; "Uso continuo" y "1 caja" van tal cual). */
+function rxLinea(it, conVia=true){
+  const dur = (it.duracion||'').trim();
+  const partes = [
+    [it.dosis, conVia && it.via ? 'vía '+it.via : ''].filter(Boolean).join(' '),
+    (it.frecuencia||'').trim(),
+    dur ? (/^\d+(?:[.,]\d+)?\s*(?:d[ií]as?|semanas?|mes(?:es)?)\b/i.test(dur) ? 'por '+dur : dur) : ''
+  ].filter(Boolean);
+  return partes.join(', ') + (it.cantidad ? ' — Dispensar: '+it.cantidad : '');
+}
 let currentRxItems = []; // {medId, generico, comercial, presentacion, concentracion, via, dosis, frecuencia, duracion, cantidad}
 
 /* ============================================================
@@ -3873,7 +3890,7 @@ function renderAdminCombos(){
         </div>
         <div class="aci-fields">
           <input type="text" value="${it.dosis||''}" placeholder="Dosis" onchange="adminUpdateComboItem('${escapeAttr(cirugia)}',${idx},'dosis',this.value)">
-          <input type="text" value="${it.frecuencia||''}" placeholder="Frecuencia" onchange="adminUpdateComboItem('${escapeAttr(cirugia)}',${idx},'frecuencia',this.value)">
+          <input type="text" list="frecuenciaOpts" value="${it.frecuencia||''}" placeholder="Frecuencia" onchange="adminUpdateComboItem('${escapeAttr(cirugia)}',${idx},'frecuencia',this.value)">
           <input type="text" list="duracionOpts" value="${it.duracion||''}" placeholder="Duración" onchange="adminUpdateComboItem('${escapeAttr(cirugia)}',${idx},'duracion',this.value)">
         </div>
       </div>`).join('');
@@ -3907,7 +3924,7 @@ function adminAddMedToCombo(cirugia, medId){
   const med = medsDB.find(m=>m.id===medId);
   if(!med) return;
   if(!combos[cirugia]) combos[cirugia] = [];
-  combos[cirugia].push({medId: med.id, generico: med.generico, presentacion: med.presentacion, concentracion: med.concentracion, dosis:'1 '+(med.presentacion||'unidad'), frecuencia:'c/8h', duracion:'5 días', cantidad:''});
+  combos[cirugia].push({medId: med.id, generico: med.generico, presentacion: med.presentacion, concentracion: med.concentracion, dosis:'1 '+(med.presentacion||'unidad'), frecuencia:'', duracion:'', cantidad:''});
   saveJSON(LS_KEYS.combos, combos);
   renderAdminCombos();
   showToast('Medicamento agregado a la plantilla ✅');
@@ -4352,7 +4369,7 @@ function addMedToRx(medId){
   currentRxItems.push({
     medId: med.id, generico: med.generico, comercial: med.comercial, presentacion: med.presentacion,
     concentracion: med.concentracion, via: med.via,
-    dosis:'1 '+(med.presentacion||'unidad'), frecuencia:'c/8h', duracion:'5 días', cantidad:''
+    dosis:'1 '+(med.presentacion||'unidad'), frecuencia:'', duracion:'', cantidad:''
   });
   document.getElementById('medSearch').value='';
   document.getElementById('medSearchResults').classList.remove('show');
@@ -4379,7 +4396,7 @@ function renderRxItems(){
       </div>
       <div class="rx-fields">
         <div><label>Dosis</label><input type="text" value="${it.dosis||''}" onchange="updateRxField(${idx},'dosis',this.value)"></div>
-        <div><label>Frecuencia</label><input type="text" value="${it.frecuencia||''}" onchange="updateRxField(${idx},'frecuencia',this.value)"></div>
+        <div><label>Frecuencia</label><input type="text" list="frecuenciaOpts" value="${it.frecuencia||''}" placeholder="Elegir o escribir" onchange="updateRxField(${idx},'frecuencia',this.value)"></div>
         <div><label>Duración</label><input type="text" list="duracionOpts" value="${it.duracion||''}" onchange="updateRxField(${idx},'duracion',this.value)"></div>
         <div><label>Cantidad a dispensar</label><input type="text" list="cantidadOpts" value="${it.cantidad||''}" onchange="updateRxField(${idx},'cantidad',this.value)"></div>
       </div>
@@ -4462,7 +4479,7 @@ function buildDocHTML(){
   const items = currentRxItems.map((it,i)=>`
     <div class="doc-rx-row">
       <div class="rxn">${i+1}. ${it.generico}${it.comercial?(' — '+it.comercial):''} ${it.concentracion||''}</div>
-      <div class="rxd">${it.dosis||''} vía ${it.via||''}, ${it.frecuencia||''}, por ${it.duracion||''}${it.cantidad? (' — Dispensar: '+it.cantidad) : ''}</div>
+      <div class="rxd">${rxLinea(it)}</div>
     </div>`).join('') || '<div class="hint">Sin medicamentos agregados todavía.</div>';
 
   const firmaTipo = document.getElementById('rxFirmaTipo').value;
@@ -4808,7 +4825,7 @@ function buildTextSummary(){
   if(pac.dx) txt += `Dx: ${pac.dx}\n`;
   txt += `Fecha: ${document.getElementById('rxFecha').value}\n\n`;
   currentRxItems.forEach((it,i)=>{
-    txt += `${i+1}. ${it.generico} ${it.concentracion||''} — ${it.dosis||''} ${it.frecuencia||''}, por ${it.duracion||''}\n`;
+    txt += `${i+1}. ${it.generico} ${it.concentracion||''} — ${rxLinea({...it, cantidad:''}, false)}\n`;
   });
   txt += `\n— ${doctorConfig.nombre||''}${doctorConfig.especialidad? (', '+doctorConfig.especialidad):''}`;
   return txt;
@@ -4839,7 +4856,7 @@ function buildRxImageSpec(){
         y = drawParagraph(ctx, linea1, x, y, maxWidth, 18);
         ctx.font = '12.5px -apple-system, Arial, sans-serif';
         ctx.fillStyle = '#333333';
-        const linea2 = `${it.dosis||''} vía ${it.via||''}, ${it.frecuencia||''}, por ${it.duracion||''}${it.cantidad? (' — Dispensar: '+it.cantidad) : ''}`;
+        const linea2 = rxLinea(it);
         y = drawParagraph(ctx, linea2, x, y, maxWidth, 16);
         y += 12;
       });

@@ -1,0 +1,18 @@
+const {chromium}=require('playwright-core');
+const ok=(c,m)=>{console.log((c?'ok: ':'FAIL: ')+m); if(!c) process.exitCode=1;};
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',ignoreDefaultArgs:['--headless=old'],args:['--no-sandbox','--headless=new']});
+const ctx=await b.newContext({viewport:{width:390,height:844}});await ctx.route('https://accounts.google.com/**',r=>r.fulfill({body:''}));const pg=await ctx.newPage();const errs=[];pg.on('pageerror',e=>errs.push(e.message));
+await pg.goto(process.env.BASE||'http://localhost:8765/'); await pg.waitForFunction(()=>{try{return Array.isArray(historial)}catch(e){return false}});
+await pg.evaluate(()=>closeConfigModal());
+ok(await pg.evaluate(()=>[...document.querySelectorAll('#frecuenciaOpts option')].map(o=>o.value).join('|'))==='Cada día|Cada día en ayunas|Cada 12 horas|Cada 8 horas|Cada 6 horas|Cada 4 horas|Dos veces al día|Tres veces al día','lista de frecuencias');
+await pg.evaluate(()=>addMedToRx(medsDB.find(m=>m.generico==='Omeprazol').id));
+ok(await pg.evaluate(()=>currentRxItems[0].frecuencia==='' && currentRxItems[0].duracion===''),'al agregar, frecuencia y duración vacías');
+ok(await pg.evaluate(()=>!!document.querySelector('#recetaItems input[list=frecuenciaOpts]')),'campo frecuencia con lista');
+await pg.evaluate(()=>{ const i=document.querySelector('#recetaItems input[list=frecuenciaOpts]'); i.value='Cada día en ayunas'; i.dispatchEvent(new Event('change')); });
+ok((await pg.textContent('#rxDocPage')).includes('Cada día en ayunas'),'se imprime la frecuencia elegida');
+await pg.evaluate(()=>{ const i=document.querySelector('#recetaItems input[list=frecuenciaOpts]'); i.value='antes del desayuno y la cena'; i.dispatchEvent(new Event('change')); });
+ok(await pg.evaluate(()=>currentRxItems[0].frecuencia==='antes del desayuno y la cena'),'acepta texto libre (otro)');
+const L=await pg.evaluate(()=>[rxLinea({dosis:'1 tableta',via:'VO',frecuencia:'',duracion:'',cantidad:''}),rxLinea({dosis:'1 tableta',via:'VO',frecuencia:'Cada día en ayunas',duracion:'Uso continuo',cantidad:''}),rxLinea({dosis:'1 tableta',via:'VO',frecuencia:'Cada 8 horas',duracion:'7 días',cantidad:'1 caja'}),rxLinea({dosis:'1 tableta',via:'VO',frecuencia:'Cada 12 horas',duracion:'1 frasco',cantidad:''})]);
+console.log(L);
+ok(L[0]==='1 tableta vía VO' && L[1]==='1 tableta vía VO, Cada día en ayunas, Uso continuo' && L[2]==='1 tableta vía VO, Cada 8 horas, por 7 días — Dispensar: 1 caja' && L[3]==='1 tableta vía VO, Cada 12 horas, 1 frasco','línea de receta sin comas sueltas');
+console.log('errors',errs);await b.close();})();

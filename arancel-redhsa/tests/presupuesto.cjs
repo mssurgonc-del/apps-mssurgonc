@@ -32,7 +32,13 @@ await add('21089'); await add('60240'); await pg.click('#cartTab'); await pg.wai
 ok(await pg.isVisible('.manual-val'),'"Sin precio" muestra campo para escribir el valor');
 await pg.fill('.manual-val','20000'); await pg.dispatchEvent('.manual-val','change'); await pg.waitForTimeout(200);
 const base=num(await pg.textContent('#cirujanoSin')); console.log('base',base);
-ok(base===20000+16150*0.5,'valor manual entra al 100/50/25 % (L 28,075)');
+ok(base===20000+16150,'privado: cada procedimiento al 100 % por defecto (L 36,150)');
+ok(await pg.$$eval('.manual-pct',e=>e.length)===2,'privado: % editable en cada procedimiento');
+await pg.fill('.manual-pct[data-id] >> nth=1','50'); await pg.dispatchEvent('.manual-pct >> nth=1','change'); await pg.waitForTimeout(200);
+ok(num(await pg.textContent('#cirujanoSin'))===20000+16150*0.5,'privado: el % escrito por el médico se aplica (L 28,075)');
+await pg.check('#seguroToggle'); await pg.waitForTimeout(150);
+ok(await pg.$$eval('.manual-pct',e=>e.length)===0 && num(await pg.textContent('#cirujanoSin'))===20000+16150*0.5,'con seguro: 100/50/25 automático, sin campos de %');
+await pg.uncheck('#seguroToggle'); await pg.waitForTimeout(150);
 await pg.reload(); await pg.waitForTimeout(500); await pg.click('#cartTab'); await pg.waitForTimeout(200);
 ok(await pg.inputValue('.manual-val')==='20000','el valor escrito se conserva');
 console.log('errors',errs); await b.close();})();

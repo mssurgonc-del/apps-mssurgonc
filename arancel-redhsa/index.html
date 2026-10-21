@@ -365,6 +365,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
 .badge-anexo{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:#e0b341;color:#1b1500;vertical-align:1px;font-family:system-ui,sans-serif;}
 .manual-val{width:110px;margin-top:4px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--gold-ink,#8a5c1e);font:inherit;font-size:14px;text-align:right;background:transparent;color:inherit;}
 .ti-pct{font-size:11px;font-weight:500;opacity:.75;}
+.manual-pct{width:52px;margin-right:2px;padding:3px 5px;border-radius:6px;border:1.5px solid var(--gold-ink,#8a5c1e);font:inherit;font-size:12px;text-align:right;background:transparent;color:inherit;}
 </style>
 </head>
 <body>
@@ -820,14 +821,15 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     renderCartList();
   }
 
-  /* Procedimientos múltiples (regla REDHSA): el de mayor valor al 100 %, el segundo al 50 %
-     y del tercero en adelante al 25 %. Devuelve el porcentaje que corresponde a cada id. */
+  /* Procedimientos múltiples. Con seguro (regla REDHSA): el de mayor valor al 100 %, el segundo al 50 %
+     y del tercero en adelante al 25 %. Sin seguro queda a criterio del médico: cada procedimiento
+     lleva el porcentaje que él escriba (100 % si no escribe nada). Devuelve el porcentaje de cada id. */
   // Valor de una línea: el del arancel o, si no tiene, el que escribió el médico
   const valorDe = x => x.valor != null ? x.valor : (x.valorManual != null ? x.valorManual : null);
   function porcentajesMultiples(){
     const conPrecio = cart.filter(x => valorDe(x) != null).slice().sort((a,b) => valorDe(b) - valorDe(a));
     const pct = {};
-    conPrecio.forEach((x,i) => { pct[x.id] = i === 0 ? 100 : i === 1 ? 50 : 25; });
+    conPrecio.forEach((x,i) => { pct[x.id] = !settings.seguroOn ? (x.pctManual ?? 100) : i === 0 ? 100 : i === 1 ? 50 : 25; });
     return pct;
   }
   // Paciente privado: cada honorario se redondea a la decena de lempiras; el total es la suma de lo redondeado.
@@ -900,10 +902,12 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
       for (const it of cart) {
         const p = pct[it.id];
         const v = valorDe(it);
-        const pctTxt = v == null || p === 100 ? '' : '<span class="ti-pct">' + p + '% de ' + fmtL(v) + '</span><br>' + fmtL(v * p/100);
+        const pctTxt = !settings.seguroOn
+          ? (v == null ? '' : '<span class="ti-pct"><input type="number" inputmode="decimal" min="0" max="100" step="5" class="manual-pct" data-id="'+it.id+'" value="'+p+'" aria-label="Porcentaje que se cobra">% de ' + fmtL(v) + '</span><br>' + fmtL(v * p/100))
+          : (v == null || p === 100 ? '' : '<span class="ti-pct">' + p + '% de ' + fmtL(v) + '</span><br>' + fmtL(v * p/100));
         const valorTxt = it.valor==null
           ? '<span class="ti-pct">Sin precio: escriba su valor</span><br><input type="number" inputmode="decimal" min="0" step="10" class="manual-val" data-id="'+it.id+'" placeholder="L." value="'+(it.valorManual!=null?it.valorManual:'')+'" aria-label="Valor del procedimiento">' + (pctTxt ? '<br>' + pctTxt : '')
-          : (p === 100 ? fmtL(it.valor) : pctTxt);
+          : (p === 100 && settings.seguroOn ? fmtL(it.valor) : pctTxt);
         html += '<div class="tape-item">' +
           '<div class="ti-main">' +
             '<div class="ti-code">'+escapeHtml(it.codigo)+'</div>' +
@@ -919,6 +923,16 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
         inp.addEventListener('input', () => {
           const v = parseFloat(inp.value);
           item.valorManual = isNaN(v) || v < 0 ? null : v;
+          saveCart(); renderTotalsUI();
+        });
+        inp.addEventListener('change', () => renderCartList());
+        inp.addEventListener('click', e => e.stopPropagation());
+      });
+      listEl.querySelectorAll('.manual-pct').forEach(inp => {
+        const item = cart.find(x => x.id === inp.dataset.id);
+        inp.addEventListener('input', () => {
+          const v = parseFloat(inp.value);
+          item.pctManual = isNaN(v) || v < 0 ? null : Math.min(v, 100);
           saveCart(); renderTotalsUI();
         });
         inp.addEventListener('change', () => renderCartList());
@@ -947,7 +961,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     $('anestToggle').checked = settings.anestOn;
 
     const nProc = cart.filter(x => x.valor != null).length;
-    $('baseLabel').textContent = 'Cirujano principal' + (nProc > 1 ? ' (100/50/25 %)' : '') + (t.missing ? ' (' + t.missing + ' sin precio)' : '');
+    $('baseLabel').textContent = 'Cirujano principal' + (nProc > 1 && settings.seguroOn ? ' (100/50/25 %)' : '') + (t.missing ? ' (' + t.missing + ' sin precio)' : '');
     $('cirujanoSin').textContent = fmtL(t.base);
     $('cirujanoCon').textContent = fmtL(t.cirujanoCon);
 
@@ -1000,7 +1014,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
       settings[key] = e.target.checked;
       if (id === 'seguroToggle') settings.ayudantePct = e.target.checked ? 30 : 33;
       saveSettings();
-      renderTotalsUI();
+      if (id === 'seguroToggle') renderCartList(); else renderTotalsUI();
     });
   });
   ['ajustePct','ayudantePct','ayudante2Pct','anestPct','copagoPct','validezDias'].forEach(id => {

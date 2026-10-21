@@ -6,7 +6,7 @@ await pg.goto(process.env.BASE||'http://localhost:8766/'); await pg.waitForFunct
 await pg.evaluate(()=>closeConfigModal());
 ok(await pg.evaluate(()=>CATALOGO.length)===645,'catálogo cargado');
 await pg.fill('#medSearch','dolgenal'); await pg.waitForTimeout(200);
-const t=await pg.textContent('#medSearchResults'); ok(t.includes('Otras presentaciones') && t.includes('Dolgenal') && !/kielsa|L\. \d/i.test(t),'busca por marca');
+const t=await pg.textContent('#medSearchResults'); ok(t.includes('Otras presentaciones') && t.includes('Dolgenal') && !/farmacia|L\. \d/i.test(t),'busca por marca');
 await pg.fill('#medSearch','ketorolaco'); await pg.waitForTimeout(200);
 const t2=await pg.textContent('#medSearchResults'); ok(t2.includes('Ketorolaco trometamina') && t2.includes('Otras presentaciones'),'base propia primero y catálogo debajo');
 await pg.click('#medSearchResults button:has-text("Importar") >> nth=0');

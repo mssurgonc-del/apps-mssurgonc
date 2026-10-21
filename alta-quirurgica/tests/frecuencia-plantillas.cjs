@@ -1,0 +1,13 @@
+const {chromium}=require('playwright-core');
+const ok=(c,m)=>{console.log((c?'ok: ':'FAIL: ')+m); if(!c) process.exitCode=1;};
+const BASE=process.env.BASE||'http://localhost:8765/';
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',ignoreDefaultArgs:['--headless=old'],args:['--no-sandbox','--headless=new']});
+const ctx=await b.newContext();await ctx.route('https://accounts.google.com/**',r=>r.fulfill({body:''}));const pg=await ctx.newPage();const errs=[];pg.on('pageerror',e=>errs.push(e.message));
+await pg.goto(BASE+'tests/legacy-v18.html');
+await pg.evaluate(()=>localStorage.setItem('altaApp_medCombos', JSON.stringify({"Mastectomía":[{generico:"Diclofenaco sódico",dosis:"1 tableta (50mg)",frecuencia:"c/12h",duracion:"5 días",cantidad:"10 tabletas"},{generico:"Ketorolaco trometamina",dosis:"1 tableta (10mg)",frecuencia:"c/8h si dolor",duracion:"3 días",cantidad:"9 tabletas"},{generico:"Omeprazol",dosis:"1 cápsula",frecuencia:"c/24h",duracion:"14 días",cantidad:"14"}],"Tiroidectomía total":[{generico:"Carbonato de calcio + Vitamina D",dosis:"1 tableta",frecuencia:"c/12h",duracion:"10 días",cantidad:"20 tabletas"}]})));
+await pg.goto(BASE); await pg.waitForFunction(()=>{try{return Array.isArray(historial)}catch(e){return false}});
+const c=await pg.evaluate(()=>({m:combos['Mastectomía'].map(i=>i.frecuencia), cal:combos['Tiroidectomía total'][0]}));
+console.log(c);
+ok(c.m.join('|')==='Cada 12 horas|Cada 8 horas si dolor|Cada día','plantillas guardadas pasan al formato nuevo');
+ok(c.cal.frecuencia==='' && c.cal.duracion==='' && c.cal.cantidad==='','calcio sigue quedando en blanco');
+console.log('errors',errs);await b.close();})();

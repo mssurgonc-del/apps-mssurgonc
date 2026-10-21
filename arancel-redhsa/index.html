@@ -75,6 +75,20 @@
   /* ---------- Search ---------- */
   .search-bar{padding:4px 18px 12px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;}
   .search-input-wrap{position:relative;}
+  .btn-propio{align-self:flex-start;background:none;border:1px dashed var(--rule-dark);color:var(--accent-strong);border-radius:10px;padding:8px 12px;font:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+  .propio-form{display:flex;flex-direction:column;gap:6px;background:var(--surface);border:1px solid var(--rule-dark);border-radius:12px;padding:12px;}
+  .propio-form[hidden]{display:none;}
+  .propio-form label{font-size:12px;color:var(--ink-faint);}
+  .propio-form input[type=text], .propio-form input[type=number]{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--rule-dark);background:var(--bg);color:var(--ink);font:inherit;font-size:15px;box-sizing:border-box;}
+  .propio-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .propio-check{display:flex;gap:8px;align-items:center;font-size:13px !important;color:var(--ink) !important;margin-top:2px;}
+  .propio-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
+  .propio-actions button{padding:9px 14px;border-radius:10px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;}
+  .propio-actions button[type=submit]{background:var(--accent);border:1px solid var(--accent);color:#0d1a16;}
+  .propio-actions .btn-ghost{background:transparent;border:1px solid var(--rule-dark);color:var(--ink);}
+  .badge-propio{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:#7fb8a4;color:#0d1a16;vertical-align:1px;font-family:system-ui,sans-serif;}
+  .propio-lista .preview-sample-row{display:flex;justify-content:space-between;gap:8px;align-items:center;}
+  .propio-lista button{background:none;border:none;color:#e06c5a;font-size:18px;cursor:pointer;}
   #searchInput{
     width:100%;padding:13px 14px 13px 40px;border-radius:12px;border:1px solid var(--rule-dark);
     background:var(--surface);color:var(--ink);font-size:16px;font-family:inherit;
@@ -370,6 +384,20 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
       <input type="search" id="searchInput" placeholder="Buscar código o procedimiento…" autocomplete="off">
     </div>
     <select id="sistemaFilter"><option value="">Todos los sistemas</option></select>
+    <button class="btn-propio" id="btnPropio" type="button">＋ Procedimiento que no está en el arancel</button>
+    <form class="propio-form" id="propioForm" hidden>
+      <label for="propioNombre">Procedimiento</label>
+      <input type="text" id="propioNombre" placeholder="Ej. Tiroidectomía robótica" autocomplete="off" required>
+      <div class="propio-row">
+        <div><label for="propioCodigo">Código (opcional)</label><input type="text" id="propioCodigo" placeholder="—" autocomplete="off"></div>
+        <div><label for="propioValor">Valor (L.)</label><input type="number" id="propioValor" inputmode="decimal" min="0" step="10" placeholder="0.00"></div>
+      </div>
+      <label class="propio-check"><input type="checkbox" id="propioGuardar" checked> Guardarlo para buscarlo la próxima vez</label>
+      <div class="propio-actions">
+        <button type="button" class="btn-ghost" id="propioCancelar">Cancelar</button>
+        <button type="submit" class="btn-primary">Agregar al presupuesto</button>
+      </div>
+    </form>
   </div>
 
   <main class="results" id="resultsList">
@@ -488,6 +516,9 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
         <button class="btn-secondary btn-danger-outline" id="btnRestoreDefault" style="display:none">Restaurar arancel original 2014</button>
       </div>
 
+      <h3>Mis procedimientos fuera del arancel</h3>
+      <div class="settings-card propio-lista" id="propiosLista"></div>
+
       <h3>Presupuesto para el paciente</h3>
       <div class="settings-card">
         <label class="adj-pct-row" style="display:flex;justify-content:space-between;align-items:center;">
@@ -600,16 +631,55 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     saveFavs();
     runSearch();
   }
+  // ---------------- Procedimientos propios (no están en el arancel) ----------------
+  const PROPIO = -2; // marca de sistema para los procedimientos propios
+  let propios = [];
+  try { propios = JSON.parse(localStorage.getItem('redhsa_propios') || '[]'); } catch(e){ propios = []; }
+  function savePropios(){ try { localStorage.setItem('redhsa_propios', JSON.stringify(propios)); } catch(e){} }
+  function todosLosItems(){ return propios.concat(dataset.items); }
+  $('btnPropio').addEventListener('click', () => {
+    const f = $('propioForm'); f.hidden = !f.hidden;
+    if (!f.hidden) { $('propioNombre').value = $('searchInput').value.trim(); $('propioNombre').focus(); }
+  });
+  $('propioCancelar').addEventListener('click', () => { $('propioForm').hidden = true; });
+  $('propioForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const nombre = $('propioNombre').value.trim();
+    if (!nombre) { $('propioNombre').focus(); return; }
+    const v = parseFloat($('propioValor').value);
+    const valor = isNaN(v) || v < 0 ? null : v;
+    let codigo = $('propioCodigo').value.trim();
+    if (!codigo) { let n = 1; while (propios.some(x => x[0] === 'P-' + n)) n++; codigo = 'P-' + n; }
+    const item = [codigo, nombre, valor, PROPIO];
+    if ($('propioGuardar').checked) {
+      propios = propios.filter(x => x[0] !== codigo);
+      propios.unshift(item); savePropios(); renderPropiosLista();
+    }
+    addToCart(item);
+    ['propioNombre','propioCodigo','propioValor'].forEach(id => { $(id).value = ''; });
+    $('propioForm').hidden = true;
+    runSearch();
+  });
+  function renderPropiosLista(){
+    const el = $('propiosLista'); if (!el) return;
+    el.innerHTML = propios.length
+      ? propios.map((p,i) => '<div class="preview-sample-row"><span><span class="mono">'+escapeHtml(p[0])+'</span> — '+escapeHtml(p[1])+(p[2]!=null?' <strong>'+fmtL(p[2])+'</strong>':'')+'</span><button data-i="'+i+'" aria-label="Borrar">×</button></div>').join('')
+      : '<p class="settings-p">Todavía no ha guardado procedimientos propios.</p>';
+    el.querySelectorAll('button[data-i]').forEach(b => b.addEventListener('click', () => {
+      confirmarEnBoton(b, '¿Borrar?', () => { propios.splice(+b.dataset.i, 1); savePropios(); renderPropiosLista(); runSearch(); });
+    }));
+  }
+
   function rowsHTML(items){
     let html = '';
     for (const item of items) {
       const [codigo, nombre, valor, sisIdx] = item;
-      const sisName = sisIdx>=0 ? dataset.sistemas[sisIdx] : '';
+      const sisName = sisIdx === PROPIO ? 'Procedimiento propio' : sisIdx>=0 ? dataset.sistemas[sisIdx] : '';
       const fav = favs.includes(codigo);
       html += '<div class="result-row" data-codigo="'+attr(codigo)+'">' +
         '<button class="result-fav'+(fav?' on':'')+'" data-fav="'+attr(codigo)+'" aria-label="'+(fav?'Quitar de favoritos':'Agregar a favoritos')+'" aria-pressed="'+fav+'">'+(fav?'★':'☆')+'</button>' +
         '<div class="result-main">' +
-          '<div class="result-code mono">'+escapeHtml(codigo)+(/^anexos/i.test(sisName)?' <span class="badge-anexo">Anexo</span>':'')+'</div>' +
+          '<div class="result-code mono">'+escapeHtml(codigo)+(/^anexos/i.test(sisName)?' <span class="badge-anexo">Anexo</span>':'')+(sisIdx===PROPIO?' <span class="badge-propio">Propio</span>':'')+'</div>' +
           '<div class="result-name'+(valor==null?' no-value':'')+'">'+escapeHtml(nombre)+'</div>' +
           '<div class="result-sistema">'+escapeHtml(sisName)+'</div>' +
         '</div>' +
@@ -641,7 +711,8 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     const list = $('resultsList');
 
     if (!q && sisFilter === '') {
-      const favItems = favs.map(c => dataset.items.find(it => it[0] === c)).filter(Boolean);
+      const todos = todosLosItems();
+      const favItems = favs.map(c => todos.find(it => it[0] === c)).filter(Boolean);
       const hint = '<p class="empty-state">Escribe un código o el nombre de un procedimiento para buscar entre los ' + dataset.items.length.toLocaleString('en-US') + ' procedimientos del arancel.' +
         (favItems.length ? '' : ' Toca ☆ en un procedimiento para tenerlo siempre aquí.') + '</p>';
       if (favItems.length) {
@@ -657,7 +728,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     const qWords = nq.split(/\s+/).filter(Boolean);
     const isDigitQuery = /^\d/.test(nq);
     let results = [];
-    for (const item of dataset.items) {
+    for (const item of todosLosItems()) {
       const [codigo, nombre, valor, sisIdx] = item;
       if (sisFilter !== '' && String(sisIdx) !== sisFilter) continue;
       if (nq) {
@@ -685,7 +756,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     const capped = results.slice(0, 120).map(r => r.item);
 
     if (capped.length === 0) {
-      list.innerHTML = '<p class="empty-state">Sin resultados para “' + escapeHtml(q) + '”.</p>';
+      list.innerHTML = '<p class="empty-state">Sin resultados para “' + escapeHtml(q) + '”. Si no está en el arancel, use “＋ Procedimiento que no está en el arancel”.</p>';
       return;
     }
 
@@ -1040,6 +1111,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
   $('overlay').addEventListener('click', closeDrawers);
 
   function renderSettingsInfo(){
+    renderPropiosLista();
     $('datasetSourceLabel').textContent = datasetMeta.source === 'custom'
       ? ('Arancel actualizado' + (datasetMeta.updatedAt ? ' — ' + datasetMeta.updatedAt : ''))
       : 'Arancel REDHSA 2014 (original)';

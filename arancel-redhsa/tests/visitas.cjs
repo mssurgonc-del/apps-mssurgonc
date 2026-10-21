@@ -22,12 +22,22 @@ await pg.selectOption('#visitasModo','incluidas'); await pg.waitForTimeout(150);
 ok(await t('segPacienteCirujano')===cir,'privado: volver a "incluidas" recalcula');
 await pg.fill('#visitasValor','4000'); await pg.waitForTimeout(150);
 ok(await t('segPacienteVisitas')===8000,'valor de la visita editable (2 × 4,000)');
+// total fijado por el médico (ejemplo: 50,000 con 2 visitas de 3,500 incluidas → se reparten 43,000)
+await pg.fill('#visitasValor','3500'); await pg.fill('#totalManual','50000'); await pg.waitForTimeout(150);
+{const c=await t('segPacienteCirujano'),a2=await t('segPacienteAyudante'),n=await t('segPacienteAnest');
+ok(c+a2+n===43000 && a2===8550 && n===8550 && c===25900 && await t('segTotalPaciente')===50000,'total fijado 50,000 − 7,000 visitas: 25,900 + 8,550 + 8,550 = 43,000; total 50,000');}
+await pg.selectOption('#visitasModo','aparte'); await pg.waitForTimeout(150);
+ok(await t('segTotalPaciente')===57000 && await t('segPacienteCirujano')+await t('segPacienteAyudante')+await t('segPacienteAnest')===50000,'total fijado con visitas aparte: 50,000 + 7,000');
+await pg.selectOption('#visitasModo','incluidas'); await pg.fill('#totalManual',''); await pg.waitForTimeout(150);
+ok(await t('segPacienteCirujano')===cir,'borrar el total fijado vuelve al arancel');
+await pg.fill('#totalManual','50000'); await pg.fill('#visitasValor','4000'); await pg.waitForTimeout(150);
 await pg.check('#seguroToggle'); await pg.waitForTimeout(150);
 const sc=await t('segPacienteCirujano'), sa=await t('segPacienteAyudante'), sn=await t('segPacienteAnest');
-ok(Math.abs(await t('segTotalPaciente')-(sc+sa+sn+8000))<0.01 && (await pg.textContent('#segVisitasLabel')).includes('aparte') && !(await pg.isVisible('#visitasModo')),'seguro: visitas aparte, sumadas al copago (sin selector)');
+ok(Math.abs(await t('segTotalPaciente')-(sc+sa+sn+8000))<0.01 && (await pg.textContent('#segVisitasLabel')).includes('aparte') && !(await pg.isVisible('#visitasModo')) && !(await pg.isVisible('#totalManual')) && sc===8882.5,'seguro: ignora el total fijado; visitas aparte, sumadas al copago');
 await pg.evaluate(()=>{ navigator.share=undefined; navigator.clipboard.writeText=async t=>{window.__t=t}; });
 await pg.click('#btnSharePatient'); await pg.waitForTimeout(200);
 ok((await pg.evaluate(()=>window.__t)).includes('Visitas médicas (2)'),'presupuesto incluye las visitas');
 await pg.click('#btnClearCart'); await pg.click('#btnClearCart'); await pg.waitForTimeout(200);
 ok(await pg.inputValue('#visitasN')==='0' && await pg.inputValue('#visitasValor')==='3500' && await pg.inputValue('#visitasModo')==='incluidas','vaciar: 0 visitas, L 3,500, incluidas');
+ok(await pg.inputValue('#totalManual')==='','vaciar: borra el total fijado');
 console.log('errors',errs); await b.close();})();

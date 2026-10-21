@@ -319,8 +319,8 @@ export default function App() {
         'Ganglios_N', 'LNR_Alto', 'Metastasis_M', 'Molecular', 'Componentes_Coexistentes', 'Riesgo_ATA2025',
         'Porcentaje_Recurrencia', 'Estadio_AJCC8', 'Ind_RAI', 'Dosis_RAI',
         'Tipo_Cirugia_Seg', 'TSH_Exacta_uUImL', 'Tg_Basal_ngmL', 'Tg_Estim_ngmL',
-        'TgAb_Exacto_UImL', 'Tendencia_TgAb', 'Imagen_Seg', 'Respuesta_Dinamica_Tabla9',
-        'Riesgo_Residual_Fig6'
+        'TgAb_Exacto_UImL', 'Tendencia_TgAb', 'Imagen_Seg', 'Respuesta_Dinamica',
+        'Riesgo_Residual'
       ];
       const row = [
         patientMeta.fecha,

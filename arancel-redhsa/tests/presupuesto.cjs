@@ -16,7 +16,7 @@ const cir=num(await pg.textContent('#segPacienteCirujano')), tot=num(await pg.te
 ok(cir%10===0 && tot%10===0,'privado: montos redondeados a la decena ('+cir+', '+tot+')');
 // seguro: 30% y exacto
 await pg.check('#seguroToggle'); await pg.waitForTimeout(150);
-ok(await pg.inputValue('#ayudantePct')==='30','con seguro: 1er ayudante pasa a 30 %');
+ok(await pg.inputValue('#ayudantePct')==='30' && await pg.inputValue('#ayudante2Pct')==='15','con seguro: 1er ayudante 30 %, 2º ayudante 15 %');
 const cs=await pg.textContent('#segPacienteCirujano'); ok(/\.\d\d$/.test(cs) && num(cs)===13791.25,'con seguro: valor exacto sin redondear ('+cs+')');
 await pg.fill('#copagoPct','30'); await pg.waitForTimeout(150);
 // validez en el texto
@@ -25,7 +25,7 @@ await pg.click('#btnSharePatient'); await pg.waitForTimeout(200);
 ok((await pg.evaluate(()=>window.__t)).includes('Válido por 30 días (hasta el '),'presupuesto con validez');
 // vaciar: vuelve a privado, copago 20, ayudante 33
 await pg.click('#btnClearCart'); await pg.click('#btnClearCart'); await pg.waitForTimeout(200);
-ok(!(await pg.isChecked('#seguroToggle')) && await pg.inputValue('#copagoPct')==='20' && await pg.inputValue('#ayudantePct')==='33','vaciar: sin seguro, copago 20 %, ayudante 33 %');
+ok(!(await pg.isChecked('#seguroToggle')) && await pg.inputValue('#copagoPct')==='20' && await pg.inputValue('#ayudantePct')==='33' && await pg.inputValue('#ayudante2Pct')==='20','vaciar: sin seguro, copago 20 %, ayudantes 33 % y 20 %');
 await pg.click('#btnCloseCart');
 // sin precio: valor manual
 await add('21089'); await add('60240'); await pg.click('#cartTab'); await pg.waitForTimeout(200);

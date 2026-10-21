@@ -823,7 +823,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
      anestesiólogo marcados. Lo que no aplique se cambia a mano en ese presupuesto. */
   function ajustesPacienteNuevo(){
     settings.ayudanteOn = true; settings.anestOn = true;
-    settings.seguroOn = false; settings.copagoPct = 20; settings.ayudantePct = 33;
+    settings.seguroOn = false; settings.copagoPct = 20; settings.ayudantePct = 33; settings.ayudante2Pct = 20;
     settings.visitasN = 0; settings.visitasValor = 3500; settings.visitasAparte = false; settings.totalManual = null;
     saveSettings();
   }
@@ -1063,7 +1063,8 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     $(id).addEventListener('change', (e) => {
       const key = id.replace('Toggle','On');
       settings[key] = e.target.checked;
-      if (id === 'seguroToggle') settings.ayudantePct = e.target.checked ? 30 : 33;
+      // REDHSA (con seguro): 1er asistente 30 %, 2º asistente 15 %. Privado: 33 % y 20 %.
+      if (id === 'seguroToggle') { settings.ayudantePct = e.target.checked ? 30 : 33; settings.ayudante2Pct = e.target.checked ? 15 : 20; }
       saveSettings();
       if (id === 'seguroToggle') renderCartList(); else renderTotalsUI();
     });

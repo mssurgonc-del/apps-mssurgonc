@@ -365,6 +365,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
 .badge-anexo{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;background:#e0b341;color:#1b1500;vertical-align:1px;font-family:system-ui,sans-serif;}
 .manual-val{width:110px;margin-top:4px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--gold-ink,#8a5c1e);font:inherit;font-size:14px;text-align:right;background:transparent;color:inherit;}
 .ti-pct{font-size:11px;font-weight:500;opacity:.75;}
+.visitas-valor{width:72px;}
 .manual-pct{width:52px;margin-right:2px;padding:3px 5px;border-radius:6px;border:1.5px solid var(--gold-ink,#8a5c1e);font:inherit;font-size:12px;text-align:right;background:transparent;color:inherit;}
 </style>
 </head>
@@ -443,6 +444,9 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
             <input type="checkbox" id="seguroToggle">
             <span class="tr-label">Paciente con seguro médico — copago (<input type="number" class="pct-input" id="copagoPct" value="20" min="0" max="100" step="1">%)</span>
           </label>
+          <div class="toggle-row visitas-row">
+            <span class="tr-label">Visitas médicas: <input type="number" class="pct-input" id="visitasN" value="0" min="0" step="1" inputmode="numeric" aria-label="Número de visitas"> × L. <input type="number" class="pct-input visitas-valor" id="visitasValor" value="3500" min="0" step="100" inputmode="decimal" aria-label="Valor de cada visita"></span>
+          </div>
         </div>
         <div class="tape-totals">
           <div class="totals-grid-header"><span></span><span>Sin ajuste</span><span>Con ajuste</span></div>
@@ -482,6 +486,8 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
           <div class="seguro-pay-row" id="segRowAyudante" style="display:none"><span class="pay-label">1er ayudante</span><span class="pay-value" id="segPacienteAyudante">L. 0.00</span></div>
           <div class="seguro-pay-row" id="segRowAyudante2" style="display:none"><span class="pay-label">2º ayudante</span><span class="pay-value" id="segPacienteAyudante2">L. 0.00</span></div>
           <div class="seguro-pay-row" id="segRowAnest" style="display:none"><span class="pay-label">Anestesiólogo</span><span class="pay-value" id="segPacienteAnest">L. 0.00</span></div>
+          <div class="seguro-pay-row" id="segRowVisitas" style="display:none"><span class="pay-label" id="segVisitasLabel">Visitas médicas</span><span class="pay-value" id="segPacienteVisitas">L. 0.00</span></div>
+          <div class="totals-note" id="visitasNote" style="display:none"></div>
           <div class="seguro-grand-box"><span class="grand-label">Total paciente</span><span class="grand-value" id="segTotalPaciente">L. 0.00</span></div>
           <button class="patient-share" id="btnSharePatient">📤 Enviar presupuesto al paciente</button>
         </div>
@@ -558,7 +564,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
   let dataset = null;
   let datasetMeta = { source: 'default' };
   let cart = [];
-  let settings = { ajustePct:35, ayudantePct:33, ayudanteOn:true, validezDias:30, ayudante2Pct:20, ayudante2On:false, anestPct:33, anestOn:true, copagoPct:20, seguroOn:false };
+  let settings = { ajustePct:35, ayudantePct:33, ayudanteOn:true, validezDias:30, ayudante2Pct:20, ayudante2On:false, anestPct:33, anestOn:true, copagoPct:20, seguroOn:false, visitasN:0, visitasValor:3500 };
   let pendingUploadData = null; // holds parsed-but-unconfirmed dataset
 
   const $ = (id) => document.getElementById(id);
@@ -807,6 +813,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
   function ajustesPacienteNuevo(){
     settings.ayudanteOn = true; settings.anestOn = true;
     settings.seguroOn = false; settings.copagoPct = 20; settings.ayudantePct = 33;
+    settings.visitasN = 0; settings.visitasValor = 3500;
     saveSettings();
   }
   function clearCart(){
@@ -832,12 +839,18 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     conPrecio.forEach((x,i) => { pct[x.id] = !settings.seguroOn ? (x.pctManual ?? 100) : i === 0 ? 100 : i === 1 ? 50 : 25; });
     return pct;
   }
-  // Paciente privado: cada honorario se redondea a la decena de lempiras; el total es la suma de lo redondeado.
-  function redondearPrivado(h){
+  /* Paciente privado: las visitas médicas salen del total de honorarios y el restante se reparte entre
+     cirujano, ayudantes y anestesiólogo en la misma proporción. Cada honorario se redondea a la decena de
+     lempiras; el total es la suma de lo redondeado más las visitas. */
+  function redondearPrivado(h, visitas){
     const r = x => Math.round(x / 10) * 10;
+    const bruto = h.cirujano + h.ayudante + h.ayudante2 + h.anest;
+    const k = bruto > 0 ? Math.max(0, bruto - visitas) / bruto : 0;
+    h = {cirujano: h.cirujano*k, ayudante: h.ayudante*k, ayudante2: h.ayudante2*k, anest: h.anest*k};
     const o = {cirujano: r(h.cirujano), ayudante: settings.ayudanteOn ? r(h.ayudante) : 0,
                ayudante2: settings.ayudante2On ? r(h.ayudante2) : 0, anest: settings.anestOn ? r(h.anest) : 0};
-    o.total = o.cirujano + o.ayudante + o.ayudante2 + o.anest;
+    o.visitas = visitas;
+    o.total = o.cirujano + o.ayudante + o.ayudante2 + o.anest + visitas;
     return o;
   }
   function computeTotals(){
@@ -870,12 +883,15 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     const segPacienteAyudante2 = settings.seguroOn && settings.ayudante2On ? (ayudante2Sin * settings.copagoPct/100) + (ayudante2Con - ayudante2Sin) : 0;
     const segPacienteAnest = settings.seguroOn && settings.anestOn ? (anestSin * settings.copagoPct/100) + (anestCon - anestSin) : 0;
     const segTotalPaciente = segPacienteCirujano + segPacienteAyudante + segPacienteAyudante2 + segPacienteAnest;
+    // Visitas médicas: con seguro se cobran aparte, además de los honorarios; sin seguro salen del total.
+    const visitas = Math.max(0, settings.visitasN||0) * Math.max(0, settings.visitasValor||0);
     // Lo que paga el paciente a cada profesional: con seguro, su copago más el ajuste; sin seguro, el honorario completo con ajuste.
     const paciente = settings.seguroOn
-      ? {cirujano: segPacienteCirujano, ayudante: segPacienteAyudante, ayudante2: segPacienteAyudante2, anest: segPacienteAnest, total: segTotalPaciente}
-      : redondearPrivado({cirujano: cirujanoCon, ayudante: ayudanteCon, ayudante2: ayudante2Con, anest: anestCon});
+      ? {cirujano: segPacienteCirujano, ayudante: segPacienteAyudante, ayudante2: segPacienteAyudante2, anest: segPacienteAnest, visitas, total: segTotalPaciente + visitas}
+      : redondearPrivado({cirujano: cirujanoCon, ayudante: ayudanteCon, ayudante2: ayudante2Con, anest: anestCon}, visitas);
+    const visitasExceden = !settings.seguroOn && visitas > totalCon;
 
-    return {base, cirujanoCon, ayudanteSin, ayudanteCon, ayudante2Sin, ayudante2Con, anestSin, anestCon, totalSin, totalCon, missing, paciente,
+    return {visitas, visitasExceden, base, cirujanoCon, ayudanteSin, ayudanteCon, ayudante2Sin, ayudante2Con, anestSin, anestCon, totalSin, totalCon, missing, paciente,
             segReconocido, segAseguradoraPaga, segPacienteCirujano, segPacienteAyudante, segPacienteAnest, segTotalPaciente};
   }
 
@@ -1004,6 +1020,15 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     $('segPacienteAyudante2').textContent = fmtL(t.paciente.ayudante2);
     $('segRowAnest').style.display = settings.anestOn ? 'flex' : 'none';
     $('segPacienteAnest').textContent = fmtL(t.paciente.anest);
+    $('visitasN').value = settings.visitasN;
+    $('visitasValor').value = settings.visitasValor;
+    $('segRowVisitas').style.display = t.visitas ? 'flex' : 'none';
+    $('segVisitasLabel').textContent = 'Visitas médicas (' + settings.visitasN + ' × ' + fmtL(settings.visitasValor) + ')' + (settings.seguroOn ? ', aparte' : '');
+    $('segPacienteVisitas').textContent = fmtL(t.visitas);
+    $('visitasNote').style.display = t.visitas && !settings.seguroOn ? 'block' : 'none';
+    $('visitasNote').textContent = t.visitasExceden
+      ? 'Las visitas superan el total de honorarios: los honorarios quedan en cero.'
+      : 'Las visitas se restan del total de honorarios (' + fmtL(t.totalCon) + ') y el restante se reparte entre los participantes.';
     $('segTotalPaciente').textContent = fmtL(t.paciente.total);
     renderCartTab();
   }
@@ -1017,7 +1042,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
       if (id === 'seguroToggle') renderCartList(); else renderTotalsUI();
     });
   });
-  ['ajustePct','ayudantePct','ayudante2Pct','anestPct','copagoPct','validezDias'].forEach(id => {
+  ['ajustePct','ayudantePct','ayudante2Pct','anestPct','copagoPct','validezDias','visitasN','visitasValor'].forEach(id => {
     $(id).addEventListener('input', (e) => {
       let v = parseFloat(e.target.value);
       if (isNaN(v) || v < 0) v = 0;
@@ -1084,6 +1109,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     if (settings.ayudanteOn) L.push('• 1er ayudante: ' + fmtL(t.paciente.ayudante));
     if (settings.ayudante2On) L.push('• 2º ayudante: ' + fmtL(t.paciente.ayudante2));
     if (settings.anestOn) L.push('• Anestesiólogo: ' + fmtL(t.paciente.anest));
+    if (t.visitas) L.push('• Visitas médicas (' + settings.visitasN + '): ' + fmtL(t.visitas));
     L.push('*Total: ' + fmtL(t.paciente.total) + '*');
     if (settings.seguroOn) L.push('Su seguro cubre ' + fmtL(t.segAseguradoraPaga) + ', sujeto a la aprobación de la aseguradora.');
     L.push('');

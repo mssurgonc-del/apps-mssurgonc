@@ -6,17 +6,18 @@ que los pacientes usan para subir sus exámenes antes de la consulta.
 ## Qué hace
 
 - El paciente abre un enlace y escribe solo su nombre. Luego sube fotos o
-  PDF (hasta 8) y/o pega el mensaje de WhatsApp del centro de imágenes con
-  uno o varios enlaces. El formulario detecta los enlaces solo y muestra
-  "✓ 2 enlaces detectados".
+  PDF (hasta 8) y/o pega el mensaje de WhatsApp del centro de imágenes en
+  uno de los dos cuadros de "estudio de imágenes" (uno por estudio). El
+  formulario detecta el enlace solo y muestra "✓ Enlace detectado".
 - Todo cae en la bandeja **"13) Archivos sincronizados desde el Telefono"**
-  con el prefijo `CARGA PACIENTE - <nombre> - <fecha y hora>`. La tarea
+  con el prefijo `EXAMEN DE PACIENTE - <nombre> - <fecha y hora>`. La tarea
   programada "Ordenar archivos de pacientes en Drive" lo abre, saca del
   documento el paciente, el tipo de estudio y la fecha, y lo archiva en la
   carpeta del paciente. Por eso no se le pide al paciente ni la fecha de
   la cita ni el tipo de examen.
-- Los enlaces se guardan en un `.txt` junto con el mensaje que pegó el
-  paciente. Nadie abre los enlaces automáticamente.
+- Cada estudio con enlace se guarda en su propio `.txt` junto con el
+  mensaje que pegó el paciente, para que se archive con su fecha y tipo.
+  Nadie abre los enlaces automáticamente.
 - Cada envío queda registrado en una hoja de cálculo llamada
   **"Registro de cargas - Formulario de exámenes"**, que el script crea
   la primera vez que alguien envía el formulario.
@@ -66,7 +67,7 @@ de prueba (puedes usar tu propio nombre) y confirma que:
 
 - te aparece la pantalla de "¡Recibido, gracias!",
 - el archivo aparece en "13) Archivos sincronizados desde el Telefono"
-  con el prefijo `CARGA PACIENTE -`, y en la siguiente corrida de la tarea
+  con el prefijo `EXAMEN DE PACIENTE -`, y en la siguiente corrida de la tarea
   programada pasa a la carpeta del paciente (o a "Por organizar"),
 - se creó la hoja "Registro de cargas - Formulario de exámenes" en tu
   Drive con esa fila.

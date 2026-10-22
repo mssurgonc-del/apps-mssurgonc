@@ -2,7 +2,9 @@
  * Formulario de carga de exámenes — Dr. Manuel Salinas
  *
  * El paciente abre el enlace, escribe su nombre, sube fotos o PDF y/o pega
- * el mensaje de WhatsApp del centro de imágenes con uno o varios enlaces.
+ * el mensaje de WhatsApp del centro de imágenes, uno por estudio (hasta dos
+ * cuadros). Cada estudio se guarda por separado para que se archive con su
+ * propia fecha y tipo.
  *
  * Todo cae en la bandeja "13) Archivos sincronizados desde el Telefono".
  * La tarea programada "Ordenar archivos de pacientes en Drive" lo abre,
@@ -25,10 +27,11 @@ var BANDEJA_FOLDER_ID = '1_27Hmo5iySiEUz-UlhFIBoyQ5FysmG-Y';
 
 // Prefijo con el que la tarea programada reconoce lo que viene del
 // formulario. Si se cambia aquí, hay que cambiarlo también en la tarea.
-var PREFIJO = 'CARGA PACIENTE - ';
+var PREFIJO = 'EXAMEN DE PACIENTE - ';
 
 var MAXIMO_ARCHIVOS = 8;
-var MAXIMO_ENLACES = 10;
+var MAXIMO_ESTUDIOS = 4;
+var MAXIMO_ENLACES_POR_ESTUDIO = 5;
 
 // ---------------------------------------------------------------------
 // PUNTO DE ENTRADA DE LA APLICACIÓN WEB
@@ -52,8 +55,8 @@ function doGet(e) {
  *   datos.nombrePaciente {string}  requerido
  *   datos.consentimiento {boolean} requerido, debe ser true
  *   datos.archivos       {Array}   opcional: [{base64, nombre, tipoMime}]
- *   datos.enlaces        {Array}   opcional: enlaces detectados en el texto
- *   datos.textoMensaje   {string}  opcional: el mensaje tal como lo pegó
+ *   datos.estudios       {Array}   opcional: [{texto, enlaces}], uno por
+ *                                  cuadro de "estudio de imágenes" con texto
  */
 function procesarEnvio(datos) {
   try {
@@ -66,8 +69,14 @@ function procesarEnvio(datos) {
     }
     var archivos = (datos.archivos || []).filter(function (a) { return a && a.base64; })
       .slice(0, MAXIMO_ARCHIVOS);
-    var enlaces = (datos.enlaces || []).filter(esEnlaceValido).slice(0, MAXIMO_ENLACES);
-    if (archivos.length === 0 && enlaces.length === 0) {
+    var estudios = (datos.estudios || []).map(function (estudio) {
+      return {
+        texto: (estudio && estudio.texto ? String(estudio.texto) : '').slice(0, 5000),
+        enlaces: ((estudio && estudio.enlaces) || []).filter(esEnlaceValido).slice(0, MAXIMO_ENLACES_POR_ESTUDIO)
+      };
+    }).filter(function (estudio) { return estudio.enlaces.length > 0; })
+      .slice(0, MAXIMO_ESTUDIOS);
+    if (archivos.length === 0 && estudios.length === 0) {
       return { ok: false, mensaje: 'Suba al menos un archivo o pegue el mensaje con el enlace.' };
     }
 
@@ -89,18 +98,19 @@ function procesarEnvio(datos) {
       enlacesCreados.push(archivo.getUrl());
     });
 
-    if (enlaces.length > 0) {
+    estudios.forEach(function (estudio, indice) {
       var contenido =
         'Paciente (escrito por quien envió): ' + nombre + '\n' +
         'Enviado el: ' + Utilities.formatDate(ahora, zonaHoraria, 'yyyy-MM-dd HH:mm') + '\n\n' +
-        'Enlaces detectados:\n' + enlaces.map(function (e) { return '- ' + e; }).join('\n') + '\n\n' +
-        'Mensaje tal como lo pegó el paciente:\n' + (datos.textoMensaje || '').slice(0, 5000) + '\n';
-      var archivoTxt = bandeja.createFile(base + ' - Enlaces.txt', contenido, MimeType.PLAIN_TEXT);
+        'Enlaces detectados:\n' + estudio.enlaces.map(function (e) { return '- ' + e; }).join('\n') + '\n\n' +
+        'Mensaje tal como lo pegó el paciente:\n' + estudio.texto + '\n';
+      var nombreTxt = base + ' - Estudio ' + (indice + 1) + ' - Enlaces.txt';
+      var archivoTxt = bandeja.createFile(nombreTxt, contenido, MimeType.PLAIN_TEXT);
       enlacesCreados.push(archivoTxt.getUrl());
-    }
+    });
 
     registrarEnBitacora([
-      ahora, nombre, archivos.length, enlaces.length, enlacesCreados.join(' | ')
+      ahora, nombre, archivos.length, estudios.length, enlacesCreados.join(' | ')
     ]);
 
     return { ok: true, mensaje: '¡Gracias! Sus documentos fueron recibidos correctamente.' };
@@ -154,7 +164,7 @@ function registrarEnBitacora(fila) {
     var libro = SpreadsheetApp.create('Registro de cargas - Formulario de exámenes');
     hoja = libro.getSheets()[0];
     hoja.setName('Registro');
-    hoja.appendRow(['Fecha/hora de envío', 'Nombre escrito', 'Archivos', 'Enlaces', 'Archivos creados en Drive']);
+    hoja.appendRow(['Fecha/hora de envío', 'Nombre escrito', 'Archivos', 'Estudios con enlace', 'Archivos creados en Drive']);
     hoja.setFrozenRows(1);
     props.setProperty('BITACORA_SHEET_ID_V2', libro.getId());
   }

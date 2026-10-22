@@ -4,7 +4,8 @@
  * Paso 1 (base del proyecto) + Paso 2 (formulario de carga) del plan de
  * construcción. El paciente abre el enlace, sube un archivo o pega un
  * enlace (ultrasonido/tomografía), y el archivo cae en su carpeta de
- * Drive si el nombre coincide, o en "(00) estudios por ver" si no.
+ * Drive si el nombre coincide, o en "14) Examenes.../00 Por identificar"
+ * si no.
  *
  * Cada envío queda registrado en una hoja de cálculo ("Registro de cargas
  * - Formulario de exámenes") que este script crea solo la primera vez
@@ -19,9 +20,12 @@
 // subcarpeta por paciente (ej. "Ordoñez Romero, María Leticia").
 var ROOT_EXAMENES_FOLDER_ID = '1xJHfrtHYutOEf7JM9o7L0tpxvoA_RgWA';
 
-// "(00) estudios por ver" — carpeta de respaldo para lo que no se pueda
-// emparejar automáticamente con el nombre de ningún paciente.
-var POR_REVISAR_FOLDER_ID = '1JTbkVbO3vwMYaIreujwariIcsdb-NvIS';
+// "14) Examenes.../00 Por identificar" — carpeta de respaldo para lo que
+// no se pueda emparejar con ningún paciente. Es la misma que usa la rutina
+// automática de organización, así que todo lo pendiente queda en un solo
+// lugar. (Antes apuntaba a "(00) estudios por ver", que resultó ser una
+// carpeta vieja de 2023-2025 que ya no se usa.)
+var POR_REVISAR_FOLDER_ID = '1FlvoQ4z-PIOgkZTRRbwhzqGkH2zgtYPF';
 
 var TIPOS_EXAMEN_VALIDOS = [
   'Laboratorio',
@@ -197,6 +201,7 @@ function buscarCarpetaPaciente(nombreIngresado) {
 
   while (carpetas.hasNext()) {
     var carpeta = carpetas.next();
+    if (carpeta.getId() === POR_REVISAR_FOLDER_ID) continue; // no es un paciente
     var tituloNorm = normalizarTexto(carpeta.getName());
 
     if (tituloNorm === nombreNorm) {

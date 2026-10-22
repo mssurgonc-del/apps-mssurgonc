@@ -10,7 +10,8 @@ que los pacientes usan para subir sus exámenes antes de la consulta.
 - El sistema busca una carpeta de paciente con un nombre parecido dentro
   de **"14) Examenes estudios y biopsias de pacientes"**. Si encuentra una
   coincidencia alta, el archivo cae ahí. Si no, cae en
-  **"(00) estudios por ver"** con el prefijo `⚠️ SIN EMPAREJAR -` en el
+  **"14) Examenes estudios y biopsias de pacientes/00 Por identificar"**
+  con el prefijo `⚠️ SIN EMPAREJAR -` en el
   nombre, para que sea imposible no notarlo.
 - Cada envío queda registrado en una hoja de cálculo llamada
   **"Registro de cargas - Formulario de exámenes"**, que el script crea
@@ -61,7 +62,7 @@ de prueba (puedes usar tu propio nombre) y confirma que:
 
 - te aparece la pantalla de "¡Recibido, gracias!",
 - el archivo aparece en Drive (en tu carpeta si tu nombre no coincide con
-  ningún paciente, caerá en "(00) estudios por ver" con el prefijo de
+  ningún paciente, caerá en "00 Por identificar" con el prefijo de
   "sin emparejar" — es lo esperado),
 - se creó la hoja "Registro de cargas - Formulario de exámenes" en tu
   Drive con esa fila.

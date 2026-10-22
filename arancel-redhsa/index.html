@@ -499,6 +499,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
           <div class="seguro-pay-row" id="segRowAnest" style="display:none"><span class="pay-label">Anestesiólogo</span><span class="pay-value" id="segPacienteAnest">L. 0.00</span></div>
           <div class="seguro-pay-row" id="segRowVisitas" style="display:none"><span class="pay-label" id="segVisitasLabel">Visitas médicas</span><span class="pay-value" id="segPacienteVisitas">L. 0.00</span></div>
           <div class="totals-note" id="visitasNote" style="display:none"></div>
+          <div class="totals-note" id="segRowVisitasNote" style="display:none">No se suman al total: lo que reconozca el seguro por las visitas se le informa al paciente al momento del alta.</div>
           <div class="seguro-grand-box"><span class="grand-label">Total paciente</span><span class="grand-value" id="segTotalPaciente">L. 0.00</span></div>
           <button class="patient-share" id="btnSharePatient">📤 Enviar presupuesto al paciente</button>
         </div>
@@ -823,7 +824,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
      anestesiólogo marcados. Lo que no aplique se cambia a mano en ese presupuesto. */
   function ajustesPacienteNuevo(){
     settings.ayudanteOn = true; settings.anestOn = true;
-    settings.seguroOn = false; settings.copagoPct = 20; settings.ayudantePct = 33; settings.ayudante2Pct = 20;
+    settings.seguroOn = false; settings.copagoPct = 20; settings.ayudantePct = 33; settings.ayudante2Pct = 20; settings.anestPct = 33;
     settings.visitasN = 0; settings.visitasValor = 3500; settings.visitasAparte = false; settings.totalManual = null;
     saveSettings();
   }
@@ -899,12 +900,13 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     const segPacienteAyudante2 = settings.seguroOn && settings.ayudante2On ? (ayudante2Sin * settings.copagoPct/100) + (ayudante2Con - ayudante2Sin) : 0;
     const segPacienteAnest = settings.seguroOn && settings.anestOn ? (anestSin * settings.copagoPct/100) + (anestCon - anestSin) : 0;
     const segTotalPaciente = segPacienteCirujano + segPacienteAyudante + segPacienteAyudante2 + segPacienteAnest;
-    /* Visitas médicas: con seguro se cobran aparte, además de los honorarios. Sin seguro, a elección del médico:
+    /* Visitas médicas: con seguro se cobran aparte y no entran al total; lo que reconozca el seguro
+       se le informa al paciente al momento del alta. Sin seguro, a elección del médico:
        incluidas (salen del total de honorarios) o aparte. */
     const visitas = Math.max(0, settings.visitasN||0) * Math.max(0, settings.visitasValor||0);
     // Lo que paga el paciente a cada profesional: con seguro, su copago más el ajuste; sin seguro, el honorario completo con ajuste.
     const paciente = settings.seguroOn
-      ? {cirujano: segPacienteCirujano, ayudante: segPacienteAyudante, ayudante2: segPacienteAyudante2, anest: segPacienteAnest, visitas, total: segTotalPaciente + visitas}
+      ? {cirujano: segPacienteCirujano, ayudante: segPacienteAyudante, ayudante2: segPacienteAyudante2, anest: segPacienteAnest, visitas, total: segTotalPaciente}
       : redondearPrivado({cirujano: cirujanoCon, ayudante: ayudanteCon, ayudante2: ayudante2Con, anest: anestCon}, visitas, !settings.visitasAparte, settings.totalManual);
     const totalPrivado = settings.totalManual != null ? settings.totalManual : totalCon;
     const visitasExceden = !settings.seguroOn && !settings.visitasAparte && visitas > totalPrivado;
@@ -1042,6 +1044,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     $('visitasValor').value = settings.visitasValor;
     $('segRowVisitas').style.display = t.visitas ? 'flex' : 'none';
     $('segVisitasLabel').textContent = 'Visitas médicas (' + settings.visitasN + ' × ' + fmtL(settings.visitasValor) + ')' + (settings.seguroOn || settings.visitasAparte ? ', aparte' : '');
+    $('segRowVisitasNote').style.display = t.visitas && settings.seguroOn ? 'block' : 'none';
     $('segPacienteVisitas').textContent = fmtL(t.visitas);
     $('visitasModo').value = settings.visitasAparte ? 'aparte' : 'incluidas';
     $('visitasModo').style.display = settings.seguroOn ? 'none' : '';
@@ -1063,8 +1066,8 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     $(id).addEventListener('change', (e) => {
       const key = id.replace('Toggle','On');
       settings[key] = e.target.checked;
-      // REDHSA (con seguro): 1er asistente 30 %, 2º asistente 15 %. Privado: 33 % y 20 %.
-      if (id === 'seguroToggle') { settings.ayudantePct = e.target.checked ? 30 : 33; settings.ayudante2Pct = e.target.checked ? 15 : 20; }
+      // Con seguro: 1er asistente 30 %, 2º asistente 15 % (REDHSA), anestesiólogo 34 %. Privado: 33 %, 20 % y 33 %.
+      if (id === 'seguroToggle') { settings.ayudantePct = e.target.checked ? 30 : 33; settings.ayudante2Pct = e.target.checked ? 15 : 20; settings.anestPct = e.target.checked ? 34 : 33; }
       saveSettings();
       if (id === 'seguroToggle') renderCartList(); else renderTotalsUI();
     });
@@ -1146,9 +1149,10 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     if (settings.ayudanteOn) L.push('• 1er ayudante: ' + fmtL(t.paciente.ayudante));
     if (settings.ayudante2On) L.push('• 2º ayudante: ' + fmtL(t.paciente.ayudante2));
     if (settings.anestOn) L.push('• Anestesiólogo: ' + fmtL(t.paciente.anest));
-    if (t.visitas) L.push('• Visitas médicas (' + settings.visitasN + '): ' + fmtL(t.visitas));
+    if (t.visitas && !settings.seguroOn) L.push('• Visitas médicas (' + settings.visitasN + '): ' + fmtL(t.visitas));
     L.push('*Total: ' + fmtL(t.paciente.total) + '*');
     if (settings.seguroOn) L.push('Su seguro cubre ' + fmtL(t.segAseguradoraPaga) + ', sujeto a la aprobación de la aseguradora.');
+    if (t.visitas && settings.seguroOn) L.push('Visitas médicas: ' + settings.visitasN + ' × ' + fmtL(settings.visitasValor) + ' (' + fmtL(t.visitas) + '), aparte. Lo que reconozca su seguro por las visitas se le informará al momento del alta.');
     L.push('');
     const dias = Math.max(1, Math.round(settings.validezDias || 30));
     const hasta = new Date(Date.now() + dias*86400000).toLocaleDateString('es-HN', {day:'numeric', month:'long', year:'numeric'});

@@ -8,7 +8,10 @@ programada que ya existía en la cuenta del Dr. Salinas:
   (`CRON_TZ=America/Tegucigalpa 56 6,11,18 * * *`). Antes corría a la 1:00
   y a las 13:00, porque su horario estaba en UTC.
 - **Lee:** la bandeja "13) Archivos sincronizados desde el Telefono"
-  (`1_27Hmo5iySiEUz-UlhFIBoyQ5FysmG-Y`), solo los archivos sueltos en la raíz.
+  (`1_27Hmo5iySiEUz-UlhFIBoyQ5FysmG-Y`) y su subcarpeta "Private"
+  (`14jIlFJNmeUgBfg0Z_LSbuK_GWbVIl55G`), donde caen los documentos de
+  WhatsApp. Procesa primero lo más reciente. No toca "Sent", "Videos" ni
+  "fotos".
 - **Archiva en:** "14) Examenes estudios y biopsias de pacientes"
   (`1xJHfrtHYutOEf7JM9o7L0tpxvoA_RgWA`), una carpeta por paciente. Lo dudoso
   va a su carpeta "Por organizar".

@@ -62,10 +62,10 @@ function include(nombreArchivo) {
  *   datos.tipoExamen       {string}  requerido, uno de TIPOS_EXAMEN_VALIDOS
  *   datos.consentimiento   {boolean} requerido, debe ser true
  *   datos.enlace           {string}  opcional
- *   datos.archivo          {Object}  opcional
- *     datos.archivo.base64   {string}
- *     datos.archivo.nombre   {string}
- *     datos.archivo.tipoMime {string}
+ *   datos.archivos          {Array}   opcional, uno o varios archivos
+ *     datos.archivos[i].base64   {string}
+ *     datos.archivos[i].nombre   {string}
+ *     datos.archivos[i].tipoMime {string}
  */
 function procesarEnvio(datos) {
   try {
@@ -78,8 +78,9 @@ function procesarEnvio(datos) {
     if (!datos.consentimiento) {
       return { ok: false, mensaje: 'Debe aceptar el uso de su información para continuar.' };
     }
-    if (!datos.archivo && !datos.enlace) {
-      return { ok: false, mensaje: 'Debe subir un archivo o pegar un enlace.' };
+    var tieneArchivos = datos.archivos && datos.archivos.length > 0;
+    if (!tieneArchivos && !datos.enlace) {
+      return { ok: false, mensaje: 'Debe subir al menos un archivo o pegar un enlace.' };
     }
 
     var carpeta = buscarCarpetaPaciente(datos.nombrePaciente);
@@ -95,16 +96,24 @@ function procesarEnvio(datos) {
     var sufijoNombre = emparejado ? '' : (' - ' + datos.nombrePaciente);
     var enlacesCreados = [];
 
-    if (datos.archivo && datos.archivo.base64) {
-      var bytes = Utilities.base64Decode(datos.archivo.base64);
-      var tipoMime = datos.archivo.tipoMime || 'application/octet-stream';
-      var blob = Utilities.newBlob(bytes, tipoMime, datos.archivo.nombre || 'archivo');
-      var extension = obtenerExtension(datos.archivo.nombre, tipoMime);
-      var nombreArchivo = prefijoSinEmparejar + fechaISO + ' - ' + datos.tipoExamen +
-        sufijoNombre + ' (cita ' + datos.fechaCita + ').' + extension;
-      var archivo = carpeta.createFile(blob);
-      archivo.setName(nombreArchivo);
-      enlacesCreados.push(archivo.getUrl());
+    if (tieneArchivos) {
+      datos.archivos.forEach(function (archivoDatos, indice) {
+        if (!archivoDatos || !archivoDatos.base64) return;
+        var bytes = Utilities.base64Decode(archivoDatos.base64);
+        var tipoMime = archivoDatos.tipoMime || 'application/octet-stream';
+        var blob = Utilities.newBlob(bytes, tipoMime, archivoDatos.nombre || 'archivo');
+        var extension = obtenerExtension(archivoDatos.nombre, tipoMime);
+        // Solo se numeran los nombres cuando hay más de un archivo, para
+        // no cambiar el patrón de nombre en el caso más común (uno solo).
+        var sufijoIndice = datos.archivos.length > 1
+          ? ' (' + (indice + 1) + ' de ' + datos.archivos.length + ')'
+          : '';
+        var nombreArchivo = prefijoSinEmparejar + fechaISO + ' - ' + datos.tipoExamen +
+          sufijoNombre + ' (cita ' + datos.fechaCita + ')' + sufijoIndice + '.' + extension;
+        var archivo = carpeta.createFile(blob);
+        archivo.setName(nombreArchivo);
+        enlacesCreados.push(archivo.getUrl());
+      });
     }
 
     if (datos.enlace) {
@@ -142,7 +151,9 @@ function procesarEnvio(datos) {
 
 function construirEtiquetaMetodo(datos) {
   var partes = [];
-  if (datos.archivo) partes.push('Archivo');
+  if (datos.archivos && datos.archivos.length) {
+    partes.push(datos.archivos.length + ' archivo' + (datos.archivos.length > 1 ? 's' : ''));
+  }
   if (datos.enlace) partes.push('Enlace');
   return partes.join(' + ');
 }

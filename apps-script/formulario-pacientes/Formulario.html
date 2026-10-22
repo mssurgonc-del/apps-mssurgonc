@@ -12,6 +12,7 @@
       --gris-borde: #d6dde0;
       --fondo: #f4f7f8;
       --verde: #1e7a3c;
+      --verde-fondo: #eaf6ee;
       --rojo: #b3261e;
     }
     * { box-sizing: border-box; }
@@ -76,11 +77,6 @@
       color: var(--gris-texto);
       font-family: inherit;
     }
-    input[type="file"] {
-      width: 100%;
-      font-size: 15px;
-      padding: 10px 0;
-    }
     .boton-archivo {
       display: block;
       width: 100%;
@@ -94,7 +90,40 @@
       color: var(--azul);
       cursor: pointer;
     }
-    #nombreArchivoElegido {
+    #listaArchivos {
+      margin-top: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .fila-archivo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 12px;
+      background: var(--verde-fondo);
+      border-radius: 8px;
+    }
+    .nombre-archivo-item {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--verde);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .boton-quitar {
+      flex-shrink: 0;
+      background: none;
+      border: none;
+      color: var(--rojo);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 2px 4px;
+      cursor: pointer;
+    }
+    .confirmacion-enlace {
       display: block;
       margin-top: 8px;
       font-size: 14px;
@@ -200,17 +229,20 @@
           <option value="Otro">Otro</option>
         </select>
 
-        <label for="archivo">Suba su examen (foto o PDF)</label>
-        <label class="boton-archivo" for="archivo">📎 Elegir archivo</label>
-        <input type="file" id="archivo" accept="image/*,application/pdf" style="display:none">
-        <span id="nombreArchivoElegido"></span>
+        <label for="archivo">Suba sus exámenes (fotos o PDF)
+          <span class="ayuda">Puede elegir varios a la vez, o ir agregando uno por uno (máximo 8)</span>
+        </label>
+        <label class="boton-archivo" id="etiquetaBotonArchivo" for="archivo">📎 Elegir archivo(s)</label>
+        <input type="file" id="archivo" accept="image/*,application/pdf" multiple style="display:none">
+        <div id="listaArchivos"></div>
 
         <div class="separador-o">— o, si es un ultrasonido/tomografía con enlace —</div>
 
         <label for="enlace">Pegue aquí el enlace del informe
-          <span class="ayuda">Opcional. Puede subir un archivo, pegar un enlace, o ambos</span>
+          <span class="ayuda">Opcional. Puede subir archivos, pegar un enlace, o ambos</span>
         </label>
         <input type="url" id="enlace" placeholder="https://...">
+        <span id="confirmacionEnlace" class="confirmacion-enlace"></span>
 
         <div class="fila-consentimiento">
           <input type="checkbox" id="consentimiento" required>
@@ -233,19 +265,64 @@
   <script>
     var ANCHO_MAXIMO_FOTO = 1600; // px, suficiente para leer un informe sin pesar demasiado
     var CALIDAD_JPEG = 0.72;
+    var MAXIMO_ARCHIVOS = 8;
 
     var formulario = document.getElementById('formularioExamenes');
     var inputArchivo = document.getElementById('archivo');
-    var etiquetaNombreArchivo = document.getElementById('nombreArchivoElegido');
+    var etiquetaBotonArchivo = document.getElementById('etiquetaBotonArchivo');
+    var listaArchivosEl = document.getElementById('listaArchivos');
+    var inputEnlace = document.getElementById('enlace');
+    var confirmacionEnlace = document.getElementById('confirmacionEnlace');
     var botonEnviar = document.getElementById('botonEnviar');
     var mensajeError = document.getElementById('mensajeError');
 
+    var archivosSeleccionados = []; // acumula File reales entre selecciones
+
     inputArchivo.addEventListener('change', function () {
-      if (inputArchivo.files.length > 0) {
-        etiquetaNombreArchivo.textContent = '✓ ' + inputArchivo.files[0].name;
-      } else {
-        etiquetaNombreArchivo.textContent = '';
-      }
+      Array.prototype.forEach.call(inputArchivo.files, function (nuevoArchivo) {
+        if (archivosSeleccionados.length >= MAXIMO_ARCHIVOS) return;
+        var yaEstaba = archivosSeleccionados.some(function (existente) {
+          return existente.name === nuevoArchivo.name &&
+                 existente.size === nuevoArchivo.size &&
+                 existente.lastModified === nuevoArchivo.lastModified;
+        });
+        if (!yaEstaba) archivosSeleccionados.push(nuevoArchivo);
+      });
+      inputArchivo.value = ''; // permite volver a elegir el mismo botón para agregar más
+      renderizarListaArchivos();
+    });
+
+    function renderizarListaArchivos() {
+      listaArchivosEl.innerHTML = '';
+      archivosSeleccionados.forEach(function (archivo, indice) {
+        var fila = document.createElement('div');
+        fila.className = 'fila-archivo';
+
+        var nombre = document.createElement('span');
+        nombre.className = 'nombre-archivo-item';
+        nombre.textContent = '✓ ' + archivo.name;
+
+        var quitar = document.createElement('button');
+        quitar.type = 'button';
+        quitar.className = 'boton-quitar';
+        quitar.textContent = 'Quitar';
+        quitar.addEventListener('click', function () {
+          archivosSeleccionados.splice(indice, 1);
+          renderizarListaArchivos();
+        });
+
+        fila.appendChild(nombre);
+        fila.appendChild(quitar);
+        listaArchivosEl.appendChild(fila);
+      });
+
+      etiquetaBotonArchivo.textContent = archivosSeleccionados.length > 0
+        ? '+ Agregar otro archivo'
+        : '📎 Elegir archivo(s)';
+    }
+
+    inputEnlace.addEventListener('input', function () {
+      confirmacionEnlace.textContent = inputEnlace.value.trim() ? '✓ Enlace agregado' : '';
     });
 
     formulario.addEventListener('submit', function (evento) {
@@ -255,9 +332,8 @@
       var nombrePaciente = document.getElementById('nombrePaciente').value.trim();
       var fechaCita = document.getElementById('fechaCita').value;
       var tipoExamen = document.getElementById('tipoExamen').value;
-      var enlace = document.getElementById('enlace').value.trim();
+      var enlace = inputEnlace.value.trim();
       var consentimiento = document.getElementById('consentimiento').checked;
-      var archivo = inputArchivo.files[0] || null;
 
       if (!nombrePaciente || !fechaCita || !tipoExamen) {
         mostrarError('Por favor complete nombre, fecha de la cita y tipo de examen.');
@@ -267,14 +343,14 @@
         mostrarError('Debe aceptar el uso de su información para continuar.');
         return;
       }
-      if (!archivo && !enlace) {
-        mostrarError('Suba un archivo o pegue un enlace.');
+      if (archivosSeleccionados.length === 0 && !enlace) {
+        mostrarError('Suba al menos un archivo o pegue un enlace.');
         return;
       }
 
       deshabilitarEnvio(true);
 
-      prepararArchivo(archivo, function (archivoListo) {
+      prepararArchivos(archivosSeleccionados, function (archivosListos) {
         google.script.run
           .withSuccessHandler(function (respuesta) {
             deshabilitarEnvio(false);
@@ -294,18 +370,36 @@
             tipoExamen: tipoExamen,
             enlace: enlace,
             consentimiento: consentimiento,
-            archivo: archivoListo
+            archivos: archivosListos
           });
       }, function () {
         deshabilitarEnvio(false);
-        mostrarError('No se pudo leer el archivo seleccionado. Intente con otra foto.');
+        mostrarError('No se pudo leer uno de los archivos seleccionados. Intente de nuevo.');
       });
     });
 
     /**
+     * Procesa la lista completa de archivos elegidos, uno por uno, y
+     * entrega el arreglo final listo para enviar a procesarEnvio.
+     */
+    function prepararArchivos(archivos, todosListos, error) {
+      var resultados = [];
+      function procesarSiguiente(indice) {
+        if (indice >= archivos.length) {
+          todosListos(resultados);
+          return;
+        }
+        prepararUnArchivo(archivos[indice], function (listo) {
+          resultados.push(listo);
+          procesarSiguiente(indice + 1);
+        }, error);
+      }
+      procesarSiguiente(0);
+    }
+
+    /**
      * Si es una foto, la comprime antes de enviarla (más rápido con mala
-     * señal). Si es un PDF, se envía tal cual. Si no hay archivo, continúa
-     * sin él (el paciente solo pegó un enlace).
+     * señal). Si es un PDF, se envía tal cual.
      *
      * Algunos iPhone guardan las fotos en formato HEIC (si tienen activado
      * "Mantener original" en vez de "Automático" en Ajustes > Cámara >
@@ -313,11 +407,7 @@
      * lienzo para comprimirlo. En vez de bloquear el envío con un error,
      * si la compresión falla se manda la foto tal cual, sin comprimir.
      */
-    function prepararArchivo(archivo, listo, error) {
-      if (!archivo) {
-        listo(null);
-        return;
-      }
+    function prepararUnArchivo(archivo, listo, error) {
       if (archivo.type.indexOf('image/') !== 0) {
         enviarArchivoSinComprimir(archivo, listo, error);
         return;

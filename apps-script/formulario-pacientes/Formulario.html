@@ -65,9 +65,7 @@
       margin-top: 2px;
     }
     input[type="text"],
-    input[type="date"],
-    input[type="url"],
-    select {
+    textarea {
       width: 100%;
       padding: 14px 12px;
       font-size: 16px;
@@ -123,6 +121,11 @@
       padding: 2px 4px;
       cursor: pointer;
     }
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+      line-height: 1.4;
+    }
     .confirmacion-enlace {
       display: block;
       margin-top: 8px;
@@ -130,6 +133,7 @@
       color: var(--verde);
       font-weight: 600;
     }
+    .confirmacion-enlace.sin-enlace { color: var(--rojo); }
     .fila-consentimiento {
       display: flex;
       align-items: flex-start;
@@ -212,22 +216,9 @@
     <div class="tarjeta" id="tarjetaFormulario">
       <form id="formularioExamenes">
         <label for="nombrePaciente">Nombre completo del paciente
-          <span class="ayuda">Escríbalo igual a como aparece en su cédula</span>
+          <span class="ayuda">El nombre del paciente, no de quien envía. Escríbalo como aparece en la cédula</span>
         </label>
-        <input type="text" id="nombrePaciente" required autocomplete="name">
-
-        <label for="fechaCita">Fecha de su cita</label>
-        <input type="date" id="fechaCita" required>
-
-        <label for="tipoExamen">Tipo de examen</label>
-        <select id="tipoExamen" required>
-          <option value="" disabled selected>Seleccione una opción</option>
-          <option value="Laboratorio">Laboratorio</option>
-          <option value="Ultrasonido">Ultrasonido</option>
-          <option value="Tomografía">Tomografía</option>
-          <option value="Valoración preoperatoria">Valoración preoperatoria</option>
-          <option value="Otro">Otro</option>
-        </select>
+        <input type="text" id="nombrePaciente" required autocomplete="off">
 
         <label for="archivo">Suba sus exámenes (fotos o PDF)
           <span class="ayuda">Puede elegir varios a la vez, o ir agregando uno por uno (máximo 8)</span>
@@ -238,10 +229,10 @@
 
         <div class="separador-o">— o, si es un ultrasonido/tomografía con enlace —</div>
 
-        <label for="enlace">Pegue aquí el enlace del informe
-          <span class="ayuda">Opcional. Puede subir archivos, pegar un enlace, o ambos</span>
+        <label for="mensajeEnlaces">Pegue aquí el mensaje que le enviaron
+          <span class="ayuda">Copie el mensaje completo de WhatsApp del centro de imágenes y péguelo aquí. Si tiene varios estudios, pegue todos los mensajes, uno debajo del otro</span>
         </label>
-        <input type="url" id="enlace" placeholder="https://...">
+        <textarea id="mensajeEnlaces" maxlength="5000" placeholder="Ejemplo: Ya puede consultar los resultados de su estudio... https://..."></textarea>
         <span id="confirmacionEnlace" class="confirmacion-enlace"></span>
 
         <div class="fila-consentimiento">
@@ -271,7 +262,7 @@
     var inputArchivo = document.getElementById('archivo');
     var etiquetaBotonArchivo = document.getElementById('etiquetaBotonArchivo');
     var listaArchivosEl = document.getElementById('listaArchivos');
-    var inputEnlace = document.getElementById('enlace');
+    var cuadroMensaje = document.getElementById('mensajeEnlaces');
     var confirmacionEnlace = document.getElementById('confirmacionEnlace');
     var botonEnviar = document.getElementById('botonEnviar');
     var mensajeError = document.getElementById('mensajeError');
@@ -321,8 +312,35 @@
         : '📎 Elegir archivo(s)';
     }
 
-    inputEnlace.addEventListener('input', function () {
-      confirmacionEnlace.textContent = inputEnlace.value.trim() ? '✓ Enlace agregado' : '';
+    /**
+     * Saca todos los enlaces del texto pegado (puede ser el mensaje completo
+     * de WhatsApp del centro de imágenes, o varios mensajes seguidos).
+     * Quita la puntuación que suele quedar pegada al final del enlace y
+     * elimina repetidos.
+     */
+    function extraerEnlaces(texto) {
+      var encontrados = texto.match(/(?:https?:\/\/|www\.)[^\s<>"']+/gi) || [];
+      var unicos = [];
+      encontrados.forEach(function (enlace) {
+        enlace = enlace.replace(/[.,;:!?)\]]+$/, '');
+        if (unicos.indexOf(enlace) === -1) unicos.push(enlace);
+      });
+      return unicos;
+    }
+
+    cuadroMensaje.addEventListener('input', function () {
+      var texto = cuadroMensaje.value.trim();
+      var cantidad = extraerEnlaces(texto).length;
+      if (!texto) {
+        confirmacionEnlace.textContent = '';
+        confirmacionEnlace.className = 'confirmacion-enlace';
+      } else if (cantidad === 0) {
+        confirmacionEnlace.textContent = 'No encontramos ningún enlace en este texto';
+        confirmacionEnlace.className = 'confirmacion-enlace sin-enlace';
+      } else {
+        confirmacionEnlace.textContent = '✓ ' + cantidad + (cantidad === 1 ? ' enlace detectado' : ' enlaces detectados');
+        confirmacionEnlace.className = 'confirmacion-enlace';
+      }
     });
 
     formulario.addEventListener('submit', function (evento) {
@@ -330,21 +348,24 @@
       ocultarError();
 
       var nombrePaciente = document.getElementById('nombrePaciente').value.trim();
-      var fechaCita = document.getElementById('fechaCita').value;
-      var tipoExamen = document.getElementById('tipoExamen').value;
-      var enlace = inputEnlace.value.trim();
+      var textoMensaje = cuadroMensaje.value.trim();
+      var enlaces = extraerEnlaces(textoMensaje);
       var consentimiento = document.getElementById('consentimiento').checked;
 
-      if (!nombrePaciente || !fechaCita || !tipoExamen) {
-        mostrarError('Por favor complete nombre, fecha de la cita y tipo de examen.');
+      if (!nombrePaciente) {
+        mostrarError('Por favor escriba el nombre completo del paciente.');
         return;
       }
       if (!consentimiento) {
         mostrarError('Debe aceptar el uso de su información para continuar.');
         return;
       }
-      if (archivosSeleccionados.length === 0 && !enlace) {
-        mostrarError('Suba al menos un archivo o pegue un enlace.');
+      if (textoMensaje && enlaces.length === 0) {
+        mostrarError('El texto que pegó no trae ningún enlace. Copie el mensaje completo que le enviaron, o bórrelo si solo va a subir archivos.');
+        return;
+      }
+      if (archivosSeleccionados.length === 0 && enlaces.length === 0) {
+        mostrarError('Suba al menos un archivo o pegue el mensaje con el enlace.');
         return;
       }
 
@@ -366,9 +387,8 @@
           })
           .procesarEnvio({
             nombrePaciente: nombrePaciente,
-            fechaCita: fechaCita,
-            tipoExamen: tipoExamen,
-            enlace: enlace,
+            enlaces: enlaces,
+            textoMensaje: textoMensaje,
             consentimiento: consentimiento,
             archivos: archivosListos
           });

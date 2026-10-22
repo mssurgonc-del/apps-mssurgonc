@@ -5,17 +5,21 @@ que los pacientes usan para subir sus exámenes antes de la consulta.
 
 ## Qué hace
 
-- El paciente abre un enlace, escribe su nombre, la fecha de su cita, el
-  tipo de examen, y sube una foto/PDF o pega un enlace (o ambos).
-- El sistema busca una carpeta de paciente con un nombre parecido dentro
-  de **"14) Examenes estudios y biopsias de pacientes"**. Si encuentra una
-  coincidencia alta, el archivo cae ahí. Si no, cae en la bandeja
-  **"13) Archivos sincronizados desde el Telefono"** con el prefijo
-  `⚠️ SIN EMPAREJAR -`, y la tarea programada "Ordenar archivos de
-  pacientes en Drive" lo abre, identifica al paciente y lo archiva.
+- El paciente abre un enlace y escribe solo su nombre. Luego sube fotos o
+  PDF (hasta 8) y/o pega el mensaje de WhatsApp del centro de imágenes con
+  uno o varios enlaces. El formulario detecta los enlaces solo y muestra
+  "✓ 2 enlaces detectados".
+- Todo cae en la bandeja **"13) Archivos sincronizados desde el Telefono"**
+  con el prefijo `CARGA PACIENTE - <nombre> - <fecha y hora>`. La tarea
+  programada "Ordenar archivos de pacientes en Drive" lo abre, saca del
+  documento el paciente, el tipo de estudio y la fecha, y lo archiva en la
+  carpeta del paciente. Por eso no se le pide al paciente ni la fecha de
+  la cita ni el tipo de examen.
+- Los enlaces se guardan en un `.txt` junto con el mensaje que pegó el
+  paciente. Nadie abre los enlaces automáticamente.
 - Cada envío queda registrado en una hoja de cálculo llamada
   **"Registro de cargas - Formulario de exámenes"**, que el script crea
-  solo la primera vez que alguien envía el formulario.
+  la primera vez que alguien envía el formulario.
 - Las fotos se comprimen en el navegador del paciente antes de subirse
   (igual funciona con mala señal).
 
@@ -61,10 +65,9 @@ Abre tú mismo esa URL desde tu celular, llena el formulario con un caso
 de prueba (puedes usar tu propio nombre) y confirma que:
 
 - te aparece la pantalla de "¡Recibido, gracias!",
-- el archivo aparece en Drive (en tu carpeta si tu nombre no coincide con
-  ningún paciente, caerá en "13) Archivos sincronizados desde el
-  Telefono" con el prefijo de
-  "sin emparejar" — es lo esperado),
+- el archivo aparece en "13) Archivos sincronizados desde el Telefono"
+  con el prefijo `CARGA PACIENTE -`, y en la siguiente corrida de la tarea
+  programada pasa a la carpeta del paciente (o a "Por organizar"),
 - se creó la hoja "Registro de cargas - Formulario de exámenes" en tu
   Drive con esa fila.
 

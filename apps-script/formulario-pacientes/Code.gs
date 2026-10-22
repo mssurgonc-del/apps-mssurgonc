@@ -4,8 +4,9 @@
  * Paso 1 (base del proyecto) + Paso 2 (formulario de carga) del plan de
  * construcción. El paciente abre el enlace, sube un archivo o pega un
  * enlace (ultrasonido/tomografía), y el archivo cae en su carpeta de
- * Drive si el nombre coincide, o en "14) Examenes.../00 Por identificar"
- * si no.
+ * Drive si el nombre coincide, o en la bandeja "13) Archivos sincronizados
+ * desde el Telefono" si no, donde la tarea programada "Ordenar archivos de
+ * pacientes en Drive" lo lee y lo archiva.
  *
  * Cada envío queda registrado en una hoja de cálculo ("Registro de cargas
  * - Formulario de exámenes") que este script crea solo la primera vez
@@ -20,12 +21,12 @@
 // subcarpeta por paciente (ej. "Ordoñez Romero, María Leticia").
 var ROOT_EXAMENES_FOLDER_ID = '1xJHfrtHYutOEf7JM9o7L0tpxvoA_RgWA';
 
-// "14) Examenes.../00 Por identificar" — carpeta de respaldo para lo que
-// no se pueda emparejar con ningún paciente. Es la misma que usa la rutina
-// automática de organización, así que todo lo pendiente queda en un solo
-// lugar. (Antes apuntaba a "(00) estudios por ver", que resultó ser una
-// carpeta vieja de 2023-2025 que ya no se usa.)
-var POR_REVISAR_FOLDER_ID = '1FlvoQ4z-PIOgkZTRRbwhzqGkH2zgtYPF';
+// "13) Archivos sincronizados desde el Telefono" — bandeja de entrada que
+// la tarea programada "Ordenar archivos de pacientes en Drive" revisa
+// varias veces al día. Lo que el formulario no puede emparejar por nombre
+// cae aquí, y la tarea lo abre, identifica al paciente leyendo el
+// documento y lo archiva (o lo deja en su carpeta "Por organizar").
+var POR_REVISAR_FOLDER_ID = '1_27Hmo5iySiEUz-UlhFIBoyQ5FysmG-Y';
 
 var TIPOS_EXAMEN_VALIDOS = [
   'Laboratorio',

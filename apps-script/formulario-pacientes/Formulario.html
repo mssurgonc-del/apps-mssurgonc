@@ -306,6 +306,12 @@
      * Si es una foto, la comprime antes de enviarla (más rápido con mala
      * señal). Si es un PDF, se envía tal cual. Si no hay archivo, continúa
      * sin él (el paciente solo pegó un enlace).
+     *
+     * Algunos iPhone guardan las fotos en formato HEIC (si tienen activado
+     * "Mantener original" en vez de "Automático" en Ajustes > Cámara >
+     * Formatos). Varios navegadores no pueden dibujar ese formato en un
+     * lienzo para comprimirlo. En vez de bloquear el envío con un error,
+     * si la compresión falla se manda la foto tal cual, sin comprimir.
      */
     function prepararArchivo(archivo, listo, error) {
       if (!archivo) {
@@ -313,16 +319,7 @@
         return;
       }
       if (archivo.type.indexOf('image/') !== 0) {
-        var lectorPdf = new FileReader();
-        lectorPdf.onload = function () {
-          listo({
-            base64: lectorPdf.result.split(',')[1],
-            nombre: archivo.name,
-            tipoMime: archivo.type || 'application/pdf'
-          });
-        };
-        lectorPdf.onerror = error;
-        lectorPdf.readAsDataURL(archivo);
+        enviarArchivoSinComprimir(archivo, listo, error);
         return;
       }
 
@@ -330,24 +327,47 @@
       lectorImagen.onload = function () {
         var imagen = new Image();
         imagen.onload = function () {
-          var escala = Math.min(1, ANCHO_MAXIMO_FOTO / imagen.width);
-          var lienzo = document.createElement('canvas');
-          lienzo.width = Math.round(imagen.width * escala);
-          lienzo.height = Math.round(imagen.height * escala);
-          var contexto = lienzo.getContext('2d');
-          contexto.drawImage(imagen, 0, 0, lienzo.width, lienzo.height);
-          var dataUrlComprimido = lienzo.toDataURL('image/jpeg', CALIDAD_JPEG);
-          listo({
-            base64: dataUrlComprimido.split(',')[1],
-            nombre: archivo.name.replace(/\.[^.]+$/, '') + '.jpg',
-            tipoMime: 'image/jpeg'
-          });
+          try {
+            var escala = Math.min(1, ANCHO_MAXIMO_FOTO / imagen.width);
+            var lienzo = document.createElement('canvas');
+            lienzo.width = Math.round(imagen.width * escala);
+            lienzo.height = Math.round(imagen.height * escala);
+            var contexto = lienzo.getContext('2d');
+            contexto.drawImage(imagen, 0, 0, lienzo.width, lienzo.height);
+            var dataUrlComprimido = lienzo.toDataURL('image/jpeg', CALIDAD_JPEG);
+            listo({
+              base64: dataUrlComprimido.split(',')[1],
+              nombre: archivo.name.replace(/\.[^.]+$/, '') + '.jpg',
+              tipoMime: 'image/jpeg'
+            });
+          } catch (e) {
+            // El navegador no pudo comprimir esta imagen (ej. HEIC sin
+            // soporte). Se manda la foto original, sin comprimir.
+            enviarArchivoSinComprimir(archivo, listo, error);
+          }
         };
-        imagen.onerror = error;
+        // El navegador no pudo ni siquiera decodificar la imagen para
+        // mostrarla: mismo respaldo, mandarla sin comprimir.
+        imagen.onerror = function () {
+          enviarArchivoSinComprimir(archivo, listo, error);
+        };
         imagen.src = lectorImagen.result;
       };
       lectorImagen.onerror = error;
       lectorImagen.readAsDataURL(archivo);
+    }
+
+    function enviarArchivoSinComprimir(archivo, listo, error) {
+      var lector = new FileReader();
+      lector.onload = function () {
+        listo({
+          base64: lector.result.split(',')[1],
+          nombre: archivo.name,
+          tipoMime: archivo.type || 'application/octet-stream'
+        });
+      };
+      lector.onerror = error;
+      lector.readAsDataURL(archivo);
     }
 
     function mostrarError(texto) {

@@ -24,3 +24,19 @@ misma bandeja lo que no puede emparejar por nombre.
 
 Las instrucciones completas de la tarea viven en la propia tarea, no en
 este repositorio.
+
+## Nombres de estudios de imagen (desde el 22 de octubre de 2026)
+
+El detalle de "Imagen" empieza siempre por la modalidad abreviada, de una
+lista fija: `US`, `TC`, `RM`, `PET-CT`, `Rx`, `Mamografía`, `Gammagrafía`,
+`Endoscopía`, `Biopsia guiada por US`, `Biopsia guiada por TC`. Luego la
+región y, si se sabe, el centro entre paréntesis. Sin hallazgos en el nombre.
+
+- `2026-10-15 Imagen — TC tórax-abdomen-pelvis (Oncorad).pdf`
+- `2026-10-16 Imagen — enlace Rx tórax PA (Oncorad).txt`
+
+## Pendiente
+
+- Renombrar los archivos de imagen viejos al formato nuevo. Hay un
+  recordatorio programado para el 30 de octubre de 2026; se hace solo con
+  confirmación del Dr. Salinas.

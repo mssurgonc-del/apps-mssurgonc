@@ -23,6 +23,15 @@ que los pacientes usan para subir sus exámenes antes de la consulta.
   la primera vez que alguien envía el formulario.
 - Las fotos se comprimen en el navegador del paciente antes de subirse
   (igual funciona con mala señal).
+- Los enlaces de Oncorad (evacenter) además se anotan en la hoja
+  **"Enlaces pendientes"** del mismo libro. La tarea programada "Mensajero de
+  informes en línea" los recoge, baja el PDF original del informe y lo
+  entrega por la "puerta" de este script (`doPost`), que lo deja en la
+  bandeja como `EXAMEN DE PACIENTE - <nombre> - <fecha> - Informe del
+  enlace.pdf`. La puerta pide una clave secreta, solo acepta PDF o JPG de
+  hasta 15 MB y solo puede guardar en la bandeja: no lee, mueve ni borra
+  nada. En la hoja se ve el estado de cada enlace (pendiente, listo o
+  falló tras 3 intentos).
 
 ## Por qué no lo publiqué yo mismo
 
@@ -46,6 +55,12 @@ pasos exactos abajo — son 10 minutos, una sola vez.
 5. En el menú **Ver → Mostrar archivo de manifiesto "appsscript.json"**,
    reemplaza su contenido por el de **`appsscript.json`** de esta carpeta.
 6. Guarda el proyecto (ícono de disquete o Ctrl/Cmd+S).
+6b. **Crear la clave del mensajero (una sola vez).** Arriba, en la lista de
+   funciones (al lado de "Depurar"), elige **`crearClaveMensajero`** y haz
+   clic en **Ejecutar**. Google te pedirá autorizar (ver paso 8). Abajo se
+   abre el "Registro de ejecución" con una línea
+   `Clave del mensajero: …`. Copia esa clave: se la pasas a Claude para la
+   tarea "Mensajero de informes en línea".
 7. Arriba a la derecha, haz clic en **Implementar → Nueva implementación**.
    - Tipo: **Aplicación web**.
    - Ejecutar como: **Yo (tu correo)**.

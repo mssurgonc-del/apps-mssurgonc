@@ -61,6 +61,27 @@ PROXY_CA_SPKI=$SPKI NODE_PATH=$(npm root -g) node rutinas/oncorad/bajar_informe.
 Si Oncorad cambia su visor, el script deja de encontrar el PDF y cae a la
 captura.
 
+### Mensajero de informes en línea
+
+`oncorad/mensajero.js` es lo que corre la tarea programada del mensajero
+(Haiku, en el entorno que tiene habilitado evacenter). Pide a la puerta del
+Apps Script del formulario los enlaces pendientes, baja cada informe y se
+lo entrega a la puerta, que lo deja en la bandeja de entrada. La tarea
+"Ordenar archivos de pacientes en Drive" lo archiva después como cualquier
+otro `EXAMEN DE PACIENTE - …`.
+
+- Sin PDF, guarda una captura JPG solo si la página muestra un informe; la
+  pantalla de error del visor cuenta como falla.
+- Cada enlace se intenta hasta 3 corridas; después queda como "falló" en
+  la hoja "Enlaces pendientes" y el `.txt` con el enlace sigue en la
+  carpeta del paciente.
+- Necesita, además de los dominios de evacenter, `script.google.com` y
+  `script.googleusercontent.com`.
+
+```sh
+PUERTA_URL='<url /exec del Apps Script>' PUERTA_CLAVE='<clave>' node rutinas/oncorad/mensajero.js
+```
+
 ## Pendiente
 
 - Renombrar los archivos de imagen viejos al formato nuevo. Hay un

@@ -31,6 +31,20 @@ Arancel en `/arancel-redhsa/`).
 La app es una PWA: desde el móvil, «Añadir a pantalla de inicio» la instala y funciona sin conexión.
 No envía datos a ningún servidor; todo se calcula en el navegador.
 
+## Constancias
+
+- Archivo único: `constancias/index.html` (PDF con jsPDF en el propio equipo).
+- Google: solo el permiso `drive.file`. La hoja de pacientes se elige con el selector de Google (⚙ Google), así que la app
+  solo ve esa hoja y los archivos que ella crea; el ID de la hoja no está en el código. La pestaña de pacientes es la del
+  año en curso si existe.
+- Requisitos en Google Cloud Console: habilitar *Google Picker API*, crear una clave de API restringida a esa API y a
+  `https://apps-mssurgonc.vercel.app/*` (se pega en ⚙ Google), y agregar `https://apps-mssurgonc.vercel.app` como
+  *Authorized JavaScript origin* del ID de cliente OAuth.
+- Consentimientos informados: los 11 documentos de octubre 2026 están en `constancias/consentimientos/*.md`.
+  Al cambiar uno, correr `python3 constancias/consentimientos/build.py`, que regenera el bloque `CONSENT_DOCS` del
+  `index.html` sin tocar el texto (solo convierte los espacios en blanco en campos).
+- Pruebas: `constancias/tests/consentimientos.cjs` y `constancias/tests/google.cjs` (ver encabezado de cada archivo).
+
 ## Alta Quirúrgica: cifrado y sincronización
 
 - Archivo único: `alta-quirurgica/index.html` (HTML + JS sin compilación).

@@ -27,6 +27,10 @@ ok((await pg.textContent('body')).includes('Componente agresivo 10–29 % (Hobna
 await pg.evaluate(()=>{ navigator.clipboard.writeText=async t=>{window.__nota=t}; });
 await pg.click('button:has-text("Copiar nota")'); await pg.waitForTimeout(150);
 ok((await pg.evaluate(()=>window.__nota||'')).includes('Componente agresivo 10–29 %'),'la nota copiada incluye el aviso');
+await pg.evaluate(()=>{ window.__nota=''; });
+await pg.locator('button.bg-emerald-700').first().click(); await pg.waitForTimeout(150);
+{const [h,r]=(await pg.evaluate(()=>window.__nota||'')).split('\n').map(l=>l.split('\t')); const i=h.indexOf('Pct_Componente_Agresivo');
+ok(i===h.indexOf('Componentes_Coexistentes')+1 && r[i]==='10–29 %' && r[i-1].endsWith('Hobnail (Tachuela)') && !r[i-1].includes('%') && h.length===r.length,'Excel: columna Pct_Componente_Agresivo junto a componentes ('+r[i]+')');}
 await pg.click('button[aria-pressed]:has-text("≥ 30 %")'); await pg.click('button:has-text("como histología principal")'); await pg.waitForTimeout(100);
 ok((await pg.textContent('#resultados')).match(/INTERMEDIO|ALTO/i) && !(await pg.isVisible('[data-testid=faltan] button:has-text("% del componente")')),'≥30 %: pasa hobnail a histología principal y sube el riesgo');
 await pg.click('button:has-text("PTC Clásico")'); await pg.waitForTimeout(100);

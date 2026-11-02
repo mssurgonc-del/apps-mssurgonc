@@ -300,10 +300,10 @@ export default function App() {
       out += `• Indicación: ${postopRes.rai.rec}\n`;
       out += `• Actividad sugerida: ${postopRes.rai.act}\n`;
       out += `• Objetivo: ${postopRes.rai.goal}\n`;
-      if (!postopRes.isNIFTP) out += `• Preparación y Rastreo: Estímulo preferido con rhTSH (meta TSH >30 µUI/mL, R34) y dieta baja en yodo por 1-2 semanas (R35). Realizar Rastreo Corporal Post-Terapia (RxWBS ± SPECT/CT) a los 2–10 días de la dosis (R37, R38).\n`;
+      if (!postopRes.isNIFTP) out += `• Preparación y Rastreo: Estímulo preferido con rhTSH (meta TSH >30 mIU/L, R34) y dieta baja en yodo por 1-2 semanas (R35). Realizar Rastreo Corporal Post-Terapia (RxWBS ± SPECT/CT) a los 2–10 días de la dosis (R37, R38).\n`;
       out += `\n`;
       out += `3. EVALUACIÓN DINÁMICA Y VIGILANCIA [R45–R48]:\n`;
-      out += `• Laboratorios registrados: TSH: ${dynamic.tshExact || 'N/D'} µUI/mL | Tg basal: ${dynamic.tgBasal || 'N/D'} ng/mL | Tg estim: ${dynamic.tgStim || 'N/D'} ng/mL | TgAb: ${dynamic.tgAbExact || 'N/D'} UI/mL (${dynamic.tgAb})\n`;
+      out += `• Laboratorios registrados: TSH: ${dynamic.tshExact || 'N/D'} mIU/L | Tg basal: ${dynamic.tgBasal || 'N/D'} ng/mL | Tg estim: ${dynamic.tgStim || 'N/D'} ng/mL | TgAb: ${dynamic.tgAbExact || 'N/D'} IU/mL (${dynamic.tgAb})\n`;
       out += `• Categoría de Respuesta: ${dynRes.cat}\n`;
       out += `• Riesgo Residual Re-estimado: ${dynRes.residualRisk}\n`;
       out += `• Meta de TSH: ${dynRes.tshGoal}\n`;
@@ -348,8 +348,8 @@ export default function App() {
         'Tamano', 'ETE', 'Estadio_pT', 'Margenes', 'Invasion_Vascular', 'Focalidad',
         'Ganglios_N', 'LNR_Alto', 'Metastasis_M', 'Molecular', 'Componentes_Coexistentes', 'Riesgo_ATA2025',
         'Porcentaje_Recurrencia', 'Estadio_AJCC8', 'Ind_RAI', 'Dosis_RAI',
-        'Tipo_Cirugia_Seg', 'TSH_Exacta_uUImL', 'Tg_Basal_ngmL', 'Tg_Estim_ngmL',
-        'TgAb_Exacto_UImL', 'Tendencia_TgAb', 'Imagen_Seg', 'Respuesta_Dinamica',
+        'Tipo_Cirugia_Seg', 'TSH_Exacta_mIUL', 'Tg_Basal_ngmL', 'Tg_Estim_ngmL',
+        'TgAb_Exacto_IUmL', 'Tendencia_TgAb', 'Imagen_Seg', 'Respuesta_Dinamica',
         'Riesgo_Residual'
       ];
       const row = [
@@ -1018,7 +1018,7 @@ export default function App() {
                     <div className="grid sm:grid-cols-2 gap-4">
                       {/* TSH */}
                       <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">TSH Sérica (µUI/mL = mUI/L)</label>
+                        <label className="block text-xs font-black text-slate-700 uppercase">TSH Sérica (mIU/L)</label>
                         <input
                           type="number"
                           inputMode="decimal"
@@ -1074,7 +1074,7 @@ export default function App() {
 
                       {/* TgAb Exacto */}
                       <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">Anticuerpos Anti-Tg (TgAb) (UI/mL)</label>
+                        <label className="block text-xs font-black text-slate-700 uppercase">Anticuerpos Anti-Tg (TgAb) (IU/mL)</label>
                         <input
                           type="number"
                           inputMode="decimal"

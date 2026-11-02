@@ -22,6 +22,8 @@ export const A_MANO = {
 
 const esFolicular = histo => ['foll', 'otc'].includes(HISTO_OPTIONS.find(h => h.id === histo)?.group);
 const esNIFTP = histo => HISTO_OPTIONS.find(h => h.id === histo)?.group === 'benign_pot';
+const grupo = id => HISTO_OPTIONS.find(h => h.id === id)?.group;
+const tieneAgresivoCoexistente = p => grupo(p.histo) === 'ptc_low' && (p.coexist || []).some(id => grupo(id) === 'ptc_agg');
 const lleno = v => String(v ?? '').trim() !== '';
 
 // Campos que hay que confirmar en cada pestaña. «cuando» limita el campo a los casos en que aplica;
@@ -31,6 +33,7 @@ export const CAMPOS = {
     { k: 'ageGroup', l: 'Edad' },
     { k: 'histo', l: 'Subtipo histológico' },
     { k: 'follPattern', l: 'Patrón de invasión', cuando: s => esFolicular(s.postop.histo) },
+    { k: 'aggPct', l: '% del componente agresivo', cuando: s => tieneAgresivoCoexistente(s.postop) },
     { k: 'size', l: 'Tamaño', cuando: s => !esNIFTP(s.postop.histo) },
     { k: 'ete', l: 'Extensión extratiroidea', cuando: s => !esNIFTP(s.postop.histo) },
     { k: 'nodes', l: 'Ganglios (N)', cuando: s => !esNIFTP(s.postop.histo) },

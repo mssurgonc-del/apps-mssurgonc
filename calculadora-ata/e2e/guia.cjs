@@ -12,13 +12,24 @@ const n=async()=>pg.$$eval('[data-testid=faltan] button',e=>e.length).catch(()=>
 ok(await n()===10,'patología: faltan 10 datos al inicio ('+await n()+')');
 await pg.click('button:has-text("< 55 años")'); await pg.waitForTimeout(100);
 ok(await n()===9,'tocar la edad la confirma');
-await pg.click('button[aria-pressed]:has-text("Células Altas")').catch(()=>{});
 await pg.locator('[data-campo="-"] button').first().click(); await pg.waitForTimeout(100);
 ok(await n()===9,'componentes coexistentes (opcional) no confirman la histología');
 await pg.locator('button[data-no-campo][aria-label^="Qué significa"]').first().click(); await pg.waitForTimeout(100);
 ok(await n()===9,'abrir una explicación (i) no confirma nada');
 await pg.click('button:has-text("PTC Clásico")'); await pg.waitForTimeout(100);
 ok(await n()===8,'histología confirmada');
+// componente agresivo coexistente con su %
+await pg.click('[data-campo="-"] button:has-text("Hobnail")'); await pg.waitForTimeout(100);
+ok(await n()===9 && await pg.isVisible('[data-testid=faltan] button:has-text("% del componente agresivo")'),'al marcar hobnail coexistente pide su %');
+await pg.click('button[aria-pressed]:has-text("10 – 29 %")'); await pg.waitForTimeout(100);
+ok(await n()===8,'elegir el % lo confirma');
+ok((await pg.textContent('body')).includes('Componente agresivo 10–29 % (Hobnail'),'el resultado muestra el aviso de 10–29 %');
+await pg.evaluate(()=>{ navigator.clipboard.writeText=async t=>{window.__nota=t}; });
+await pg.click('button:has-text("Copiar nota")'); await pg.waitForTimeout(150);
+ok((await pg.evaluate(()=>window.__nota||'')).includes('Componente agresivo 10–29 %'),'la nota copiada incluye el aviso');
+await pg.click('button[aria-pressed]:has-text("≥ 30 %")'); await pg.click('button:has-text("como histología principal")'); await pg.waitForTimeout(100);
+ok((await pg.textContent('#resultados')).match(/INTERMEDIO|ALTO/i) && !(await pg.isVisible('[data-testid=faltan] button:has-text("% del componente")')),'≥30 %: pasa hobnail a histología principal y sube el riesgo');
+await pg.click('button:has-text("PTC Clásico")'); await pg.waitForTimeout(100);
 ok((await pg.textContent('[data-testid=barra-faltan]')).includes('Faltan 8 datos'),'la barra de resultado avisa que es provisional');
 await pg.click('[data-testid=faltan] button:has-text("Ganglios (N)")'); await pg.waitForTimeout(300);
 ok(await pg.$eval('[data-campo="nodes"]',e=>e.classList.contains('campo-resaltado')),'tocar un dato faltante lleva a él y lo resalta');

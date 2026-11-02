@@ -126,6 +126,18 @@ export function evaluatePostop(p) {
   const lowInt = [];
   const warnings = [];
 
+  // Componente agresivo coexistente en un PTC no agresivo: el % lo informa patología. No cambia el riesgo ATA
+  // (que exige el subtipo según OMS 2022), pero ≥10 % se asocia a peor evolución en cohortes.
+  const aggCoexist = histObj.group === 'ptc_low'
+    ? (p.coexist || []).map(id => HISTO_OPTIONS.find(h => h.id === id)).filter(h => h?.group === 'ptc_agg')
+    : [];
+  if (aggCoexist.length) {
+    const nombres = aggCoexist.map(h => h.label).join(', ');
+    if (p.aggPct === 'lt10') warnings.push(`Componente agresivo < 10 % (${nombres}): sin impacto pronóstico demostrado; se documenta y no modifica el riesgo ATA.`);
+    if (p.aggPct === '10to29') warnings.push(`Componente agresivo 10–29 % (${nombres}): no alcanza el subtipo OMS 2022, pero en cohortes ≥10 % ya se asocia a peor evolución (células altas: Bongers 2019, HR 2.3 de persistencia/recurrencia; Beninato 2013, más ETE, invasión angiolinfática y N1). El riesgo ATA calculado no lo incluye: valorar con juicio clínico tratarlo como un factor de mayor riesgo.`);
+    if (p.aggPct === 'gte30') warnings.push(`Componente agresivo ≥ 30 % (${nombres}): si cumple el umbral OMS 2022 (células altas o hobnail ≥ 30 %; sólido/trabecular > 50 %), selecciónelo como histología principal para que el riesgo ATA lo incluya.`);
+  }
+
   // Validación de coherencia anatomopatológica en FTC / OTC
   if (isFoll) {
     if (p.follPattern === 'mi' && p.vi !== 'none') {
@@ -445,6 +457,7 @@ export const INITIAL_POSTOP = {
     metastasis: 'm0', // 'm0' | 'm1'
     mol: 'none', // 'none' | 'braf' | 'tert_combo'
     coexist: [], // subtipos de PTC coexistentes: solo documentación, no entra al cálculo
+    aggPct: 'none', // % del componente agresivo coexistente: 'none' | 'lt10' | '10to29' | 'gte30'
   };
 export const INITIAL_DYNAMIC = {
     surgeryType: 'tt_rai', // 'tt_rai' | 'tt_norai' | 'hemi'

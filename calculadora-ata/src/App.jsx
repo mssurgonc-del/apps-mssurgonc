@@ -347,7 +347,7 @@ export default function App() {
       const headers = [
         'Fecha', 'ID_Paciente', 'Grupo_Edad', 'Histologia_OMS2025', 'Patron_Folicular',
         'Tamano', 'ETE', 'Estadio_pT', 'Margenes', 'Invasion_Vascular', 'Focalidad',
-        'Ganglios_N', 'LNR_Alto', 'Metastasis_M', 'Molecular', 'Componentes_Coexistentes', 'Riesgo_ATA2025',
+        'Ganglios_N', 'LNR_Alto', 'Metastasis_M', 'Molecular', 'Componentes_Coexistentes', 'Pct_Componente_Agresivo', 'Riesgo_ATA2025',
         'Porcentaje_Recurrencia', 'Estadio_AJCC8', 'Ind_RAI', 'Dosis_RAI',
         'Tipo_Cirugia_Seg', 'TSH_Exacta_mIUL', 'Tg_Basal_ngmL', 'Tg_Estim_ngmL',
         'TgAb_Exacto_IUmL', 'Tendencia_TgAb', 'Imagen_Seg', 'Respuesta_Dinamica',
@@ -369,7 +369,8 @@ export default function App() {
         postop.lnrHigh ? 'Si' : 'No',
         postop.metastasis,
         postop.mol,
-        isPTCMain && coexistLabels.length ? coexistLabels.join(' + ') : 'Ninguno',
+        isPTCMain && postop.coexist.length ? postop.coexist.map(id => HISTO_OPTIONS.find(h => h.id === id)?.label).filter(Boolean).join(' + ') : 'Ninguno',
+        aggCoexist.length ? (AGG_PCT_TXT[postop.aggPct] || 'No reportado') : 'ND',
         postopRes.label,
         postopRes.pct,
         postopRes.ajccStage,

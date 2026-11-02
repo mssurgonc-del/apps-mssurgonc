@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 
-// base relativa: funciona en GitHub Pages (subcarpeta) y en cualquier hosting estático
+// base relativa: funciona en una subcarpeta (Vercel) y en cualquier hosting estático
 export default defineConfig({
   base: './',
   plugins: [

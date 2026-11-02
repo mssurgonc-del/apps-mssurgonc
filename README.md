@@ -19,13 +19,14 @@ npm test         # 65 casos de referencia del motor clínico (src/logic.test.js)
 ```
 
 La lógica clínica vive en `src/logic.js`, separada de la interfaz. Las pruebas corren en cada push
-(`.github/workflows/tests.yml`) y el despliegue a Pages se detiene si alguna falla.
+(`.github/workflows/tests.yml`); Vercel también las corre al publicar y no publica si alguna falla.
 
 ## Publicación
 
-`.github/workflows/deploy-pages.yml` construye y publica en GitHub Pages en cada push a `main`
-(requiere *Settings → Pages → Source: GitHub Actions*). URL esperada:
-`https://mssurgonc-del.github.io/apps-mssurgonc/calculadora-ata/`
+Vercel publica en cada push a `main` (proyecto `apps-mssurgonc`; el repositorio sigue privado).
+`vercel.json` corre `scripts/build-site.sh`, que arma el sitio en `site/`. URL:
+`https://apps-mssurgonc.vercel.app/` (calculadora en `/calculadora-ata/`, Alta en `/alta-quirurgica/`,
+Arancel en `/arancel-redhsa/`).
 
 La app es una PWA: desde el móvil, «Añadir a pantalla de inicio» la instala y funciona sin conexión.
 No envía datos a ningún servidor; todo se calcula en el navegador.
@@ -41,7 +42,7 @@ No envía datos a ningún servidor; todo se calcula en el navegador.
   clave de sincronización (PBKDF2-SHA256, 600 000 iteraciones) que se escribe una vez por dispositivo.
   Los historiales se combinan por id entre dispositivos y respetan los borrados.
 - Requisito en Google Cloud Console (proyecto del ID de cliente OAuth): agregar
-  `https://mssurgonc-del.github.io` como *Authorized JavaScript origin* y el permiso `.../auth/drive.appdata`.
+  `https://apps-mssurgonc.vercel.app` como *Authorized JavaScript origin* y el permiso `.../auth/drive.appdata`.
 - Prueba de extremo a extremo (Drive simulado): servir la carpeta con `python3 -m http.server 8765` dentro de
   `alta-quirurgica/` y correr `node tests/e2e.cjs`, `node tests/templates-preview.cjs` y
   `node tests/nuevo-paciente-layout.cjs`, `node tests/catalogo.cjs` (requieren `playwright-core` y Chromium).

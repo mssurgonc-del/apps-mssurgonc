@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Arma el sitio estático en site/ (lo usan Vercel y el workflow de GitHub Pages).
+# Arma el sitio estático en site/ (lo usa Vercel, ver vercel.json).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 (cd calculadora-ata && npm ci && npm test && npm run build)

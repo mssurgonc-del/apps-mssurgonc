@@ -1,0 +1,44 @@
+const {chromium}=require('playwright-core');
+const ok=(c,m)=>{console.log((c?'ok: ':'FAIL: ')+m); if(!c) process.exitCode=1;};
+const num=s=>parseFloat(s.replace(/[^\d.]/g,'').replace(/^\./,''));
+const F='';
+(async()=>{const b=await chromium.launch({executablePath:'/opt/pw-browsers/chromium',ignoreDefaultArgs:['--headless=old'],args:['--no-sandbox','--headless=new']});
+const pg=await (await b.newContext({viewport:{width:390,height:844}})).newPage(); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
+await pg.goto((process.env.BASE||'http://localhost:8768/')); await pg.waitForTimeout(500);
+const add=async c=>{await pg.fill('#searchInput',c); await pg.waitForTimeout(250); await pg.click(`.result-row[data-codigo="${c}"]`);};
+// anexo
+await pg.fill('#searchInput','cesárea'); await pg.waitForTimeout(250);
+ok(await pg.$$eval('.result-row',e=>e.some(x=>x.querySelector('.badge-anexo'))) && await pg.$$eval('.result-row',e=>e.some(x=>!x.querySelector('.badge-anexo'))),'filas del anexo con etiqueta, las demás sin ella');
+// paciente privado: redondeo y 1er ayudante 33%
+await add('60240'); await add('38724'); await pg.click('#cartTab'); await pg.waitForTimeout(200);
+ok(await pg.inputValue('#ayudantePct')==='33' && !(await pg.isChecked('#seguroToggle')),'privado: 1er ayudante 33 %, sin seguro');
+const cir=num(await pg.textContent('#segPacienteCirujano')), tot=num(await pg.textContent('#segTotalPaciente'));
+ok(cir%10===0 && tot%10===0,'privado: montos redondeados a la decena ('+cir+', '+tot+')');
+// seguro: 30% y exacto
+await pg.check('#seguroToggle'); await pg.waitForTimeout(150);
+ok(await pg.inputValue('#ayudantePct')==='30' && await pg.inputValue('#ayudante2Pct')==='15' && await pg.inputValue('#anestPct')==='34','con seguro: 1er ayudante 30 %, 2º ayudante 15 %, anestesiólogo 34 %');
+const cs=await pg.textContent('#segPacienteCirujano'); ok(/\.\d\d$/.test(cs) && num(cs)===13791.25,'con seguro: valor exacto sin redondear ('+cs+')');
+await pg.fill('#copagoPct','30'); await pg.waitForTimeout(150);
+// validez en el texto
+await pg.evaluate(()=>{ navigator.share=undefined; navigator.clipboard.writeText=async t=>{window.__t=t}; });
+await pg.click('#btnSharePatient'); await pg.waitForTimeout(200);
+ok((await pg.evaluate(()=>window.__t)).includes('Válido por 30 días (hasta el '),'presupuesto con validez');
+// vaciar: vuelve a privado, copago 20, ayudante 33
+await pg.click('#btnClearCart'); await pg.click('#btnClearCart'); await pg.waitForTimeout(200);
+ok(!(await pg.isChecked('#seguroToggle')) && await pg.inputValue('#copagoPct')==='20' && await pg.inputValue('#ayudantePct')==='33' && await pg.inputValue('#ayudante2Pct')==='20' && await pg.inputValue('#anestPct')==='33','vaciar: sin seguro, copago 20 %, ayudantes 33 % y 20 %, anestesiólogo 33 %');
+await pg.click('#btnCloseCart');
+// sin precio: valor manual
+await add('21089'); await add('60240'); await pg.click('#cartTab'); await pg.waitForTimeout(200);
+ok(await pg.isVisible('.manual-val'),'"Sin precio" muestra campo para escribir el valor');
+await pg.fill('.manual-val','20000'); await pg.dispatchEvent('.manual-val','change'); await pg.waitForTimeout(200);
+const base=num(await pg.textContent('#cirujanoSin')); console.log('base',base);
+ok(base===20000+16150,'privado: cada procedimiento al 100 % por defecto (L 36,150)');
+ok(await pg.$$eval('.manual-pct',e=>e.length)===2,'privado: % editable en cada procedimiento');
+await pg.fill('.manual-pct[data-id] >> nth=1','50'); await pg.dispatchEvent('.manual-pct >> nth=1','change'); await pg.waitForTimeout(200);
+ok(num(await pg.textContent('#cirujanoSin'))===20000+16150*0.5,'privado: el % escrito por el médico se aplica (L 28,075)');
+await pg.check('#seguroToggle'); await pg.waitForTimeout(150);
+ok(await pg.$$eval('.manual-pct',e=>e.length)===0 && num(await pg.textContent('#cirujanoSin'))===20000+16150*0.5,'con seguro: 100/50/25 automático, sin campos de %');
+await pg.uncheck('#seguroToggle'); await pg.waitForTimeout(150);
+await pg.reload(); await pg.waitForTimeout(500); await pg.click('#cartTab'); await pg.waitForTimeout(200);
+ok(await pg.inputValue('.manual-val')==='20000','el valor escrito se conserva');
+console.log('errors',errs); await b.close();})();

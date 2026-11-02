@@ -24,16 +24,8 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: calculadora-ata/package-lock.json
-      - name: Build calculadora-ata
-        working-directory: calculadora-ata
-        run: npm ci && npm test && npm run build
-      - name: Assemble site
-        run: |
-          mkdir -p site/calculadora-ata
-          cp -r calculadora-ata/dist/. site/calculadora-ata/
-          mkdir -p site/alta-quirurgica
-          cp alta-quirurgica/index.html site/alta-quirurgica/index.html
-          cp index.html site/index.html
+      - name: Build site
+        run: bash scripts/build-site.sh
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

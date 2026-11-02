@@ -187,7 +187,7 @@ export const RECS = {
  },
  "R34": {
   "en": "R34A: In patients with DTC in whom RAI remnant ablation or adjuvant therapy is planned, preparation with rhTSH stimulation is preferred over thyroid hormone withdrawal. (Strong recommendation, High certainty evidence) R34B: In patients with DTC of any risk level with significant comorbidity that may preclude thyroid hormone withdrawal prior to RAI administration, rhTSH preparation should be considered. (Good Practice Statement) R34C: If thyroid hormone withdrawal is planned prior to RAI therapy or diagnostic testing, LT4 should be withdrawn for 3–4 weeks. If LT4 is withdrawn for ≥4 weeks, substitution of LT4 with liothyronine (LT3) in the initial weeks should be considered. In such circumstances LT3 should be withdrawn for at least 2 weeks. Serum TSH should be measured prior to radioisotope administration to evaluate the degree of TSH elevation. (Good Practice Statement) R34D: A goal of TSH >30 mIU/L should be employed in preparation for RAI therapy or diagnostic testing. (Good Practice Statement) R34E: In patients with known distant metastases, either LT4 withdrawal or rhTSH can be used for preparation. (Conditional recommendation, Low certainty evidence)",
-  "es": "R34A: En pacientes con cáncer diferenciado en quienes se planea ablación del remanente o terapia adyuvante con I-131, se prefiere la preparación con rhTSH sobre la suspensión de la hormona tiroidea. (Recomendación fuerte, certeza alta) R34D: En la preparación para tratamiento con I-131 o estudios diagnósticos debe buscarse una TSH >30 mUI/L. (Declaración de buena práctica)"
+  "es": "R34A: En pacientes con cáncer diferenciado en quienes se planea ablación del remanente o terapia adyuvante con I-131, se prefiere la preparación con rhTSH sobre la suspensión de la hormona tiroidea. (Recomendación fuerte, certeza alta) R34D: En la preparación para tratamiento con I-131 o estudios diagnósticos debe buscarse una TSH >30 mIU/L. (Declaración de buena práctica)"
  },
  "R34A": {
   "en": "In patients with DTC in whom RAI remnant ablation or adjuvant therapy is planned, preparation with rhTSH stimulation is preferred over thyroid hormone withdrawal. (Strong recommendation, High certainty evidence)",
@@ -195,7 +195,7 @@ export const RECS = {
  },
  "R34D": {
   "en": "A goal of TSH >30 mIU/L should be employed in preparation for RAI therapy or diagnostic testing. (Good Practice Statement)",
-  "es": "En la preparación para tratamiento con I-131 o estudios diagnósticos debe buscarse una TSH >30 mUI/L. (Declaración de buena práctica)"
+  "es": "En la preparación para tratamiento con I-131 o estudios diagnósticos debe buscarse una TSH >30 mIU/L. (Declaración de buena práctica)"
  },
  "R35": {
   "en": "A low-iodine diet for approximately 1–2 weeks should be used for patients undergoing RAI remnant ablation or treatment. (Good Practice Statement)",

@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "true",
+  "buildCommand": "bash scripts/build-site.sh",
+  "outputDirectory": "site",
+  "headers": [
+    {
+      "source": "/(.*)sw.js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache"
+        }
+      ]
+    }
+  ],
+  "trailingSlash": true
+}

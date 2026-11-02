@@ -6,6 +6,7 @@ Herramientas clínicas web de cirugía oncológica.
 |---|---|---|
 | ThyroidScore Pro | `calculadora-ata/` | Estratificación de riesgo en cáncer diferenciado de tiroides: ATA 2025 (Fig. 2), AJCC 8.ª, respuesta dinámica (Tabla 9 / Fig. 6), cirugía (Tabla 5), TI-RADS (ACR 2017, JACR 2017;14:587–595) y Bethesda 2023 (vía PathologyOutlines) en pestañas propias. Exporta nota para expediente y fila TSV para Excel. |
 | Alta Quirúrgica | `alta-quirurgica/` | Receta, indicaciones de alta, órdenes de laboratorio y citas, con plantillas por cirugía y una sola ficha de paciente para las cuatro. Datos cifrados con PIN y sincronizados entre teléfono y PC vía Google Drive. |
+| Arancel REDHSA | `arancel-redhsa/` | Honorarios médico-quirúrgicos REDHSA 2014 (5,203 procedimientos, verificados contra el PDF): búsqueda, favoritos, procedimientos múltiples al 100/50/25 %, ayudantes y anestesiólogo, copago según póliza y presupuesto para enviar al paciente. Instalable y sin conexión. |
 
 ## Desarrollo local
 

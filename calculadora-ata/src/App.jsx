@@ -5,6 +5,7 @@ import {
   evaluateTirads, evaluatePostop, evaluateDynamic, evaluateSurgery, SURG_LABELS,
   INITIAL_POSTOP, INITIAL_DYNAMIC, INITIAL_SURG, INITIAL_NODULE,
 } from './logic.js';
+import { TAREAS, A_MANO, faltantes } from './guia.js';
 
 // --- ICONOS VECTORIALES INTEGRADOS (Cero dependencias externas) ---
 const IconShield = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>;
@@ -58,6 +59,7 @@ function RecTip({ code }) {
       <button
         ref={btnRef}
         type="button"
+        data-no-campo
         aria-label={`Ver recomendación ${code}`}
         aria-expanded={!!pos}
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); pos ? hide() : show(); }}
@@ -138,6 +140,7 @@ function InfoTip({ text, label }) {
       <button
         ref={btnRef}
         type="button"
+        data-no-campo
         aria-label={`Qué significa ${label}`}
         aria-expanded={!!pos}
         onClick={(e) => { e.stopPropagation(); pos ? hide() : show(); }}
@@ -173,7 +176,9 @@ export default function App() {
   const today = new Date();
   const defaultDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 
-  const [activeTab, setActiveTab] = useState('postop'); // 'postop' | 'dynamic' | 'surgery' | 'nodule'
+  const [activeTab, setActiveTab] = useState('inicio'); // 'inicio' | 'nodule' | 'bethesda' | 'surgery' | 'postop' | 'dynamic'
+  // Datos que el usuario ya confirmó tocando su sección: { 'postop.size': true, ... } (ver guia.js)
+  const [hechos, setHechos] = useState({});
   const [undoSnap, setUndoSnap] = useState(null);
   const [showStudyGuide, setShowStudyGuide] = useState(false);
   const [copyFeedback, setCopyFeedback] = useState(null);
@@ -201,13 +206,14 @@ export default function App() {
 
 
   const resetAll = () => {
-    setUndoSnap({ patientMeta, postop, dynamic, surg, nodule, activeTab });
+    setUndoSnap({ patientMeta, postop, dynamic, surg, nodule, activeTab, hechos });
     setPatientMeta({ id: '', fecha: defaultDate });
     setPostop(INITIAL_POSTOP);
     setDynamic(INITIAL_DYNAMIC);
     setSurg(INITIAL_SURG);
     setNodule(INITIAL_NODULE);
-    setActiveTab('postop');
+    setHechos({});
+    setActiveTab('inicio');
     window.scrollTo({ top: 0 });
     clearTimeout(window.__undoTimer);
     window.__undoTimer = setTimeout(() => setUndoSnap(null), 8000);
@@ -215,9 +221,33 @@ export default function App() {
   const undoReset = () => {
     if (!undoSnap) return;
     setPatientMeta(undoSnap.patientMeta); setPostop(undoSnap.postop); setDynamic(undoSnap.dynamic);
-    setSurg(undoSnap.surg); setNodule(undoSnap.nodule); setActiveTab(undoSnap.activeTab);
+    setSurg(undoSnap.surg); setNodule(undoSnap.nodule); setActiveTab(undoSnap.activeTab); setHechos(undoSnap.hechos);
     setUndoSnap(null);
   };
+
+  /* Marca como confirmado el dato cuya sección tocó el usuario: el marcador [data-campo] más cercano
+     que precede al control dentro de la columna de datos. data-campo="-" delimita zonas opcionales. */
+  const marcarCampo = (e) => {
+    const el = e.target.closest('button, input, select, label, textarea');
+    if (!el || el.closest('[data-no-campo]') || !e.currentTarget.contains(el)) return;
+    let campo = null;
+    for (const m of e.currentTarget.querySelectorAll('[data-campo]')) {
+      if (m === el || m.contains(el) || (m.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING)) campo = m.dataset.campo;
+      else break;
+    }
+    if (!campo || campo === '-') return;
+    const key = `${activeTab}.${campo}`;
+    if (!hechos[key]) setHechos(h => ({ ...h, [key]: true }));
+  };
+  const zonaDatos = { onClickCapture: marcarCampo, onChangeCapture: marcarCampo };
+  const irACampo = (k) => {
+    const el = document.querySelector(`[data-campo="${k}"]`);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    el.classList.add('campo-resaltado');
+    setTimeout(() => el.classList.remove('campo-resaltado'), 1600);
+  };
+  const elegirTarea = (tab) => { setActiveTab(tab); window.scrollTo({ top: 0 }); };
 
   const postopRes = useMemo(() => evaluatePostop(postop), [postop]);
   const surgRes = useMemo(() => evaluateSurgery(surg), [surg]);
@@ -362,6 +392,7 @@ export default function App() {
   const isPTCMain = ['ptc_low', 'ptc_agg'].includes(HISTO_OPTIONS.find(h => h.id === postop.histo)?.group);
   const curStyle = TIER_STYLES[postopRes.tier] || TIER_STYLES.low;
   const dynStyle = TIER_STYLES[dynRes.tier] || TIER_STYLES.low;
+  const faltanTab = faltantes(activeTab, { postop, dynamic, surg, nodule }, hechos).length;
   const isFollSelected = postop.histo === 'ftc' || postop.histo === 'iefvptc' || postop.histo === 'otc';
 
   return (
@@ -478,23 +509,72 @@ export default function App() {
           </div>
         )}
 
+        {/* ==================== INICIO: ¿QUÉ DESEA HACER? ==================== */}
+        {activeTab === 'inicio' && (
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-lg font-black text-slate-900 mb-1">¿Qué desea hacer?</h2>
+            <p className="text-xs text-slate-500 mb-3">Elija una opción; le diré qué datos tener a mano y cuáles faltan por llenar.</p>
+            <div className="grid gap-2">
+              {TAREAS.map(t => (
+                <button
+                  key={t.tab}
+                  onClick={() => elegirTarea(t.tab)}
+                  className="text-left bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-teal-500 hover:bg-teal-50 transition-all"
+                >
+                  <span className="block text-sm font-black text-slate-900">{t.titulo} →</span>
+                  <span className="block text-xs text-slate-500 mt-0.5">{t.sub}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ==================== GUÍA: QUÉ TENER A MANO Y QUÉ FALTA ==================== */}
+        {A_MANO[activeTab] && (() => {
+          const falta = faltantes(activeTab, { postop, dynamic, surg, nodule }, hechos);
+          return (
+            <div className="mb-4 bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 text-xs" data-testid="guia">
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-slate-600 leading-snug"><b className="text-slate-800">Tenga a mano:</b> {A_MANO[activeTab]}</p>
+                <button onClick={() => elegirTarea('inicio')} className="shrink-0 font-bold text-teal-800 underline">Cambiar</button>
+              </div>
+              {falta.length ? (
+                <div className="mt-2.5 pt-2.5 border-t border-slate-100" data-testid="faltan">
+                  <span className="font-black text-amber-800">Falta llenar ({falta.length}):</span>{' '}
+                  <span className="text-slate-500">el resultado usa valores por defecto en estos datos. Toque uno para ir a él.</span>
+                  <div className="flex flex-wrap gap-1.5 mt-1.5">
+                    {falta.map(c => (
+                      <button key={c.k} onClick={() => irACampo(c.k)} className="px-2.5 py-1 rounded-full border border-amber-300 bg-amber-50 text-amber-900 font-bold hover:bg-amber-100">
+                        {c.l}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-2.5 pt-2.5 border-t border-slate-100 font-black text-emerald-700" data-testid="completo">✓ Datos completos: el resultado corresponde a lo que usted ingresó.</div>
+              )}
+            </div>
+          );
+        })()}
+
         {/* ==================== PESTAÑA 1 y 2: FLUJO POSOPERATORIO + DINÁMICO ==================== */}
         {(activeTab === 'postop' || activeTab === 'dynamic') && (
           <div className="grid lg:grid-cols-12 gap-6 items-start">
             
             {/* COLUMNA IZQUIERDA: ENTRADA DE DATOS RÁPIDA (7 COLUMNAS) */}
-            <div className="lg:col-span-7 space-y-4">
+            <div className="lg:col-span-7 space-y-4" {...zonaDatos}>
               
               {activeTab === 'postop' ? (
                 <>
                   {/* PASO 1: EDAD E HISTOLOGÍA CON BOTONES INDIVIDUALES */}
                   <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">
+                      <h3 data-campo="ageGroup" className="text-xs font-black uppercase text-slate-500 tracking-wider">
                         1. Edad (Para AJCC 8.ª Ed. y Dosimetría R55)
                       </h3>
                       <button
-                        onClick={() => setPostop(INITIAL_POSTOP)}
+                        data-no-campo
+                        onClick={() => { setPostop(INITIAL_POSTOP); setHechos(h => Object.fromEntries(Object.entries(h).filter(([k]) => !k.startsWith('postop.')))); }}
                         className="text-xs font-bold text-slate-500 hover:text-teal-700 flex items-center gap-1"
                       >
                         <IconReset /> Reiniciar
@@ -520,7 +600,7 @@ export default function App() {
                       ))}
                     </div>
 
-                    <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                    <h3 data-campo="histo" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                       2. Subtipo Histológico Exacto (OMS 5.ª Ed.)
                     </h3>
 
@@ -607,7 +687,7 @@ export default function App() {
                     </div>
 
                     {postop.histo !== 'dhgtc_pdtc' && postop.histo !== 'niftp' && (
-                      <label className="mt-3 flex items-start gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                      <label data-campo="-" className="mt-3 flex items-start gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={postop.highGradeFeatures}
@@ -619,7 +699,7 @@ export default function App() {
                     )}
 
                     {isPTCMain && (
-                      <div className="mt-3 pt-3 border-t border-slate-100">
+                      <div data-campo="-" className="mt-3 pt-3 border-t border-slate-100">
                         <span className="text-[11px] font-black uppercase text-slate-600 block">Componentes coexistentes (opcional, solo documentación)</span>
                         <span className="text-[11px] text-slate-500 block mb-1.5 leading-snug">No modifica el riesgo calculado. Si el componente agresivo alcanza el criterio de subtipo en el informe, selecciónelo arriba como histología principal.</span>
                         <div className="flex flex-wrap gap-1.5">
@@ -643,7 +723,7 @@ export default function App() {
                     {/* Sub-selector exclusivo si elige FTC / IEFVPTC / OTC */}
                     {isFollSelected && (
                       <div className="mt-4 pt-3 border-t border-slate-200 bg-blue-50/60 p-3 rounded-xl">
-                        <label className="block text-[11px] font-black uppercase text-blue-900 mb-2">
+                        <label data-campo="follPattern" className="block text-[11px] font-black uppercase text-blue-900 mb-2">
                           Patrón de Invasión Capsular/Parenquimatosa (FTC/OTC):
                         </label>
                         <div className="grid sm:grid-cols-3 gap-2">
@@ -671,7 +751,7 @@ export default function App() {
                   <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider">3. Tamaño del Tumor Primario</h3>
+                        <h3 data-campo="size" className="text-xs font-black uppercase text-slate-500 tracking-wider">3. Tamaño del Tumor Primario</h3>
                         <span className="text-xs font-mono font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
                           Estadio derivado: p{postopRes.pT}
                         </span>
@@ -697,7 +777,7 @@ export default function App() {
                     </div>
 
                     <div>
-                      <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="ete" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                         4. Extensión Extratiroidea (ETE)
                       </h3>
                       <div className="grid sm:grid-cols-2 gap-2">
@@ -725,7 +805,7 @@ export default function App() {
                   {/* PASO 3: GANGLIOS, INVASIÓN VASCULAR, MÁRGENES Y MULTIFOCALIDAD */}
                   <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                     <div>
-                      <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="nodes" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                         5. Estado Ganglionar Cervical (N)
                       </h3>
                       <div className="grid sm:grid-cols-2 gap-2">
@@ -750,7 +830,7 @@ export default function App() {
                           </div>
                         ))}
                       </div>
-                      <label className="mt-2.5 inline-flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                      <label data-campo="-" className="mt-2.5 inline-flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={postop.lnrHigh}
@@ -763,7 +843,7 @@ export default function App() {
 
                     <div className="grid sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                       <div>
-                        <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                        <h3 data-campo="vi" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                           6. Invasión Vascular (Angioinvasión)
                         </h3>
                         <div className="flex flex-col gap-1.5">
@@ -786,7 +866,7 @@ export default function App() {
                       </div>
 
                       <div>
-                        <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                        <h3 data-campo="margins" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                           7. Márgenes Quirúrgicos (Diferenciación Anterior/Posterior)
                         </h3>
                         <div className="flex flex-col gap-1.5">
@@ -812,7 +892,7 @@ export default function App() {
 
                     <div className="grid sm:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
                       <div>
-                        <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-1.5">8. Focalidad</h3>
+                        <h3 data-campo="focality" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-1.5">8. Focalidad</h3>
                         <div className="flex flex-col gap-1.5">
                           {[
                             { v: 'uni', l: 'Unifocal' },
@@ -834,7 +914,7 @@ export default function App() {
                       </div>
 
                       <div>
-                        <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-1.5">9. Metástasis (M)</h3>
+                        <h3 data-campo="metastasis" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-1.5">9. Metástasis (M)</h3>
                         <div className="flex flex-col gap-1.5">
                           {[
                             { v: 'm0', l: 'M0 (Ausente)' },
@@ -854,7 +934,7 @@ export default function App() {
                       </div>
 
                       <div>
-                        <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-1.5">10. Molecular (R28B)</h3>
+                        <h3 data-campo="mol" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-1.5">10. Molecular (R28B)</h3>
                         <div className="flex flex-col gap-1.5">
                           {[
                             { v: 'none', l: 'No realizado / Bajo riesgo' },
@@ -881,7 +961,7 @@ export default function App() {
                 <div className="space-y-4">
                   <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div>
-                      <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="surgeryType" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                         1. Tratamiento inicial recibido (define los umbrales de respuesta)
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-2">
@@ -905,7 +985,7 @@ export default function App() {
 
                     {dynamic.surgeryType === 'hemi' && (
                       <div className="mt-4 pt-3 border-t border-slate-100">
-                        <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">Lóbulo contralateral en la ecografía</h3>
+                        <h3 data-campo="hemiLobe" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">Lóbulo contralateral en la ecografía</h3>
                         <div className="grid sm:grid-cols-2 gap-2">
                           {[
                             { v: 'normal', l: 'Normal, o nódulos benignos / de bajo riesgo' },
@@ -928,7 +1008,7 @@ export default function App() {
                   </div>
 
                   <div className="bg-white p-5 rounded-2xl border-2 border-teal-600 shadow-sm">
-                    <h3 className="text-sm font-black uppercase text-teal-900 mb-1">
+                    <h3 data-campo="tg" className="text-sm font-black uppercase text-teal-900 mb-1">
                       2. Valores de laboratorio
                     </h3>
                     <p className="text-xs text-slate-500 mb-4">
@@ -1014,7 +1094,7 @@ export default function App() {
                   {/* PARÁMETROS CLÍNICOS TABLA 9 */}
                   <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                     <div>
-                      <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="tgAb" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                         3. Tendencia de anticuerpos (TgAb)
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-2">
@@ -1037,7 +1117,7 @@ export default function App() {
                     </div>
 
                     <div>
-                      <h3 className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="imaging" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                         4. Imagen (US cervical / rastreo / TC / PET)
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-2">
@@ -1218,13 +1298,13 @@ export default function App() {
         {/* ==================== PESTAÑA 3: CIRUGÍA PREOPERATORIA (TABLA 5, R11-R25) ==================== */}
         {activeTab === 'surgery' && (
           <div className="grid lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4" {...zonaDatos}>
               <h2 className="text-base font-black text-slate-900">
                 Planificación Quirúrgica Preoperatoria y Vigilancia Activa (R11–R25)
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Estadio Clínico cT</label>
+                  <label data-campo="cT" className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Estadio Clínico cT</label>
                   <select
                     value={surg.cT}
                     onChange={(e) => setSurg({ ...surg, cT: e.target.value })}
@@ -1240,7 +1320,7 @@ export default function App() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 mb-1.5">
-                    <label className="block text-xs font-bold uppercase text-slate-500">Ganglios Clínicos (cN)</label>
+                    <label data-campo="cN" className="block text-xs font-bold uppercase text-slate-500">Ganglios Clínicos (cN)</label>
                     <InfoTip text={TIP_N1A + ' ' + TIP_N1B} label="cN1a y cN1b" />
                   </div>
                   <select
@@ -1254,7 +1334,7 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Metástasis a Distancia (cM)</label>
+                  <label data-campo="cM" className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Metástasis a Distancia (cM)</label>
                   <select
                     value={surg.cM}
                     onChange={(e) => setSurg({ ...surg, cM: e.target.value })}
@@ -1265,7 +1345,7 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Lateralidad / Lóbulo Contralateral</label>
+                  <label data-campo="laterality" className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Lateralidad / Lóbulo Contralateral</label>
                   <select
                     value={surg.laterality}
                     onChange={(e) => setSurg({ ...surg, laterality: e.target.value })}
@@ -1277,7 +1357,7 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Relación con Cápsula Posterior / Tráquea</label>
+                  <label data-campo="posteriorAbutment" className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Relación con Cápsula Posterior / Tráquea</label>
                   <select
                     value={surg.posteriorAbutment}
                     onChange={(e) => setSurg({ ...surg, posteriorAbutment: e.target.value })}
@@ -1321,7 +1401,7 @@ export default function App() {
         {/* ==================== PESTAÑA 4: NÓDULO (ACR TI-RADS 2017 — Tessler FN, et al. J Am Coll Radiol 2017;14:587-595) ==================== */}
         {activeTab === 'nodule' && (
           <div className="grid lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+            <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4" {...zonaDatos}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-base font-black text-slate-900">Evaluación de Nódulo (ACR TI-RADS 2017)</h2>
                 <span className="text-[11px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">TI-RADS: Tessler FN, et al. J Am Coll Radiol 2017;14:587–595 · Bethesda 2023 (vía PathologyOutlines)</span>
@@ -1331,14 +1411,14 @@ export default function App() {
               </p>
               <div className="grid sm:grid-cols-2 gap-3 text-xs">
                 <div>
-                  <label className="font-bold text-slate-600 block mb-1">1. Composición</label>
+                  <label data-campo="comp" className="font-bold text-slate-600 block mb-1">1. Composición</label>
                   <select value={nodule.comp} onChange={e => setNodule({ ...nodule, comp: e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
                     {Object.entries(TIRADS_COMP).map(([k, o]) => <option key={k} value={k}>{o.l} ({o.pts} {o.pts === 1 ? 'pt' : 'pts'})</option>)}
                   </select>
                   <span className="text-[11px] text-slate-500 block mt-1">Espongiforme: &gt;50% de pequeños espacios quísticos. Mixto: puntuar el componente sólido predominante.</span>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-600 block mb-1">2. Ecogenicidad</label>
+                  <label data-campo="echo" className="font-bold text-slate-600 block mb-1">2. Ecogenicidad</label>
                   <select value={nodule.echo} onChange={e => setNodule({ ...nodule, echo: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold" disabled={nodule.comp === 'spongiform'}>
                     <option value={0}>Anecoico (0 pts)</option>
                     <option value={1}>Hiper o isoecoico (1 pt)</option>
@@ -1349,14 +1429,14 @@ export default function App() {
                   <span className="text-[11px] text-slate-500 block mt-1">Anecoico: solo nódulos quísticos o casi quísticos. Muy hipoecoico: más que la musculatura pretiroidea.</span>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-600 block mb-1">3. Forma (imagen transversal)</label>
+                  <label data-campo="shape" className="font-bold text-slate-600 block mb-1">3. Forma (imagen transversal)</label>
                   <select value={nodule.shape} onChange={e => setNodule({ ...nodule, shape: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold" disabled={nodule.comp === 'spongiform'}>
                     <option value={0}>Más ancho que alto (0 pts)</option>
                     <option value={3}>Más alto que ancho (3 pts)</option>
                   </select>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-600 block mb-1">4. Margen</label>
+                  <label data-campo="margin" className="font-bold text-slate-600 block mb-1">4. Margen</label>
                   <select value={nodule.margin} onChange={e => setNodule({ ...nodule, margin: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold" disabled={nodule.comp === 'spongiform'}>
                     <option value={0}>Liso (0 pts)</option>
                     <option value={-1}>Mal definido (0 pts)</option>
@@ -1366,7 +1446,7 @@ export default function App() {
                   </select>
                 </div>
                 <div className="sm:col-span-2">
-                  <span className="font-bold text-slate-600 block mb-1">5. Focos ecogénicos (todos los que apliquen)</span>
+                  <span data-campo="foci" className="font-bold text-slate-600 block mb-1">5. Focos ecogénicos (todos los que apliquen)</span>
                   <div className="grid sm:grid-cols-3 gap-1.5">
                     {TIRADS_FOCI.map(f => (
                       <label key={f.k} className={`flex items-start gap-2 p-2 rounded-lg border cursor-pointer ${nodule.comp === 'spongiform' ? 'opacity-50' : ''} ${nodule.foci[f.k] ? 'bg-teal-50 border-teal-400' : 'bg-slate-50 border-slate-200'}`}>
@@ -1381,10 +1461,18 @@ export default function App() {
                       </label>
                     ))}
                   </div>
-                  <span className="text-[11px] text-slate-500 block mt-1">Sin marcar = ninguno o artefactos en cola de cometa grandes (0 pts).</span>
+                  <button
+                    type="button"
+                    disabled={nodule.comp === 'spongiform'}
+                    aria-pressed={!Object.values(nodule.foci).some(Boolean) && !!hechos['nodule.foci']}
+                    onClick={() => setNodule({ ...nodule, foci: { macro: false, rim: false, punct: false } })}
+                    className={`mt-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold ${!Object.values(nodule.foci).some(Boolean) && hechos['nodule.foci'] ? 'bg-teal-700 border-teal-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-700'}`}
+                  >
+                    Ninguno (o artefactos en cola de cometa grandes, 0 pts)
+                  </button>
                 </div>
                 <div>
-                  <label className="font-bold text-slate-600 block mb-1">Diámetro máximo (cm)</label>
+                  <label data-campo="sizeCm" className="font-bold text-slate-600 block mb-1">Diámetro máximo (cm)</label>
                   <input
                     type="number" inputMode="decimal" step="0.1" min="0"
                     value={nodule.sizeCm}
@@ -1394,6 +1482,7 @@ export default function App() {
                 </div>
                 <div className="flex items-end">
                   <button
+                    data-no-campo
                     onClick={() => { setActiveTab('bethesda'); window.scrollTo({ top: 0 }); }}
                     className="w-full p-2 rounded-lg border border-teal-300 bg-teal-50 text-teal-900 font-bold text-left hover:bg-teal-100"
                   >
@@ -1519,6 +1608,7 @@ export default function App() {
           <span className="min-w-0">
             <span className="block text-[10px] font-mono uppercase tracking-wider opacity-90">Riesgo ATA · p{postopRes.pT} · {dynRes.cat}</span>
             <span className="block text-sm font-black truncate">{postopRes.label} ({postopRes.pct})</span>
+            {faltanTab > 0 && <span className="block text-[11px] font-bold opacity-95" data-testid="barra-faltan">⚠ Faltan {faltanTab} dato{faltanTab > 1 ? 's' : ''}: resultado provisional</span>}
           </span>
           <span className="shrink-0 text-xs font-bold bg-white/20 px-3 py-1.5 rounded-lg">Ver ↓</span>
         </button>

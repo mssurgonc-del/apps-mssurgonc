@@ -236,3 +236,21 @@ describe('Planificación quirúrgica (R11, R15, R19, R20)', () => {
     expect(sg({ cT: 't3a' }).nodal).toContain('R19B');
   });
 });
+
+describe('componente agresivo coexistente (% del informe)', () => {
+  const base = { ...INITIAL_POSTOP, histo: 'ptc_clasico', coexist: ['ptc_tall'] };
+  const w = p => evaluatePostop(p).warnings.join(' ');
+  it('10–29 % advierte sin cambiar el riesgo ATA', () => {
+    const r = evaluatePostop({ ...base, aggPct: '10to29' });
+    expect(r.tier).toBe(evaluatePostop({ ...base, aggPct: 'none' }).tier);
+    expect(w({ ...base, aggPct: '10to29' })).toMatch(/10–29 %.*Bongers 2019/);
+  });
+  it('< 10 % y ≥ 30 % tienen su propio aviso', () => {
+    expect(w({ ...base, aggPct: 'lt10' })).toMatch(/< 10 %/);
+    expect(w({ ...base, aggPct: 'gte30' })).toMatch(/histología principal/);
+  });
+  it('sin componente agresivo, o con histología ya agresiva, no avisa', () => {
+    expect(w({ ...base, coexist: ['ptc_warthin'], aggPct: '10to29' })).not.toMatch(/Componente agresivo/);
+    expect(w({ ...base, histo: 'ptc_tall', coexist: ['ptc_hobnail'], aggPct: '10to29' })).not.toMatch(/Componente agresivo/);
+  });
+});

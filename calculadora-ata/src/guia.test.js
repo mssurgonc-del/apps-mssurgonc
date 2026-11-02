@@ -18,6 +18,11 @@ describe('guía: datos que faltan', () => {
     expect(ks('postop', { ...base, postop: { ...INITIAL_POSTOP, histo: 'ftc' } })).toContain('follPattern');
     expect(ks('postop', { ...base, postop: { ...INITIAL_POSTOP, histo: 'niftp' } })).toEqual(['ageGroup', 'histo']);
   });
+  it('patología: con componente agresivo coexistente pide su %', () => {
+    const p = { ...INITIAL_POSTOP, coexist: ['ptc_hobnail'] };
+    expect(ks('postop', { ...base, postop: p })).toContain('aggPct');
+    expect(ks('postop', { ...base, postop: { ...p, coexist: ['ptc_warthin'] } })).not.toContain('aggPct');
+  });
   it('seguimiento: la Tg cuenta por valor; lobectomía pide lóbulo y no Tg ni TgAb', () => {
     const h = { 'dynamic.surgeryType': true, 'dynamic.tgAb': true, 'dynamic.imaging': true };
     expect(ks('dynamic', base, h)).toEqual(['tg']);

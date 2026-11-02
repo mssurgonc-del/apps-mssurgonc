@@ -293,6 +293,7 @@ export default function App() {
       out += `1. ESTRATIFICACIÓN POSOPERATORIA INICIAL (ATA 2025 & AJCC 8.ª Ed.):\n`;
       out += `• Histotipo (OMS 5.ª ed.): ${postopRes.histObj?.full || 'NIFTP'}\n`;
       if (isPTCMain && coexistLabels.length) out += `• Componentes coexistentes (documentación; no modifican el riesgo calculado): ${coexistLabels.join(', ')}\n`;
+      postopRes.warnings.filter(w => w.startsWith('Componente agresivo')).forEach(w => { out += `• ${w}\n`; });
       out += `• Estadio Anatómico T: p${postopRes.pT} | Mortalidad (AJCC 8.ª): ${postopRes.ajccStage}\n`;
       out += `• RIESGO DE RECURRENCIA ESTRUCTURAL ATA 2025: ${postopRes.label} (${postopRes.pct})\n`;
       out += `• Factores determinantes:\n  ${postopRes.drivers.join('\n  ')}\n\n`;
@@ -388,7 +389,12 @@ export default function App() {
     }
   };
 
-  const coexistLabels = postop.coexist.map(id => HISTO_OPTIONS.find(h => h.id === id)?.label).filter(Boolean);
+  const AGG_PCT_TXT = { lt10: '< 10 %', '10to29': '10–29 %', gte30: '≥ 30 %' };
+  const aggCoexist = HISTO_OPTIONS.find(h => h.id === postop.histo)?.group === 'ptc_low'
+    ? postop.coexist.map(id => HISTO_OPTIONS.find(h => h.id === id)).filter(h => h?.group === 'ptc_agg')
+    : [];
+  const coexistLabels = postop.coexist.map(id => HISTO_OPTIONS.find(h => h.id === id)?.label).filter(Boolean)
+    .concat(aggCoexist.length && AGG_PCT_TXT[postop.aggPct] ? [`componente agresivo ${AGG_PCT_TXT[postop.aggPct]}`] : []);
   const isPTCMain = ['ptc_low', 'ptc_agg'].includes(HISTO_OPTIONS.find(h => h.id === postop.histo)?.group);
   const curStyle = TIER_STYLES[postopRes.tier] || TIER_STYLES.low;
   const dynStyle = TIER_STYLES[dynRes.tier] || TIER_STYLES.low;
@@ -709,7 +715,11 @@ export default function App() {
                               <button
                                 key={h.id}
                                 aria-pressed={on}
-                                onClick={() => setPostop({ ...postop, coexist: on ? postop.coexist.filter(c => c !== h.id) : [...postop.coexist, h.id] })}
+                                onClick={() => {
+                                  const coexist = on ? postop.coexist.filter(c => c !== h.id) : [...postop.coexist, h.id];
+                                  const conAgresivo = coexist.some(c => HISTO_OPTIONS.find(o => o.id === c)?.group === 'ptc_agg');
+                                  setPostop({ ...postop, coexist, aggPct: conAgresivo ? postop.aggPct : 'none' });
+                                }}
                                 className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all ${on ? 'bg-slate-700 border-slate-700 text-white' : 'bg-white border-slate-300 border-dashed text-slate-600 hover:bg-slate-50'}`}
                               >
                                 {on ? '✓ ' : '+ '}{h.label}
@@ -717,6 +727,37 @@ export default function App() {
                             );
                           })}
                         </div>
+                        {aggCoexist.length > 0 && (
+                          <div className="mt-2.5">
+                            <span data-campo="aggPct" className="text-[11px] font-black uppercase text-slate-600 block mb-1">% del componente agresivo en el informe</span>
+                            <div className="grid grid-cols-3 gap-1.5">
+                              {[
+                                { v: 'lt10', l: '< 10 %' },
+                                { v: '10to29', l: '10 – 29 %' },
+                                { v: 'gte30', l: '≥ 30 %' },
+                              ].map(o => (
+                                <button
+                                  key={o.v}
+                                  aria-pressed={postop.aggPct === o.v}
+                                  onClick={() => setPostop({ ...postop, aggPct: o.v })}
+                                  className={`py-1.5 rounded-lg text-xs font-bold border transition-all ${postop.aggPct === o.v ? 'bg-slate-700 border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`}
+                                >
+                                  {o.l}
+                                </button>
+                              ))}
+                            </div>
+                            <span className="text-[11px] text-slate-500 block mt-1 leading-snug">Umbral OMS 2022 del subtipo: células altas o hobnail ≥ 30 %; sólido/trabecular &gt; 50 %. Entre 10 y 29 % no cambia el riesgo ATA, pero se advierte en el resultado.</span>
+                            {postop.aggPct === 'gte30' && aggCoexist.length === 1 && (
+                              <button
+                                data-no-campo
+                                onClick={() => setPostop({ ...postop, histo: aggCoexist[0].id, coexist: postop.coexist.filter(c => c !== aggCoexist[0].id), aggPct: 'none' })}
+                                className="mt-1.5 px-3 py-1.5 rounded-lg border border-orange-300 bg-orange-50 text-orange-900 text-xs font-bold"
+                              >
+                                Usar {aggCoexist[0].label} como histología principal
+                              </button>
+                            )}
+                          </div>
+                        )}
                       </div>
                     )}
 

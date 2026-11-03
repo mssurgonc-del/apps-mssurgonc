@@ -2174,11 +2174,12 @@ function consentBody(c, d){
 
 CONSENT_DOCS.forEach(c=> TEMPLATES.push({
   id: c.id, n: c.n, title: c.title,
-  desc: c.tipo==='cirugia' ? 'Consentimiento informado · '+c.ref.split('|')[0].replace('Doc. Ref:','').trim() : c.ref.split('|')[0].replace('Doc. Ref:','').trim(),
+  desc: (c.tipo==='cirugia' ? 'Consentimiento informado · ' : '')+c.ref.split('|')[0].replace('Doc. Ref:','').trim()+' · 2 copias (paciente y expediente)',
   docTitle: c.docTitle,
   fields: consentFields(c),
   signatureBlocks: CONSENT_SIGNATURES,
   body: (d)=> consentBody(c, d),
+  dosCopias: true,
 }));
 
 /* ===================== STATE ===================== */
@@ -3704,101 +3705,121 @@ function generateLetterPDF(){
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({unit:'in', format:'letter'});
   const marginL = 1, marginR = 1, width = 8.5-marginL-marginR;
-  let y = 0.9;
+  // Dibuja el documento completo desde la página actual (los consentimientos se dibujan dos veces).
+  const dibujar = ()=>{
+    let y = 0.9;
 
-  if(state.logoDataUrl){
-    const maxW = 1.8, maxH = 0.8;
-    const aspect = state.logoAspect || 2.5;
-    let w = maxW, h = w/aspect;
-    if(h > maxH){ h = maxH; w = h*aspect; }
-    const fmt = state.logoDataUrl.includes('image/png') ? 'PNG' : 'JPEG';
-    try{ doc.addImage(state.logoDataUrl, fmt, marginL, y-0.15, w, h); }catch(e){ console.error('logo error', e); }
-    y += h + 0.15;
-  }
-
-  doc.setFont('times','normal');
-
-  doc.setFontSize(10);
-  HEADER_LINES_PDF.forEach(l=>{ doc.text(l, marginL, y); y+=0.19; });
-  y += 0.05;
-  doc.text(fmtFechaCorta(d.__fecha)||fmtFechaCorta(todayISO()), marginL, y);
-  y += 0.4;
-
-  if(t.docTitle){
-    doc.setFont('times','bold'); doc.setFontSize(12);
-    const titleLines = doc.splitTextToSize(t.docTitle, width);
-    titleLines.forEach(line=>{ doc.text(line, 4.25, y, {align:'center'}); y += 0.22; });
-    doc.setFont('times','normal');
-    y += 0.13;
-  }
-  if(t.addressee){
-    doc.setFont('times','bold'); doc.setFontSize(11);
-    const lines = doc.splitTextToSize(t.addressee(d), width);
-    doc.text(lines, marginL, y); y += lines.length*0.2 + 0.15;
-    doc.setFont('times','normal');
-  }
-
-  doc.setFontSize(10.5);
-  (d.__editedBody ? editableTextToBody(d.__editedBody) : t.body(d)).forEach(p=>{
-    if(p.t==='p'){
-      doc.setFont('times','normal');
-      const lines = doc.splitTextToSize(p.v, width);
-      if(y + lines.length*0.2 > 10.2){ doc.addPage(); y=0.9; }
-      doc.text(lines, marginL, y);
-      y += lines.length*0.2 + 0.14;
-    } else if(p.t==='ul'){
-      doc.setFont('times','normal');
-      p.v.forEach(item=>{
-        const lines = doc.splitTextToSize('•  '+item, width-0.15);
-        if(y + lines.length*0.2 > 10.2){ doc.addPage(); y=0.9; }
-        doc.text(lines, marginL+0.15, y);
-        y += lines.length*0.2 + 0.05;
-      });
-      y += 0.1;
-    } else if(p.t==='h2'){
-      if(y > 9.6){ doc.addPage(); y=0.9; }
-      doc.setFont('times','bold'); doc.setFontSize(11.5);
-      const lines = doc.splitTextToSize(p.v, width);
-      doc.text(lines, marginL, y);
-      y += lines.length*0.22 + 0.12;
-      doc.setFont('times','normal'); doc.setFontSize(10.5);
-    } else if(p.t==='h3'){
-      if(y > 9.7){ doc.addPage(); y=0.9; }
-      doc.setFont('times','bold'); doc.setFontSize(10.5);
-      const lines = doc.splitTextToSize(p.v, width);
-      doc.text(lines, marginL, y);
-      y += lines.length*0.2 + 0.08;
-      doc.setFont('times','normal'); doc.setFontSize(10.5);
+    if(state.logoDataUrl){
+      const maxW = 1.8, maxH = 0.8;
+      const aspect = state.logoAspect || 2.5;
+      let w = maxW, h = w/aspect;
+      if(h > maxH){ h = maxH; w = h*aspect; }
+      const fmt = state.logoDataUrl.includes('image/png') ? 'PNG' : 'JPEG';
+      try{ doc.addImage(state.logoDataUrl, fmt, marginL, y-0.15, w, h); }catch(e){ console.error('logo error', e); }
+      y += h + 0.15;
     }
-  });
 
-  y += 0.4;
-  const useElectronicSig = t.electronicSignature && state.signatureDataUrl && !t.signatureBlocks;
-  if(useElectronicSig){
-    if(y + 1.1 > 10.4){ doc.addPage(); y=0.9; }
-    doc.setFont('times','normal'); doc.setFontSize(10);
-    doc.text('Atte.', marginL, y); y += 0.22;
-    const maxW = 1.6, maxH = 0.55;
-    const aspect = state.signatureAspect || 2.5;
-    let sw = maxW, sh = sw/aspect;
-    if(sh > maxH){ sh = maxH; sw = sh*aspect; }
-    const sigFmt = state.signatureDataUrl.includes('image/png') ? 'PNG' : 'JPEG';
-    try{ doc.addImage(state.signatureDataUrl, sigFmt, marginL, y-0.05, sw, sh); }catch(e){ console.error('signature error', e); }
-    y += sh + 0.08;
-    doc.text('Dr. Manuel Salinas', marginL, y); y += 0.2;
-    doc.text('Cirujano Oncólogo', marginL, y); y += 0.2;
-  } else {
-    const sigBlocks = t.signatureBlocks ? t.signatureBlocks : [SIGNATURE_LINES];
-    const colWidth = width/sigBlocks.length;
-    const maxLines = Math.max(...sigBlocks.map(b=>b.length));
-    if(y + maxLines*0.2 > 10.4){ doc.addPage(); y=0.9; }
-    doc.setFont('times','normal'); doc.setFontSize(10);
-    sigBlocks.forEach((block, i)=>{
-      let sy = y;
-      block.forEach(l=>{ doc.text(l, marginL + i*colWidth, sy); sy+=0.2; });
+    doc.setFont('times','normal');
+
+    doc.setFontSize(10);
+    HEADER_LINES_PDF.forEach(l=>{ doc.text(l, marginL, y); y+=0.19; });
+    y += 0.05;
+    doc.text(fmtFechaCorta(d.__fecha)||fmtFechaCorta(todayISO()), marginL, y);
+    y += 0.4;
+
+    if(t.docTitle){
+      doc.setFont('times','bold'); doc.setFontSize(12);
+      const titleLines = doc.splitTextToSize(t.docTitle, width);
+      titleLines.forEach(line=>{ doc.text(line, 4.25, y, {align:'center'}); y += 0.22; });
+      doc.setFont('times','normal');
+      y += 0.13;
+    }
+    if(t.addressee){
+      doc.setFont('times','bold'); doc.setFontSize(11);
+      const lines = doc.splitTextToSize(t.addressee(d), width);
+      doc.text(lines, marginL, y); y += lines.length*0.2 + 0.15;
+      doc.setFont('times','normal');
+    }
+
+    doc.setFontSize(10.5);
+    (d.__editedBody ? editableTextToBody(d.__editedBody) : t.body(d)).forEach(p=>{
+      if(p.t==='p'){
+        doc.setFont('times','normal');
+        const lines = doc.splitTextToSize(p.v, width);
+        if(y + lines.length*0.2 > 10.2){ doc.addPage(); y=0.9; }
+        doc.text(lines, marginL, y);
+        y += lines.length*0.2 + 0.14;
+      } else if(p.t==='ul'){
+        doc.setFont('times','normal');
+        p.v.forEach(item=>{
+          const lines = doc.splitTextToSize('•  '+item, width-0.15);
+          if(y + lines.length*0.2 > 10.2){ doc.addPage(); y=0.9; }
+          doc.text(lines, marginL+0.15, y);
+          y += lines.length*0.2 + 0.05;
+        });
+        y += 0.1;
+      } else if(p.t==='h2'){
+        if(y > 9.6){ doc.addPage(); y=0.9; }
+        doc.setFont('times','bold'); doc.setFontSize(11.5);
+        const lines = doc.splitTextToSize(p.v, width);
+        doc.text(lines, marginL, y);
+        y += lines.length*0.22 + 0.12;
+        doc.setFont('times','normal'); doc.setFontSize(10.5);
+      } else if(p.t==='h3'){
+        if(y > 9.7){ doc.addPage(); y=0.9; }
+        doc.setFont('times','bold'); doc.setFontSize(10.5);
+        const lines = doc.splitTextToSize(p.v, width);
+        doc.text(lines, marginL, y);
+        y += lines.length*0.2 + 0.08;
+        doc.setFont('times','normal'); doc.setFontSize(10.5);
+      }
     });
-    y += maxLines*0.2;
-  }
+
+    y += 0.4;
+    const useElectronicSig = t.electronicSignature && state.signatureDataUrl && !t.signatureBlocks;
+    if(useElectronicSig){
+      if(y + 1.1 > 10.4){ doc.addPage(); y=0.9; }
+      doc.setFont('times','normal'); doc.setFontSize(10);
+      doc.text('Atte.', marginL, y); y += 0.22;
+      const maxW = 1.6, maxH = 0.55;
+      const aspect = state.signatureAspect || 2.5;
+      let sw = maxW, sh = sw/aspect;
+      if(sh > maxH){ sh = maxH; sw = sh*aspect; }
+      const sigFmt = state.signatureDataUrl.includes('image/png') ? 'PNG' : 'JPEG';
+      try{ doc.addImage(state.signatureDataUrl, sigFmt, marginL, y-0.05, sw, sh); }catch(e){ console.error('signature error', e); }
+      y += sh + 0.08;
+      doc.text('Dr. Manuel Salinas', marginL, y); y += 0.2;
+      doc.text('Cirujano Oncólogo', marginL, y); y += 0.2;
+    } else {
+      const sigBlocks = t.signatureBlocks ? t.signatureBlocks : [SIGNATURE_LINES];
+      const colWidth = width/sigBlocks.length;
+      const maxLines = Math.max(...sigBlocks.map(b=>b.length));
+      if(y + maxLines*0.2 > 10.4){ doc.addPage(); y=0.9; }
+      doc.setFont('times','normal'); doc.setFontSize(10);
+      sigBlocks.forEach((block, i)=>{
+        let sy = y;
+        block.forEach(l=>{ doc.text(l, marginL + i*colWidth, sy); sy+=0.2; });
+      });
+      y += maxLines*0.2;
+    }
+  };
+  // Consentimientos: dos juegos en el mismo PDF (paciente y expediente), cada página marcada con su copia.
+  const copias = t.dosCopias ? ['Copia para el paciente', 'Copia para el médico (expediente)'] : [null];
+  const tramos = [];
+  copias.forEach((c, i)=>{
+    if(i) doc.addPage();
+    const ini = doc.getNumberOfPages();
+    dibujar();
+    tramos.push([c, ini, doc.getNumberOfPages()]);
+  });
+  if(t.dosCopias) tramos.forEach(([c, a, b])=>{
+    for(let pg = a; pg <= b; pg++){
+      doc.setPage(pg);
+      doc.setFont('times','italic'); doc.setFontSize(8.5);
+      doc.text(`${c} · Página ${pg-a+1} de ${b-a+1}`, 4.25, 10.6, {align:'center'});
+    }
+    doc.setFont('times','normal');
+  });
 
   const fnameFecha = d.__fecha || todayISO();
   const fname = `${fnameFecha}_${t.title.replace(/[^\wáéíóúñÁÉÍÓÚÑ ]/g,'').trim().replace(/\s+/g,'_')}_${(d.nombre||d.nombrePaciente||d.nombreCompleto||'paciente').replace(/\s+/g,'_')}.pdf`;

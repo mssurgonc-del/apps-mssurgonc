@@ -29,6 +29,10 @@ async function hacer(tpl, fill, file){
 let t=await hacer('consent_tiroides',{nombre:'Paciente Prueba',documentoIdentidad:'0801-1990-00001',edad:'45',sexo:'Femenino',diagnostico:'Carcinoma papilar de tiroides',procedimiento:'Tiroidectomía total',transfusion:'Acepto'},'tiroides.pdf');
 ok(t.includes('Dr./Dra. Manuel Salinas') && t.includes('Carcinoma papilar de tiroides') && t.includes('(X) Acepto | (  ) Rechazo'),'tiroides: médico, diagnóstico y transfusión en el texto');
 ok(t.includes('Doc. Ref: CI-TIROIDES-V2.4'),'tiroides: referencia del documento');
+{const {execSync}=require('child_process'); const txt=execSync(`pdftotext -layout ${OUT}tiroides.pdf -`).toString();
+ const n=+execSync(`pdfinfo ${OUT}tiroides.pdf`).toString().match(/Pages:\s+(\d+)/)[1];
+ const pac=(txt.match(/Copia para el paciente · Página \d+ de (\d+)/g)||[]).length, med=(txt.match(/Copia para el médico \(expediente\) · Página \d+ de \d+/g)||[]).length;
+ ok(n%2===0 && pac===n/2 && med===n/2 && (txt.match(/CONSENTIMIENTO INFORMADO PARA CIRUGÍA DE TIROIDES/g)||[]).length===2,'tiroides: dos juegos en el PDF ('+n+' páginas; '+pac+' del paciente y '+med+' del expediente)');}
 t=await hacer('consent_mama',{nombre:'Paciente Dos',documentoIdentidad:'',edad:'',sexo:'Femenino'},'mama.pdf');
 ok(t.includes('(  ) Acepto | (  ) Rechazo') && t.includes('______________________________________________'),'mama sin datos: casillas y líneas en blanco para llenar a mano');
 t=await hacer('consent_imagen',{nombre:'Paciente Tres',autorizaImagen:'No autorizo'},'imagen.pdf');

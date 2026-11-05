@@ -2912,7 +2912,7 @@ function renderPreview(){
   <h2 class="screentitle">Vista previa</h2>
   <div style="height:14px"></div>
   <div class="paper-preview">
-    ${state.logoDataUrl ? `<div style="text-align:center;"><img src="${state.logoDataUrl}" style="max-height:110px;max-width:260px;margin-bottom:10px;"></div>` : ''}
+    ${state.logoDataUrl ? `<div style="text-align:center;"><img src="${state.logoDataUrl}" style="${(state.logoAspect||2.5) >= 3.5 ? 'width:100%;' : 'max-height:110px;max-width:260px;'}margin-bottom:10px;"></div>` : ''}
     <div class="ph">
       <div style="text-align:center;">${HEADER_LINES.map(l=>`<div>${escapeHTML(l)}</div>`).join('')}</div>
       <div style="margin-top:8px;">${escapeHTML(fecha)}</div>
@@ -3731,9 +3731,10 @@ function generateLetterPDF(){
     let y = 0.9;
 
     if(state.logoDataUrl){
-      // Logo centrado, hasta 2.8 × 1.25 pulgadas.
-      const maxW = 2.8, maxH = 1.25;
+      // Logo centrado, hasta 2.8 × 1.25 pulgadas; un banner alargado (≥ 3.5:1) ocupa todo el ancho del texto.
       const aspect = state.logoAspect || 2.5;
+      const banner = aspect >= 3.5;
+      const maxW = banner ? width : 2.8, maxH = banner ? 1.6 : 1.25;
       let w = maxW, h = w/aspect;
       if(h > maxH){ h = maxH; w = h*aspect; }
       const fmt = state.logoDataUrl.includes('image/png') ? 'PNG' : 'JPEG';

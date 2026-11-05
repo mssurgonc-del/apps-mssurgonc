@@ -1,5 +1,5 @@
 // Servir constancias/ (python3 -m http.server 8771) y correr con NODE_PATH=<playwright-core> BASE=http://localhost:8771/
-// JSPDF=<ruta a jspdf.umd.min.js 2.5.1> (el navegador de prueba no llega a cdnjs). LOGO=<archivo con un data URL PNG>.
+// JSPDF=<ruta a jspdf.umd.min.js 2.5.1> (el navegador de prueba no llega a cdnjs). LOGO=<archivo con un data URL PNG>, LOGO_ASPECT=<ancho/alto> (3 = logo; 4.8 = banner 960×200).
 const BASE=process.env.BASE||'http://localhost:8771/';
 const fs=require('fs'); const {chromium}=require('playwright-core');
 const ok=(c,m)=>{console.log((c?'ok: ':'FAIL: ')+m); if(!c) process.exitCode=1;};
@@ -8,11 +8,11 @@ const OUT=(process.env.OUT||'/tmp')+'/';
 const ctx=await b.newContext({viewport:{width:390,height:844},acceptDownloads:true});
 await ctx.route('**/jspdf.umd.min.js', r=>r.fulfill({path:process.env.JSPDF, contentType:'application/javascript'})); await ctx.route(/google\.com/, r=>r.abort());
 const logo=fs.readFileSync(process.env.LOGO,'utf8').trim();
-await ctx.addInitScript(l=>{ localStorage.setItem('doctor_logo', l); localStorage.setItem('doctor_logo_aspect','3');
+await ctx.addInitScript(([l,a])=>{ localStorage.setItem('doctor_logo', l); localStorage.setItem('doctor_logo_aspect',a);
   window.__compartido=null;
   navigator.canShare=()=>true;
   navigator.share=async (data)=>{ const f=data.files[0]; const u=new Uint8Array(await f.arrayBuffer()); let s=''; u.forEach(x=>s+=String.fromCharCode(x)); window.__compartido={name:f.name,type:f.type,size:f.size,text:data.text,b64:btoa(s)}; };
-}, logo);
+}, [logo, process.env.LOGO_ASPECT||'3']);
 const pg=await ctx.newPage(); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
 await pg.goto(BASE); await pg.waitForTimeout(800);
 await pg.click('.card[data-tpl="consulta"]'); await pg.click('#btnNewPatient');

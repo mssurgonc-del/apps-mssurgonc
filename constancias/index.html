@@ -134,19 +134,29 @@ const DRIVE_FOLDER_NAME = 'Constancias - Dr. Manuel Salinas';
 // no el resto de su Drive ni sus otras hojas de cálculo.
 const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
-const HEADER_LINES = [
-  'Hospital CEMESA, Consultorio #42',
-  '☎ 9555-8959',
-  '✉ manuelsalinascirujanooncologo@gmail.com',
-  'San Pedro Sula, Cortés'
-];
-// Versión sin símbolos ☎/✉ — la fuente estándar del PDF (Times) no los soporta y salían como caracteres rotos.
-const HEADER_LINES_PDF = [
-  'Hospital CEMESA, Consultorio #42',
-  'Tel: 9555-8959',
-  'Email: manuelsalinascirujanooncologo@gmail.com',
-  'San Pedro Sula, Cortés'
-];
+// Encabezado de los documentos: se configura en «🖼 Encabezado»; un campo vacío no se imprime.
+// Sin símbolos ☎/✉: la fuente estándar del PDF (Times) no los tiene.
+const HEADER_DEFAULT = {
+  nombre: '',
+  direccion: 'Hospital CEMESA, Consultorio #42\nSan Pedro Sula, Cortés',
+  telefono: '9555-8959',
+  correo: 'manuelsalinascirujanooncologo@gmail.com',
+};
+function loadHeaderCfg(){
+  try{ return Object.assign({}, HEADER_DEFAULT, JSON.parse(localStorage.getItem('doctor_header')||'null')||{}); }
+  catch(e){ return Object.assign({}, HEADER_DEFAULT); }
+}
+// Líneas del encabezado: [{v, nombre}] — las del nombre van en negrita.
+function headerLines(){
+  const h = state.header || HEADER_DEFAULT;
+  const lineas = (txt)=> String(txt||'').split('\n').map(l=>l.trim()).filter(Boolean);
+  return [
+    ...lineas(h.nombre).map(v=>({v, nombre:true})),
+    ...lineas(h.direccion).map(v=>({v})),
+    ...(String(h.telefono||'').trim() ? [{v:'Tel: '+h.telefono.trim()}] : []),
+    ...(String(h.correo||'').trim() ? [{v:'Email: '+h.correo.trim()}] : []),
+  ];
+}
 const SIGNATURE_LINES = ['Atte.', '', 'Dr. Manuel Salinas', 'Cirujano Oncólogo'];
 
 /* ===================== SPECIALISTS (semilla inicial — Valoración preoperatoria) ===================== */
@@ -2221,6 +2231,7 @@ function saveSpecialistsCache(){
 loadSpecialistsCache();
 
 /* ===================== LOGO Y FIRMA ELECTRÓNICA ===================== */
+state.header = loadHeaderCfg();
 state.logoDataUrl = localStorage.getItem('doctor_logo') || null;
 state.logoAspect = parseFloat(localStorage.getItem('doctor_logo_aspect')) || null;
 state.signatureDataUrl = localStorage.getItem('doctor_signature') || null;
@@ -2286,6 +2297,10 @@ async function loadConfigFromSheet(){
     const rows = json.values || [];
     rows.forEach(r=>{
       const key = r[0], val = r[1];
+      if(key==='Encabezado' && val){
+        try{ state.header = Object.assign({}, HEADER_DEFAULT, JSON.parse(val)); localStorage.setItem('doctor_header', JSON.stringify(state.header)); }catch(e){}
+        return;
+      }
       if(!val || !val.startsWith('data:image')) return;
       if(key==='Logo'){ state.logoDataUrl=val; localStorage.setItem('doctor_logo', val); computeLogoAspect(val); }
       if(key==='Firma'){ state.signatureDataUrl=val; localStorage.setItem('doctor_signature', val); computeSignatureAspect(val); }
@@ -2489,7 +2504,7 @@ function renderHeader(){
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       ${state.screen!=='history' ? `<button class="gbtn" id="btnHistory">Historial</button>` : ''}
-      ${state.screen!=='logo' ? `<button class="gbtn" id="btnLogo">🖼 Logo</button>` : ''}
+      ${state.screen!=='logo' ? `<button class="gbtn" id="btnLogo">🖼 Encabezado</button>` : ''}
       ${state.screen!=='signature' ? `<button class="gbtn" id="btnSignature">✍ Firma</button>` : ''}
       ${state.screen!=='google' ? `<button class="gbtn" id="btnGoogleCfg">⚙ Google</button>` : ''}
       <button class="gbtn ${on?'connected':''}" id="btnGoogle"><span class="dot ${on?'on':''}"></span>${on?'Google conectado':'Conectar Google'}</button>
@@ -2500,8 +2515,21 @@ function renderHeader(){
 function renderLogoScreen(){
   return `
   <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
-  <h2 class="screentitle">Logo del consultorio</h2>
+  <h2 class="screentitle">Encabezado de los documentos</h2>
   <div style="height:14px"></div>
+  <div class="patient-box">
+    <div class="home-section-title" style="margin-top:0">Datos del médico</div>
+    <div class="footnote" style="margin-bottom:8px;">Salen centrados debajo del logo. Lo que deje en blanco no se imprime.</div>
+    <div class="field"><label for="hdrNombre">Nombre (puede usar dos líneas, p. ej. nombre y especialidad)</label>
+    <textarea id="hdrNombre" data-hdr="nombre" rows="2" placeholder="Dr. Manuel Salinas&#10;Cirujano Oncólogo">${escapeHTML(state.header.nombre)}</textarea></div>
+    <div class="field"><label for="hdrDireccion">Dirección (una línea por renglón)</label>
+    <textarea id="hdrDireccion" data-hdr="direccion" rows="2">${escapeHTML(state.header.direccion)}</textarea></div>
+    <div class="field"><label for="hdrTelefono">Teléfono</label>
+    <input type="text" id="hdrTelefono" data-hdr="telefono" value="${escapeHTML(state.header.telefono)}" inputmode="tel"></div>
+    <div class="field" style="margin-bottom:0"><label for="hdrCorreo">Correo</label>
+    <input type="text" id="hdrCorreo" data-hdr="correo" value="${escapeHTML(state.header.correo)}" inputmode="email" autocomplete="off"></div>
+  </div>
+  <div class="home-section-title">Logo o banner</div>
   ${state.logoDataUrl ? `
     <div class="patient-box" style="text-align:center;">
       <img src="${state.logoDataUrl}" style="max-width:220px;max-height:120px;">
@@ -2914,7 +2942,7 @@ function renderPreview(){
   <div class="paper-preview">
     ${state.logoDataUrl ? `<div style="text-align:center;"><img src="${state.logoDataUrl}" style="${(state.logoAspect||2.5) >= 3.5 ? 'width:100%;' : 'max-height:110px;max-width:260px;'}margin-bottom:10px;"></div>` : ''}
     <div class="ph">
-      <div style="text-align:center;">${HEADER_LINES.map(l=>`<div>${escapeHTML(l)}</div>`).join('')}</div>
+      <div style="text-align:center;">${headerLines().map(l=>`<div${l.nombre?' style="font-weight:700;"':''}>${escapeHTML(l.v)}</div>`).join('')}</div>
       <div style="margin-top:8px;">${escapeHTML(fecha)}</div>
     </div>
     ${docTitle}
@@ -3012,6 +3040,15 @@ function bindEvents(){
 
   const btnRemoveLogo = document.getElementById('btnRemoveLogo');
   if(btnRemoveLogo) btnRemoveLogo.onclick = async ()=>{ await removeLogo(); render(); toast('Logo eliminado'); };
+
+  document.querySelectorAll('[data-hdr]').forEach(el=>{
+    el.onchange = ()=>{
+      state.header[el.dataset.hdr] = el.value;
+      localStorage.setItem('doctor_header', JSON.stringify(state.header));
+      if(state.accessToken && state.sheetId) saveConfigValue('Encabezado', JSON.stringify(state.header)).catch(()=>{});
+      toast('Encabezado guardado');
+    };
+  });
 
   const logoFile = document.getElementById('logoFile');
   if(logoFile) logoFile.onchange = ()=>{
@@ -3744,8 +3781,11 @@ function generateLetterPDF(){
 
     doc.setFont('times','normal');
 
-    doc.setFontSize(10);
-    HEADER_LINES_PDF.forEach(l=>{ doc.text(l, 4.25, y, {align:'center'}); y+=0.19; });
+    headerLines().forEach(l=>{
+      doc.setFont('times', l.nombre ? 'bold' : 'normal'); doc.setFontSize(l.nombre ? 11 : 10);
+      doc.text(l.v, 4.25, y, {align:'center'}); y += l.nombre ? 0.21 : 0.19;
+    });
+    doc.setFont('times','normal'); doc.setFontSize(10);
     y += 0.05;
     doc.text(fmtFechaCorta(d.__fecha)||fmtFechaCorta(todayISO()), marginL, y);
     y += 0.4;

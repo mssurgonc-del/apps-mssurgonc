@@ -2901,7 +2901,7 @@ function renderPreview(){
     : `<div class="actions">
         <button class="btn btn-ghost" id="btnEdit">Editar datos</button>
         <button class="btn btn-ghost" id="btnToggleEdit">✏️ Editar texto</button>
-        <button class="btn btn-ghost" id="btnWhatsApp">📤 WhatsApp</button>
+        <button class="btn btn-ghost" id="btnWhatsApp">📤 Compartir PDF</button>
         <button class="btn btn-primary" id="btnGeneratePDF">Generar PDF</button>
       </div>`;
 
@@ -2912,9 +2912,9 @@ function renderPreview(){
   <h2 class="screentitle">Vista previa</h2>
   <div style="height:14px"></div>
   <div class="paper-preview">
-    ${state.logoDataUrl ? `<img src="${state.logoDataUrl}" style="max-height:70px;max-width:220px;margin-bottom:10px;">` : ''}
+    ${state.logoDataUrl ? `<div style="text-align:center;"><img src="${state.logoDataUrl}" style="max-height:110px;max-width:260px;margin-bottom:10px;"></div>` : ''}
     <div class="ph">
-      ${HEADER_LINES.map(l=>`<div>${escapeHTML(l)}</div>`).join('')}
+      <div style="text-align:center;">${HEADER_LINES.map(l=>`<div>${escapeHTML(l)}</div>`).join('')}</div>
       <div style="margin-top:8px;">${escapeHTML(fecha)}</div>
     </div>
     ${docTitle}
@@ -3247,12 +3247,9 @@ function bindEvents(){
 
   const btnWhatsApp = document.getElementById('btnWhatsApp');
   if(btnWhatsApp) btnWhatsApp.onclick = ()=>{
-    const t = state.tpl, d = state.data;
-    const nombreField = t.fields.find(f=>f.autofill==='nombre');
-    const nombre = (nombreField ? d[nombreField.key] : d.nombre) || '';
-    const msg = `${t.title}${nombre ? ' — '+nombre : ''}\n\nLe adjunto el documento en PDF.\n\nDr. Manuel Salinas, Cirujano Oncólogo`;
-    window.open('https://wa.me/?text='+encodeURIComponent(msg), '_blank');
-    toast('Abriendo WhatsApp — recuerda adjuntar el PDF ya descargado.');
+    modoEntrega = 'compartir';
+    try{ if(state.screen === 'cmh_preview') generateCMHPDF(); else generateLetterPDF(); }
+    finally{ modoEntrega = 'descargar'; }
   };
 
   bindHistButtons();
@@ -3693,6 +3690,30 @@ function reprintFromHistory(idx){
 }
 
 /* ===================== PDF GENERATION ===================== */
+// «Compartir PDF» abre el menú de compartir del teléfono con el PDF adjunto (ahí aparece WhatsApp).
+// Donde el navegador no puede adjuntar archivos, se descarga el PDF y se abre WhatsApp con el texto.
+let modoEntrega = 'descargar';
+function mensajeCompartir(){
+  const t = state.tpl, d = state.data;
+  const nombreField = (t.fields||[]).find(f=>f.autofill==='nombre');
+  const nombre = (nombreField ? d[nombreField.key] : d.nombre) || '';
+  return `${t.title}${nombre ? ' — '+nombre : ''}\n\nLe adjunto el documento en PDF.\n\nDr. Manuel Salinas, Cirujano Oncólogo`;
+}
+function entregarPDF(doc, fname){
+  if(modoEntrega !== 'compartir'){ doc.save(fname); return; }
+  const file = new File([doc.output('blob')], fname, {type:'application/pdf'});
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    navigator.share({files:[file], title:fname, text:mensajeCompartir()}).catch(e=>{
+      if(e && e.name === 'AbortError') return;
+      doc.save(fname); toast('No se pudo compartir; el PDF se descargó.', 'warn');
+    });
+    return;
+  }
+  doc.save(fname);
+  window.open('https://wa.me/?text='+encodeURIComponent(mensajeCompartir()), '_blank');
+  toast('Este navegador no adjunta archivos: el PDF se descargó; adjúntelo en WhatsApp.', 'warn');
+}
+
 function generateLetterPDF(){
   const t = state.tpl, d = state.data;
 
@@ -3710,19 +3731,20 @@ function generateLetterPDF(){
     let y = 0.9;
 
     if(state.logoDataUrl){
-      const maxW = 1.8, maxH = 0.8;
+      // Logo centrado, hasta 2.8 × 1.25 pulgadas.
+      const maxW = 2.8, maxH = 1.25;
       const aspect = state.logoAspect || 2.5;
       let w = maxW, h = w/aspect;
       if(h > maxH){ h = maxH; w = h*aspect; }
       const fmt = state.logoDataUrl.includes('image/png') ? 'PNG' : 'JPEG';
-      try{ doc.addImage(state.logoDataUrl, fmt, marginL, y-0.15, w, h); }catch(e){ console.error('logo error', e); }
+      try{ doc.addImage(state.logoDataUrl, fmt, 4.25 - w/2, y-0.15, w, h); }catch(e){ console.error('logo error', e); }
       y += h + 0.15;
     }
 
     doc.setFont('times','normal');
 
     doc.setFontSize(10);
-    HEADER_LINES_PDF.forEach(l=>{ doc.text(l, marginL, y); y+=0.19; });
+    HEADER_LINES_PDF.forEach(l=>{ doc.text(l, 4.25, y, {align:'center'}); y+=0.19; });
     y += 0.05;
     doc.text(fmtFechaCorta(d.__fecha)||fmtFechaCorta(todayISO()), marginL, y);
     y += 0.4;
@@ -3823,7 +3845,7 @@ function generateLetterPDF(){
 
   const fnameFecha = d.__fecha || todayISO();
   const fname = `${fnameFecha}_${t.title.replace(/[^\wáéíóúñÁÉÍÓÚÑ ]/g,'').trim().replace(/\s+/g,'_')}_${(d.nombre||d.nombrePaciente||d.nombreCompleto||'paciente').replace(/\s+/g,'_')}.pdf`;
-  doc.save(fname);
+  entregarPDF(doc, fname);
 
   const nombre = d.nombre||d.nombrePaciente||d.nombreCompleto||'';
   if(state.accessToken){
@@ -3867,7 +3889,7 @@ function renderCMHPreview(){
   </div>
   <div class="footnote" style="margin-top:10px;">Firma y sello van de tu puño y letra sobre la hoja impresa.</div>
   <div class="actions">
-    <button class="btn btn-ghost" id="btnWhatsApp">📤 WhatsApp</button>
+    <button class="btn btn-ghost" id="btnWhatsApp">📤 Compartir PDF</button>
     <button class="btn btn-primary" id="btnCMHGenerate">Generar PDF</button>
   </div>`;
 }
@@ -3910,7 +3932,7 @@ function generateCMHPDF(){
 
   const cmhFnameFecha = d.fechaExtendida || todayISO();
   const cmhFname = cmhFnameFecha+'_Constancia_CMH_'+String(d.nombre).replace(/\s+/g,'_')+'.pdf';
-  doc.save(cmhFname);
+  entregarPDF(doc, cmhFname);
 
   if(state.accessToken){
     toast('PDF generado ✓ — guardando en Drive…');

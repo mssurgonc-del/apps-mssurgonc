@@ -405,11 +405,12 @@ export default function App() {
   return (
     <div className="min-h-screen bg-slate-100 text-slate-800 font-sans pb-28 lg:pb-16">
       {/* ENCABEZADO COMPACTO */}
-      <header className="bg-slate-900 text-white px-4 py-2 border-b-4 border-teal-600">
+      <header className="bg-white text-slate-900 px-4 pt-3 pb-2">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-x-3 gap-y-2">
-          <div className="min-w-0 mr-auto">
-            <h1 className="text-base sm:text-lg font-extrabold tracking-tight leading-tight">ThyroidScore · ATA 2025</h1>
-            <p className="hidden sm:block text-[11px] text-slate-400 leading-tight truncate">Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985 · Corrigendum 35(11):1350</p>
+          <div className="w-[38px] h-[38px] rounded-full bg-teal-700 text-white flex items-center justify-center shrink-0"><IconShield /></div>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-[17px] font-extrabold tracking-tight leading-tight truncate">ThyroidScore · ATA 2025</h1>
+            <p className="text-xs text-slate-500 leading-tight truncate">Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985 · Corrigendum 35(11):1350</p>
           </div>
           <div className="flex items-center gap-2 order-3 sm:order-none w-full sm:w-auto">
             <input
@@ -417,7 +418,7 @@ export default function App() {
               aria-label="Fecha de evaluación"
               value={patientMeta.fecha}
               onChange={(e) => setPatientMeta({ ...patientMeta, fecha: e.target.value })}
-              className="flex-1 sm:flex-none min-w-0 bg-slate-800 text-white text-xs font-mono px-2 py-1.5 rounded-lg border border-slate-600 focus:border-teal-400 focus:outline-none"
+              className="flex-1 sm:flex-none min-w-0 bg-slate-50 text-slate-900 text-xs font-mono px-3 py-2 rounded-full border border-slate-300 focus:border-teal-600 focus:outline-none"
             />
             <input
               type="text"
@@ -425,20 +426,20 @@ export default function App() {
               placeholder="ID (opcional)"
               value={patientMeta.id}
               onChange={(e) => setPatientMeta({ ...patientMeta, id: e.target.value })}
-              className="flex-1 sm:flex-none min-w-0 sm:w-32 bg-slate-800 text-white text-xs font-mono px-2 py-1.5 rounded-lg border border-slate-600 focus:border-teal-400 focus:outline-none"
+              className="flex-1 sm:flex-none min-w-0 sm:w-32 bg-slate-50 text-slate-900 text-xs font-mono px-3 py-2 rounded-full border border-slate-300 focus:border-teal-600 focus:outline-none"
             />
           </div>
           <button
             onClick={() => setShowStudyGuide(!showStudyGuide)}
             aria-label="Guía de estudio ATA 2025"
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-xs font-bold border transition-colors ${showStudyGuide ? 'bg-amber-300 text-amber-950 border-amber-300' : 'bg-transparent text-amber-200 border-amber-400/60 hover:bg-amber-400/10'}`}
+            className={`flex items-center gap-1.5 h-9 px-3 rounded-full text-xs font-bold border transition-colors ${showStudyGuide ? 'bg-teal-700 text-white border-teal-700' : 'bg-slate-100 text-teal-700 border-slate-100 hover:bg-slate-200'}`}
           >
             <IconBook /> <span className="hidden sm:inline">Guía</span>
           </button>
           <button
             onClick={resetAll}
             aria-label="Nuevo paciente (borra todos los datos)"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-teal-600 hover:bg-teal-500 text-white"
+            className="flex items-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-bold bg-teal-700 hover:bg-teal-800 text-white"
           >
             <IconReset /> <span className="sm:hidden">Nuevo</span><span className="hidden sm:inline">Nuevo paciente</span>
           </button>
@@ -446,8 +447,8 @@ export default function App() {
       </header>
 
       {/* NAVEGACIÓN DE PESTAÑAS CLÍNICAS */}
-      <nav className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4 py-1.5 grid grid-cols-5 gap-1 sm:gap-1.5">
+      <nav className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-slate-200 px-2 sm:px-4 pb-2.5 pt-1">
+        <div className="max-w-7xl mx-auto p-1 bg-slate-100 rounded-[22px] sm:rounded-full grid grid-cols-5 gap-1">
           {[
             { id: 'nodule', icon: <IconSearch />, l: 'TI-RADS', s: 'Ecografía' },
             { id: 'bethesda', icon: <IconCells />, l: 'Bethesda', s: 'Citología' },
@@ -459,8 +460,8 @@ export default function App() {
               key={t.id}
               onClick={() => { setActiveTab(t.id); window.scrollTo({ top: 0 }); }}
               aria-current={activeTab === t.id ? 'page' : undefined}
-              className={`flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-2 rounded-lg font-bold transition-all ${
-                activeTab === t.id ? 'bg-teal-700 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              className={`flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-2 rounded-[18px] sm:rounded-full transition-all ${
+                activeTab === t.id ? 'bg-teal-700 text-white font-bold shadow-sm' : 'bg-transparent text-slate-600 font-semibold hover:bg-white'
               }`}
             >
               {t.icon}
@@ -489,7 +490,7 @@ export default function App() {
         
         {/* GUÍA DE ESTUDIO DESPLEGABLE */}
         {showStudyGuide && (
-          <div className="mb-6 bg-white rounded-2xl border-2 border-teal-600 p-5 shadow-md">
+          <div className="mb-6 bg-white rounded-card border-2 border-teal-600 p-5 shadow-md">
             <h2 className="text-base font-black text-teal-900 uppercase tracking-wide mb-3 flex items-center gap-2">
               <IconBook /> Resumen de Aprendizaje Rápido — Cambios Clave ATA 2025
             </h2>
@@ -526,7 +527,7 @@ export default function App() {
                 <button
                   key={t.tab}
                   onClick={() => elegirTarea(t.tab)}
-                  className="text-left bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:border-teal-500 hover:bg-teal-50 transition-all"
+                  className="text-left bg-white p-4 rounded-card shadow-ms hover:border-teal-500 hover:bg-teal-50 transition-all"
                 >
                   <span className="block text-sm font-black text-slate-900">{t.titulo} →</span>
                   <span className="block text-xs text-slate-500 mt-0.5">{t.sub}</span>
@@ -540,7 +541,7 @@ export default function App() {
         {A_MANO[activeTab] && (() => {
           const falta = faltantes(activeTab, { postop, dynamic, surg, nodule }, hechos);
           return (
-            <div className="mb-4 bg-white rounded-2xl border border-slate-200 shadow-sm p-3.5 text-xs" data-testid="guia">
+            <div className="mb-4 bg-white rounded-card shadow-ms p-3.5 text-xs" data-testid="guia">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-slate-600 leading-snug"><b className="text-slate-800">Tenga a mano:</b> {A_MANO[activeTab]}</p>
                 <button onClick={() => elegirTarea('inicio')} className="shrink-0 font-bold text-teal-800 underline">Cambiar</button>
@@ -574,7 +575,7 @@ export default function App() {
               {activeTab === 'postop' ? (
                 <>
                   {/* PASO 1: EDAD E HISTOLOGÍA CON BOTONES INDIVIDUALES */}
-                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+                  <div className="bg-white p-4 sm:p-5 rounded-card shadow-ms">
                     <div className="flex items-center justify-between mb-3">
                       <h3 data-campo="ageGroup" className="text-xs font-black uppercase text-slate-500 tracking-wider">
                         1. Edad (Para AJCC 8.ª Ed. y Dosimetría R55)
@@ -790,7 +791,7 @@ export default function App() {
                   </div>
 
                   {/* PASO 2: TAMAÑO Y EXTENSIÓN EXTRATIROIDEA */}
-                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                  <div className="bg-white p-4 sm:p-5 rounded-card shadow-ms space-y-4">
                     <div>
                       <div className="flex items-center justify-between mb-2">
                         <h3 data-campo="size" className="text-xs font-black uppercase text-slate-500 tracking-wider">3. Tamaño del Tumor Primario</h3>
@@ -845,7 +846,7 @@ export default function App() {
                   </div>
 
                   {/* PASO 3: GANGLIOS, INVASIÓN VASCULAR, MÁRGENES Y MULTIFOCALIDAD */}
-                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                  <div className="bg-white p-4 sm:p-5 rounded-card shadow-ms space-y-4">
                     <div>
                       <h3 data-campo="nodes" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                         5. Estado Ganglionar Cervical (N)
@@ -1001,7 +1002,7 @@ export default function App() {
               ) : (
                 /* ==================== FORMULARIO DE SEGUIMIENTO DINÁMICO Y LABS EXACTOS ==================== */
                 <div className="space-y-4">
-                  <div className="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200 shadow-sm">
+                  <div className="bg-white p-4 sm:p-5 rounded-card shadow-ms">
                     <div>
                       <h3 data-campo="surgeryType" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                         1. Tratamiento inicial recibido (define los umbrales de respuesta)
@@ -1049,7 +1050,7 @@ export default function App() {
                     )}
                   </div>
 
-                  <div className="bg-white p-5 rounded-2xl border-2 border-teal-600 shadow-sm">
+                  <div className="bg-white p-5 rounded-card border-2 border-teal-600 shadow-sm">
                     <h3 data-campo="tg" className="text-sm font-black uppercase text-teal-900 mb-1">
                       2. Valores de laboratorio
                     </h3>
@@ -1134,7 +1135,7 @@ export default function App() {
                   </div>
 
                   {/* PARÁMETROS CLÍNICOS TABLA 9 */}
-                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                  <div className="bg-white p-5 rounded-card shadow-ms space-y-4">
                     <div>
                       <h3 data-campo="tgAb" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
                         3. Tendencia de anticuerpos (TgAb)
@@ -1190,7 +1191,7 @@ export default function App() {
               <div className="lg:sticky lg:top-16 space-y-4">
                 
                 {/* TARJETA DE RESULTADO POSOPERATORIO */}
-                <div className={`rounded-2xl border-2 shadow-lg overflow-hidden transition-all ${curStyle.card}`}>
+                <div className={`rounded-card border-2 shadow-lg overflow-hidden transition-all ${curStyle.card}`}>
                   <div className={`h-2 w-full ${curStyle.band}`} />
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-2 mb-2">
@@ -1281,7 +1282,7 @@ export default function App() {
                 </div>
 
                 {/* TARJETA DE RE-ESTRATIFICACIÓN DINÁMICA (SIEMPRE VISIBLE Y VINCULADA) */}
-                <div className={`rounded-2xl border-2 shadow-md overflow-hidden transition-all ${dynStyle.card}`}>
+                <div className={`rounded-card border-2 shadow-md overflow-hidden transition-all ${dynStyle.card}`}>
                   <div className={`h-1.5 w-full ${dynStyle.band}`} />
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-1">
@@ -1319,14 +1320,14 @@ export default function App() {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => handleExport('emr')}
-                    className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-4 rounded-xl font-black text-xs sm:text-sm shadow-md transition-all"
+                    className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-4 rounded-full font-black text-xs sm:text-sm shadow-md transition-all"
                   >
                     <IconCopy />
                     {copyFeedback === 'emr' ? '¡Copiado al Expediente!' : 'Copiar Expediente (EMR)'}
                   </button>
                   <button
                     onClick={() => handleExport('excel')}
-                    className="flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white py-3 px-4 rounded-xl font-black text-xs sm:text-sm shadow-md transition-all"
+                    className="flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white py-3 px-4 rounded-full font-black text-xs sm:text-sm shadow-md transition-all"
                   >
                     <IconExcel />
                     {copyFeedback === 'excel' ? '¡Fila TSV Copiada!' : 'Tabular Fila (Excel)'}
@@ -1340,7 +1341,7 @@ export default function App() {
         {/* ==================== PESTAÑA 3: CIRUGÍA PREOPERATORIA (TABLA 5, R11-R25) ==================== */}
         {activeTab === 'surgery' && (
           <div className="grid lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4" {...zonaDatos}>
+            <div className="lg:col-span-7 bg-white p-5 rounded-card shadow-ms space-y-4" {...zonaDatos}>
               <h2 className="text-base font-black text-slate-900">
                 Planificación Quirúrgica Preoperatoria y Vigilancia Activa (R11–R25)
               </h2>
@@ -1443,7 +1444,7 @@ export default function App() {
         {/* ==================== PESTAÑA 4: NÓDULO (ACR TI-RADS 2017 — Tessler FN, et al. J Am Coll Radiol 2017;14:587-595) ==================== */}
         {activeTab === 'nodule' && (
           <div className="grid lg:grid-cols-12 gap-6">
-            <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4" {...zonaDatos}>
+            <div className="lg:col-span-7 bg-white p-5 rounded-card shadow-ms space-y-4" {...zonaDatos}>
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <h2 className="text-base font-black text-slate-900">Evaluación de Nódulo (ACR TI-RADS 2017)</h2>
                 <span className="text-[11px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">TI-RADS: Tessler FN, et al. J Am Coll Radiol 2017;14:587–595 · Bethesda 2023 (vía PathologyOutlines)</span>
@@ -1534,7 +1535,7 @@ export default function App() {
               </div>
             </div>
 
-            <div className="lg:col-span-5 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3 text-xs">
+            <div className="lg:col-span-5 bg-white p-5 rounded-card shadow-ms space-y-3 text-xs">
               {(() => {
                 const t = evaluateTirads(nodule);
                 return (
@@ -1574,7 +1575,7 @@ export default function App() {
           const tone = { none: 'bg-slate-50 border-slate-200', '1': 'bg-slate-50 border-slate-300', '2': 'bg-emerald-50 border-emerald-300', '3n': 'bg-amber-50 border-amber-300', '3o': 'bg-amber-50 border-amber-300', '4': 'bg-orange-50 border-orange-300', '4o': 'bg-orange-50 border-orange-300', '5': 'bg-red-50 border-red-300', '6': 'bg-red-50 border-red-400' }[nodule.bethesda];
           return (
             <div className="grid lg:grid-cols-12 gap-6">
-              <div className="lg:col-span-7 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+              <div className="lg:col-span-7 bg-white p-5 rounded-card shadow-ms space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
                   <h2 className="text-base font-black text-slate-900">Citología de tiroides (Bethesda 2023)</h2>
                   <span className="text-[11px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">Fuente: PathologyOutlines (resumen de Ali SZ, et al.)</span>
@@ -1602,7 +1603,7 @@ export default function App() {
               </div>
 
               <div className="lg:col-span-5 space-y-3 text-xs">
-                <div className={`p-4 rounded-2xl border-2 ${tone}`}>
+                <div className={`p-4 rounded-card border-2 ${tone}`}>
                   <span className="text-[10px] font-mono uppercase text-slate-500 block">Bethesda 2023 · Riesgo de malignidad</span>
                   {bth.rom ? (
                     <>
@@ -1630,7 +1631,7 @@ export default function App() {
           <div className="mt-4 hidden lg:flex justify-end">
             <button
               onClick={() => handleExport('preop')}
-              className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-5 rounded-xl font-black text-sm shadow-md"
+              className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-5 rounded-full font-black text-sm shadow-md"
             >
               <IconCopy /> {copyFeedback === 'preop' ? '¡Nota preoperatoria copiada!' : 'Copiar nota preoperatoria (TI-RADS + Bethesda + Cirugía)'}
             </button>

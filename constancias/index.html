@@ -8,86 +8,184 @@
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://apis.google.com/js/api.js" async defer></script>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Fraunces:ital,opsz,wght@1,9..144,500&display=swap');
+/* MS-UI:INICIO */
+/* Estilo común de las apps (diseño «C»: estructura Consultorio, colores Clínico).
+   Fuente única: shared/ms-ui.css. scripts/sync-ui.py lo copia dentro de cada app entre
+   los marcadores MS-UI:INICIO / MS-UI:FIN (cada app es un solo archivo y funciona sin conexión). */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+:root{
+  --ms-bg:#F1F5F9;
+  --ms-surface:#FFFFFF;
+  --ms-surface-2:#F8FAFC;
+  --ms-line:#E2E8F0;
+  --ms-line-strong:#CBD5E1;
+  --ms-ink:#0F172A;
+  --ms-ink-2:#334155;
+  --ms-muted:#475569;
+  --ms-faint:#94A3B8;
+  --ms-accent:#0F766E;
+  --ms-accent-hover:#115E59;
+  --ms-accent-soft:#CCFBF1;
+  --ms-accent-ink:#115E59;
+  --ms-warn-bg:#FFFBEB;
+  --ms-warn-line:#FCD34D;
+  --ms-warn-ink:#78350F;
+  --ms-ok-bg:#D1FAE5;
+  --ms-ok-ink:#065F46;
+  --ms-danger:#B91C1C;
+  --ms-danger-bg:#FEF2F2;
+  --ms-radius-card:18px;
+  --ms-radius-field:12px;
+  --ms-pill:999px;
+  --ms-shadow:0 1px 2px rgba(15,23,42,.06), 0 4px 14px rgba(15,23,42,.05);
+  --ms-shadow-up:0 -6px 18px rgba(15,23,42,.06);
+  --ms-font:'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+.ms-app{font-family:var(--ms-font);color:var(--ms-ink);background:var(--ms-bg);-webkit-tap-highlight-color:transparent;}
+.ms-app *{box-sizing:border-box;}
+.ms-app button,.ms-app input,.ms-app select,.ms-app textarea{font-family:inherit;}
+
+/* Encabezado */
+.ms-header{background:var(--ms-surface);display:flex;align-items:center;gap:12px;padding:12px 16px 10px;}
+.ms-mark{width:38px;height:38px;border-radius:50%;background:var(--ms-accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;}
+.ms-mark svg{width:19px;height:19px;}
+.ms-titles{flex:1;min-width:0;}
+.ms-title{font-size:17px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin:0;color:var(--ms-ink);}
+.ms-sub{font-size:12px;color:var(--ms-muted);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ms-iconbtn{width:44px;height:44px;border-radius:50%;border:none;background:var(--ms-bg);color:var(--ms-accent);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+.ms-iconbtn:hover{background:var(--ms-line);}
+.ms-iconbtn svg{width:20px;height:20px;}
+.ms-chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:var(--ms-pill);border:1px solid var(--ms-line);background:var(--ms-surface);color:var(--ms-muted);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.ms-chip .ms-dot{width:8px;height:8px;border-radius:50%;background:var(--ms-faint);}
+.ms-chip.on{background:var(--ms-accent-soft);border-color:var(--ms-accent-soft);color:var(--ms-accent-ink);}
+.ms-chip.on .ms-dot{background:var(--ms-accent);}
+
+/* Pestañas tipo píldora */
+.ms-tabsbar{background:var(--ms-surface);padding:0 12px 10px;border-bottom:1px solid var(--ms-line);}
+.ms-tabs{background:var(--ms-bg);border-radius:var(--ms-pill);padding:4px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;}
+.ms-tab{height:38px;border-radius:var(--ms-pill);border:none;background:transparent;color:var(--ms-muted);font-size:13px;font-weight:600;cursor:pointer;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ms-tab:hover{color:var(--ms-ink);}
+.ms-tab[aria-current="page"]{background:var(--ms-accent);color:#fff;font-weight:700;box-shadow:0 1px 3px rgba(15,23,42,.15);}
+
+/* Títulos y tarjetas */
+.ms-section-title{margin:0 4px 8px;font-size:13px;font-weight:800;color:var(--ms-accent);}
+.ms-card{background:var(--ms-surface);border-radius:var(--ms-radius-card);box-shadow:var(--ms-shadow);padding:16px;}
+.ms-list{background:var(--ms-surface);border-radius:var(--ms-radius-card);box-shadow:var(--ms-shadow);overflow:hidden;}
+.ms-row{width:100%;border:none;background:transparent;text-align:left;color:var(--ms-ink);min-height:56px;padding:10px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--ms-bg);text-decoration:none;}
+.ms-row:last-child{border-bottom:none;}
+.ms-row:hover{background:var(--ms-surface-2);}
+.ms-row[aria-current="true"]{background:var(--ms-accent);color:#fff;}
+.ms-row[aria-current="true"] .ms-row-d{color:#CCFBF1;}
+.ms-row[aria-current="true"] .ms-badge-n{background:rgba(255,255,255,.18);color:#fff;}
+.ms-badge-n{min-width:34px;height:34px;padding:0 6px;border-radius:10px;background:var(--ms-accent-soft);color:var(--ms-accent-ink);font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;}
+.ms-row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.ms-row-t{font-size:14.5px;font-weight:700;line-height:1.3;}
+.ms-row-d{font-size:12px;color:var(--ms-muted);line-height:1.35;}
+.ms-chev{flex:none;color:var(--ms-faint);}
+
+/* Campos */
+.ms-label{display:block;font-size:12px;font-weight:600;color:var(--ms-muted);margin-bottom:5px;}
+.ms-input{width:100%;min-height:46px;border-radius:var(--ms-radius-field);border:1px solid var(--ms-line-strong);background:var(--ms-surface-2);padding:10px 14px;font-size:15px;color:var(--ms-ink);}
+.ms-input:focus{outline:2px solid var(--ms-accent);outline-offset:1px;border-color:var(--ms-accent);background:#fff;}
+.ms-search{position:relative;}
+.ms-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#64748B;pointer-events:none;}
+.ms-search input{width:100%;height:48px;border-radius:var(--ms-pill);border:1px solid var(--ms-line-strong);background:var(--ms-surface);padding:0 16px 0 42px;font-size:15px;color:var(--ms-ink);}
+.ms-search input:focus{outline:2px solid var(--ms-accent);outline-offset:1px;}
+.ms-seg{background:var(--ms-bg);border-radius:var(--ms-radius-field);padding:3px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;}
+.ms-seg button{height:40px;border-radius:10px;border:none;background:transparent;color:var(--ms-muted);font-size:14px;font-weight:600;cursor:pointer;}
+.ms-seg button[aria-pressed="true"]{background:var(--ms-accent);color:#fff;font-weight:700;}
+
+/* Botones */
+.ms-btn{min-height:48px;padding:0 20px;border-radius:var(--ms-pill);border:1px solid transparent;font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;}
+.ms-btn-primary{background:var(--ms-accent);color:#fff;box-shadow:0 4px 12px rgba(15,118,110,.28);}
+.ms-btn-primary:hover{background:var(--ms-accent-hover);}
+.ms-btn-secondary{background:var(--ms-surface);border-color:var(--ms-line-strong);color:var(--ms-ink);}
+.ms-btn-secondary:hover{background:var(--ms-surface-2);}
+.ms-btn-ghost{background:transparent;color:var(--ms-accent);}
+.ms-btn-danger{background:var(--ms-surface);border-color:var(--ms-line);color:var(--ms-danger);min-height:32px;padding:0 12px;font-size:12.5px;font-weight:600;}
+.ms-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;}
+
+/* Barra de acciones fija abajo (celular) */
+.ms-actionbar{position:sticky;bottom:0;z-index:20;background:var(--ms-surface);border-top:1px solid var(--ms-line);box-shadow:var(--ms-shadow-up);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;gap:10px;}
+.ms-actionbar>*{flex:1;}
+
+/* Avisos */
+.ms-banner{border-radius:var(--ms-radius-field);padding:10px 14px;font-size:13px;line-height:1.45;}
+.ms-banner-warn{background:var(--ms-warn-bg);color:var(--ms-warn-ink);}
+.ms-banner-ok{background:var(--ms-ok-bg);color:var(--ms-ok-ink);}
+.ms-badge{display:inline-flex;align-items:center;border-radius:var(--ms-pill);padding:4px 10px;font-size:12px;font-weight:700;}
+.ms-badge-ok{background:var(--ms-ok-bg);color:var(--ms-ok-ink);}
+.ms-toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ms-ink);color:#fff;padding:11px 18px;border-radius:var(--ms-pill);font-size:13px;box-shadow:var(--ms-shadow);z-index:60;max-width:90%;text-align:center;}
+
+/* Computadora: lista a la izquierda, contenido al centro */
+@media (min-width:1024px){
+  .ms-header{padding:14px 28px;}
+  .ms-tabsbar{padding:0 28px 12px;}
+  .ms-tabs{max-width:520px;}
+  .ms-split{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start;}
+  .ms-split>aside{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto;padding-bottom:16px;}
+  .ms-actionbar{position:static;box-shadow:none;border-top:none;background:transparent;padding:16px 0 0;justify-content:flex-end;}
+  .ms-actionbar>*{flex:0 1 220px;}
+}
+/* MS-UI:FIN */
+/* ---- Constancias sobre el estilo común ---- */
   :root{
-    --bg:#E9E1CE;
-    --paper:#FFFFFF;
-    --ink:#15120F;
-    --ink-soft:#5C564A;
-    --line:#D9CCAF;
-    --accent:#6B1E2A;
-    --accent-dark:#4A121B;
-    --accent-soft:#F2E3E1;
-    --gold:#B8935A;
-    --gold-soft:#F3E9D8;
-    --warn:#9C5A22;
-    --warn-soft:#F7ECDC;
-    --danger:#B0402A;
-    --radius:12px;
-    --shadow:0 2px 4px rgba(21,18,15,.07), 0 16px 32px -16px rgba(21,18,15,.32);
-    --font-display:'Fraunces','Georgia','Times New Roman',serif;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    --bg:var(--ms-bg); --paper:var(--ms-surface); --ink:var(--ms-ink); --ink-soft:var(--ms-muted);
+    --line:var(--ms-line); --accent:var(--ms-accent); --accent-dark:var(--ms-accent-hover); --accent-soft:var(--ms-accent-soft);
+    --gold:var(--ms-accent); --gold-soft:var(--ms-accent-soft); --warn:#B45309; --warn-soft:var(--ms-warn-bg); --danger:var(--ms-danger);
+    --radius:var(--ms-radius-card); --shadow:var(--ms-shadow); --font-display:var(--ms-font);
   }
   *{box-sizing:border-box;}
-  body{margin:0;background:var(--bg);color:var(--ink);}
-  .app{max-width:760px;margin:0 auto;padding:16px 16px 64px;}
-  header.top{display:flex;align-items:center;justify-content:space-between;padding:14px 2px 20px;border-bottom:1px solid var(--line);margin-bottom:20px;}
-  header.top .brand{display:flex;align-items:center;gap:10px;}
-  header.top .ribbon{flex:none;color:var(--accent);}
-  header.top h1{font-family:var(--font-display);font-size:21px;margin:0;font-weight:600;letter-spacing:.1px;color:var(--ink);}
-  header.top .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;font-style:italic;}
-  .gbtn{border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:20px;padding:7px 14px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:6px;}
-  .gbtn.connected{background:var(--accent-soft);color:var(--accent-dark);border-color:var(--accent-soft);}
-  .dot{width:7px;height:7px;border-radius:50%;background:#B3AA98;}
-  .dot.on{background:var(--accent);}
+  body{margin:0;background:var(--ms-bg);color:var(--ms-ink);font-family:var(--ms-font);}
+  .shell{min-height:100vh;}
+  .app{max-width:760px;margin:0 auto;padding:16px 14px 24px;}
+  @media (min-width:1024px){ .app{max-width:1240px;padding:24px 28px 40px;} .app.narrow{max-width:820px;} }
 
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;}
-  @media (max-width:480px){.grid{grid-template-columns:1fr;}}
-  .home-section{margin-bottom:26px;}
-  .home-section-title{font-family:var(--font-display);font-size:14.5px;font-weight:600;font-style:italic;color:var(--accent-dark);margin-bottom:12px;padding-left:12px;border-left:2px solid var(--gold);letter-spacing:.2px;}
-  .card{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:16px;text-align:left;cursor:pointer;box-shadow:var(--shadow);transition:transform .12s ease, box-shadow .12s ease;}
-  .card:active{transform:scale(.98);}
-  .card .n{font-family:var(--font-display);font-size:13px;color:var(--gold);font-weight:600;letter-spacing:.3px;}
-  .card .t{font-size:14.5px;font-weight:600;margin-top:5px;line-height:1.3;color:var(--ink);}
-  .card .d{font-size:12px;color:var(--ink-soft);margin-top:6px;line-height:1.4;}
+  .grid{display:flex;flex-direction:column;}
+  .home-section{margin-bottom:18px;}
+  .home-section-title{margin:0 4px 8px;font-size:13px;font-weight:800;color:var(--ms-accent);}
 
-  .backbar{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-  .backbtn{border:none;background:none;color:var(--accent-dark);font-size:14px;font-weight:600;cursor:pointer;padding:6px 0;display:flex;align-items:center;gap:4px;}
-  .screentitle{font-family:var(--font-display);font-size:21px;font-weight:600;margin:0;color:var(--ink);}
+  .backbar{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .backbtn{border:none;background:none;color:var(--ms-accent);font-size:14px;font-weight:700;cursor:pointer;padding:10px 0;min-height:44px;display:flex;align-items:center;gap:4px;}
+  .screentitle{font-size:20px;font-weight:800;letter-spacing:-.02em;margin:0;color:var(--ms-ink);}
 
-  .patient-box{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:18px;}
-  .patient-box.new{border-color:var(--warn);background:var(--warn-soft);}
+  .patient-box{background:var(--ms-surface);border:none;border-radius:var(--ms-radius-card);box-shadow:var(--ms-shadow);padding:16px;margin-bottom:16px;}
+  .patient-box.new{background:var(--ms-warn-bg);}
   .patient-row{display:flex;gap:8px;}
   .patient-row input{flex:1;}
-  .search-results{margin-top:8px;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--paper);}
-  .search-item{padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13px;}
+  .search-results{margin-top:8px;border:1px solid var(--ms-line);border-radius:var(--ms-radius-field);overflow:hidden;background:var(--ms-surface);}
+  .search-item{padding:12px 14px;border-bottom:1px solid var(--ms-bg);cursor:pointer;font-size:13.5px;}
   .search-item:last-child{border-bottom:none;}
-  .search-item:hover,.search-item:active{background:var(--accent-soft);}
-  .search-item b{font-weight:600;}
-  .search-item span{color:var(--ink-soft);}
-  .newpatient-btn{width:100%;margin-top:8px;background:none;border:1px dashed var(--gold);color:var(--warn);border-radius:8px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;}
-  .selected-chip{display:flex;align-items:center;justify-content:space-between;background:var(--accent-soft);color:var(--accent-dark);border-radius:8px;padding:9px 12px;font-size:13px;font-weight:600;}
-  .selected-chip button{background:none;border:none;color:var(--accent-dark);font-size:12px;text-decoration:underline;cursor:pointer;}
+  .search-item:hover,.search-item:active{background:var(--ms-accent-soft);}
+  .search-item b{font-weight:700;}
+  .search-item span{color:var(--ms-muted);}
+  .newpatient-btn{width:100%;margin-top:8px;min-height:44px;background:none;border:1px dashed var(--ms-line-strong);color:var(--ms-accent);border-radius:var(--ms-pill);padding:9px;font-size:13.5px;font-weight:700;cursor:pointer;}
+  .selected-chip{display:flex;align-items:center;justify-content:space-between;background:var(--ms-accent-soft);color:var(--ms-accent-ink);border-radius:var(--ms-radius-field);padding:10px 14px;font-size:13.5px;font-weight:700;}
+  .selected-chip button{background:none;border:none;color:var(--ms-accent-ink);font-size:12.5px;text-decoration:underline;cursor:pointer;min-height:32px;}
 
   .field{margin-bottom:14px;}
-  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--ink-soft);margin-bottom:5px;}
-  .field input, .field select, .field textarea{
-    width:100%;border:1px solid var(--line);border-radius:8px;padding:10px 11px;font-size:14.5px;
-    font-family:inherit;background:var(--paper);color:var(--ink);
+  .field label{display:block;font-size:12px;font-weight:600;color:var(--ms-muted);margin-bottom:5px;}
+  .field input, .field select, .field textarea, .app input[type=text], .app input[type=number], .app input[type=time], .app select, .app textarea{
+    width:100%;min-height:46px;border:1px solid var(--ms-line-strong);border-radius:var(--ms-radius-field);padding:10px 14px;font-size:15px;
+    font-family:inherit;background:var(--ms-surface-2);color:var(--ms-ink);
   }
-  .field textarea{min-height:64px;resize:vertical;}
-  .field input:focus,.field select:focus,.field textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent);}
-  .field.locked input{background:#F1EEE6;color:var(--ink-soft);}
+  .field textarea, .app textarea{min-height:72px;resize:vertical;}
+  .field input:focus,.field select:focus,.field textarea:focus,.app input:focus,.app select:focus,.app textarea:focus{outline:2px solid var(--ms-accent);outline-offset:1px;border-color:var(--ms-accent);background:#fff;}
+  .field.locked input{background:var(--ms-bg);color:var(--ms-muted);}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .app input[type=checkbox]{width:18px;height:18px;min-height:0;accent-color:var(--ms-accent);}
+  .app input[type=file]{min-height:0;background:none;border:none;padding:6px 0;}
 
-  .actions{display:flex;gap:10px;margin-top:22px;}
-  .btn{flex:1;padding:13px;border-radius:9px;border:none;font-size:14.5px;font-weight:700;cursor:pointer;}
-  .btn-primary{background:var(--accent);color:#fff;}
-  .btn-primary:active{background:var(--accent-dark);}
-  .btn-ghost{background:var(--paper);border:1px solid var(--line);color:var(--ink);}
-  .btn:disabled{opacity:.5;cursor:not-allowed;}
+  .actions{position:sticky;bottom:0;z-index:20;display:flex;gap:10px;margin:22px -14px 0;padding:12px 14px calc(12px + env(safe-area-inset-bottom));background:var(--ms-surface);border-top:1px solid var(--ms-line);box-shadow:var(--ms-shadow-up);}
+  @media (min-width:1024px){ .actions{position:static;margin:22px 0 0;padding:0;background:none;border:none;box-shadow:none;justify-content:flex-end;} .actions .btn{flex:0 1 230px;} }
+  .btn{flex:1;min-height:50px;padding:0 18px;border-radius:var(--ms-pill);border:1px solid transparent;font-size:15px;font-weight:700;cursor:pointer;}
+  .btn-primary{background:var(--ms-accent);color:#fff;box-shadow:0 4px 12px rgba(15,118,110,.28);}
+  .btn-primary:hover,.btn-primary:active{background:var(--ms-accent-hover);}
+  .btn-ghost{background:var(--ms-surface);border-color:var(--ms-line-strong);color:var(--ms-ink);}
+  .btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;}
 
-  .paper-preview{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:38px 34px;font-family:Georgia,'Times New Roman',serif;font-size:13.5px;line-height:1.55;color:#20242B;margin-bottom:18px;}
+  .paper-preview{background:#fff;border:1px solid var(--ms-line);border-radius:var(--ms-radius-field);box-shadow:var(--ms-shadow);padding:38px 34px;font-family:Georgia,'Times New Roman',serif;font-size:13.5px;line-height:1.55;color:#20242B;margin-bottom:18px;}
+  @media (max-width:480px){ .paper-preview{padding:24px 18px;} }
   .paper-preview .ph{font-size:12px;line-height:1.5;margin-bottom:18px;}
   .paper-preview .ph b{display:block;font-size:13.5px;}
   .paper-preview p{margin:0 0 12px;}
@@ -96,24 +194,31 @@
   .paper-preview .doctitle{font-weight:700;text-align:center;text-decoration:underline;margin-bottom:16px;font-size:14px;}
   .paper-preview .sig{margin-top:34px;}
 
-  .hist-item{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:13px 14px;margin-bottom:9px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
-  .hist-item .hi-t{font-size:11px;color:var(--accent);font-weight:700;}
-  .hist-item .hi-n{font-size:14px;font-weight:600;margin-top:2px;}
-  .hist-item .hi-d{font-size:11.5px;color:var(--ink-soft);margin-top:2px;}
-  .hist-item button{border:1px solid var(--line);background:var(--paper);border-radius:7px;padding:7px 12px;font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .hist-item{background:var(--ms-surface);border-radius:var(--ms-radius-card);box-shadow:var(--ms-shadow);padding:14px 16px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;}
+  .hist-item .hi-t{font-size:11.5px;color:var(--ms-accent);font-weight:800;}
+  .hist-item .hi-n{font-size:14.5px;font-weight:700;margin-top:2px;}
+  .hist-item .hi-d{font-size:12px;color:var(--ms-muted);margin-top:2px;}
+  .hist-item button{border:1px solid var(--ms-line-strong);background:var(--ms-surface);border-radius:var(--ms-pill);min-height:40px;padding:0 14px;font-size:13px;font-weight:700;color:var(--ms-ink);cursor:pointer;white-space:nowrap;}
 
-  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 18px;border-radius:20px;font-size:13px;box-shadow:var(--shadow);z-index:50;max-width:90%;text-align:center;}
-  .toast.warn{background:var(--warn);}
-  .toast.err{background:var(--danger);}
+  .toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ms-ink);color:#fff;padding:11px 18px;border-radius:var(--ms-pill);font-size:13px;box-shadow:var(--ms-shadow);z-index:60;max-width:90%;text-align:center;}
+  .toast.warn{background:#B45309;}
+  .toast.err{background:var(--ms-danger);}
 
-  .empty{text-align:center;padding:50px 20px;color:var(--ink-soft);font-size:13.5px;}
-  .footnote{font-size:11.5px;color:var(--ink-soft);margin-top:6px;line-height:1.5;}
-  .cmh-tune{background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-top:4px;}
-  .cmh-tune summary{font-size:13px;font-weight:600;color:var(--accent-dark);cursor:pointer;}
+  .empty{text-align:center;padding:50px 20px;color:var(--ms-muted);font-size:14px;}
+  .footnote{font-size:12px;color:var(--ms-muted);margin-top:6px;line-height:1.5;}
+  .cmh-tune{background:var(--ms-surface);border-radius:var(--ms-radius-card);box-shadow:var(--ms-shadow);padding:14px;margin-top:4px;}
+  .cmh-tune summary{font-size:13.5px;font-weight:700;color:var(--ms-accent);cursor:pointer;min-height:32px;}
+  .ajustes-list{margin-bottom:16px;}
+  .app .ms-search input{padding-left:42px;border-radius:var(--ms-pill);background:var(--ms-surface);min-height:48px;}
+  @media (min-width:1024px){
+    .ms-header,.ms-tabsbar{padding-left:max(28px, calc((100vw - 1240px) / 2 + 28px));padding-right:max(28px, calc((100vw - 1240px) / 2 + 28px));}
+    .form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;}
+    .form-grid .field:has(textarea),.form-grid .field:has(input[type=checkbox]),.form-grid .field:has(.selected-chip){grid-column:1 / -1;}
+  }
 </style>
 </head>
 <body>
-<div class="app" id="app"></div>
+<div class="shell ms-app" id="app"></div>
 
 <script>
 'use strict';
@@ -2474,47 +2579,69 @@ function checkedItems(d, key, otroKey){
 /* ===================== RENDER ===================== */
 const app = document.getElementById('app');
 
+const SCREENS_DOCS = ['home','form','preview','cmh_preview'];
+const SCREENS_AJUSTES = ['ajustes','logo','signature','google'];
+const esAncho = ()=> window.matchMedia('(min-width:1024px)').matches;
 function render(){
-  let html = renderHeader();
-  if(state.screen === 'home') html += renderHome();
-  else if(state.screen === 'form') html += renderForm();
-  else if(state.screen === 'preview') html += renderPreview();
-  else if(state.screen === 'cmh_preview') html += renderCMHPreview();
-  else if(state.screen === 'history') html += renderHistory();
-  else if(state.screen === 'logo') html += renderLogoScreen();
-  else if(state.screen === 'signature') html += renderSignatureScreen();
-  else if(state.screen === 'google') html += renderGoogleScreen();
-  app.innerHTML = html;
+  let content = '';
+  if(state.screen === 'home') content = renderHome();
+  else if(state.screen === 'form') content = renderForm();
+  else if(state.screen === 'preview') content = renderPreview();
+  else if(state.screen === 'cmh_preview') content = renderCMHPreview();
+  else if(state.screen === 'history') content = renderHistory();
+  else if(state.screen === 'ajustes') content = renderAjustes();
+  else if(state.screen === 'logo') content = renderLogoScreen();
+  else if(state.screen === 'signature') content = renderSignatureScreen();
+  else if(state.screen === 'google') content = renderGoogleScreen();
+  // En computadora, mientras se llena o revisa un documento, la lista queda a la izquierda.
+  const dividido = esAncho() && SCREENS_DOCS.includes(state.screen) && state.screen !== 'home';
+  const cuerpo = dividido ? `<div class="ms-split"><aside aria-label="Documentos">${renderHome(true)}</aside><main>${content}</main></div>` : content;
+  app.innerHTML = renderHeader() + renderTabs() + `<div class="app${dividido ? '' : ' narrow'}">${cuerpo}</div>`;
   bindEvents();
 }
+let anchoPrevio = esAncho();
+window.addEventListener('resize', ()=>{ if(esAncho() !== anchoPrevio){ anchoPrevio = esAncho(); render(); } });
+
+const ICON_DOC = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 15l2 2 4-4"/></svg>';
+const ICON_GEAR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68 1.65 1.65 0 0 0 10 3.17V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+const ICON_CHEV = '<svg class="ms-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>';
+const ICON_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>';
 
 function renderHeader(){
   const on = !!state.accessToken;
   return `
-  <header class="top">
-    <div class="brand">
-      <svg class="ribbon" width="20" height="24" viewBox="0 0 22 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M11 12C11 12 4 8 4 4.5C4 2.5 5.8 1 8 1C9.6 1 11 2 11 4C11 2 12.4 1 14 1C16.2 1 18 2.5 18 4.5C18 8 11 12 11 12Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
-        <path d="M11 12L5 25M11 12L17 25" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
-      </svg>
-      <div>
-        <h1>Constancias</h1>
-        <div class="sub">Dr. Manuel Salinas · Cirujano Oncólogo</div>
-      </div>
+  <header class="ms-header">
+    <div class="ms-mark">${ICON_DOC}</div>
+    <div class="ms-titles">
+      <h1 class="ms-title">Constancias</h1>
+      <div class="ms-sub">Dr. Manuel Salinas · Cirujano Oncólogo</div>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      ${state.screen!=='history' ? `<button class="gbtn" id="btnHistory">Historial</button>` : ''}
-      ${state.screen!=='logo' ? `<button class="gbtn" id="btnLogo">🖼 Encabezado</button>` : ''}
-      ${state.screen!=='signature' ? `<button class="gbtn" id="btnSignature">✍ Firma</button>` : ''}
-      ${state.screen!=='google' ? `<button class="gbtn" id="btnGoogleCfg">⚙ Google</button>` : ''}
-      <button class="gbtn ${on?'connected':''}" id="btnGoogle"><span class="dot ${on?'on':''}"></span>${on?'Google conectado':'Conectar Google'}</button>
-    </div>
+    <button class="ms-chip ${on?'on':''}" id="btnGoogle" title="${on?'Google conectado':'Conectar Google'}"><span class="ms-dot"></span>${on?'Google':'Conectar'}</button>
+    <button class="ms-iconbtn" id="btnAjustesIcon" aria-label="Ajustes">${ICON_GEAR}</button>
   </header>`;
+}
+
+function renderTabs(){
+  const cur = SCREENS_DOCS.includes(state.screen) ? 'docs' : state.screen==='history' ? 'hist' : 'ajustes';
+  const tab = (id, key, label)=> `<button class="ms-tab" id="${id}" ${cur===key?'aria-current="page"':''}>${label}</button>`;
+  return `<nav class="ms-tabsbar" aria-label="Secciones"><div class="ms-tabs">${tab('tabDocs','docs','Documentos')}${tab('btnHistory','hist','Historial')}${tab('tabAjustes','ajustes','Ajustes')}</div></nav>`;
+}
+
+function renderAjustes(){
+  const on = !!state.accessToken;
+  const fila = (id, n, t, d)=> `<button class="ms-row" id="${id}"><span class="ms-badge-n">${n}</span><span class="ms-row-main"><span class="ms-row-t">${t}</span><span class="ms-row-d">${d}</span></span>${ICON_CHEV}</button>`;
+  return `
+  <h2 class="screentitle" style="margin:6px 4px 14px;">Ajustes</h2>
+  <div class="ms-list ajustes-list">
+    ${fila('btnLogo','1','Encabezado de los documentos','Nombre, dirección, teléfono, correo y logo o banner')}
+    ${fila('btnSignature','2','Firma electrónica','Para las constancias que no llevan firma y sello físicos')}
+    ${fila('btnGoogleCfg','3','Conexión con Google', on ? (state.sheetName ? 'Conectado · hoja: '+escapeHTML(state.sheetName) : 'Conectado · falta elegir la hoja') : 'Sin conectar · lista de pacientes, Drive e historial')}
+  </div>`;
 }
 
 function renderLogoScreen(){
   return `
-  <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
+  <div class="backbar"><button class="backbtn" id="btnBack">← Ajustes</button></div>
   <h2 class="screentitle">Encabezado de los documentos</h2>
   <div style="height:14px"></div>
   <div class="patient-box">
@@ -2546,7 +2673,7 @@ function renderLogoScreen(){
 
 function renderSignatureScreen(){
   return `
-  <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
+  <div class="backbar"><button class="backbtn" id="btnBack">← Ajustes</button></div>
   <h2 class="screentitle">Firma electrónica</h2>
   <div style="height:14px"></div>
   <div class="footnote" style="margin-bottom:10px;">Se usa solo en las constancias que no requieren firma y sello físicos: Valoración preoperatoria, Referencia a especialista, Consulta de paciente, Acompañante — consulta, Tratamiento, Acompañante — hospitalización, Diagnóstico y plan quirúrgico, Programación quirúrgica, Presupuesto aproximado, y Constancia para aerolínea. Los consentimientos informados, incapacidades IHSS y la constancia CMH siguen necesitando tu firma y sello reales.</div>
@@ -2567,7 +2694,7 @@ function renderSignatureScreen(){
 function renderGoogleScreen(){
   const tabs = (state.sheetTabs||[]).filter(t=>![HISTORY_TAB, SPECIALISTS_TAB, CONFIG_TAB].includes(t));
   return `
-  <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
+  <div class="backbar"><button class="backbtn" id="btnBack">← Ajustes</button></div>
   <h2 class="screentitle">Conexión con Google</h2>
   <div style="height:14px"></div>
   <div class="patient-box">
@@ -2596,19 +2723,20 @@ const HOME_CATEGORIES = [
   {label:'Constancias y trámites generales', ids:['consulta','acompanante_consulta','tratamiento','acompanante_hosp','dxplan','programacion','aerolinea']},
 ];
 
-function renderHome(){
-  return HOME_CATEGORIES.map(cat=>{
+function renderHome(compacto){
+  const activo = state.tpl && state.tpl.id;
+  const secciones = HOME_CATEGORIES.map(cat=>{
     const items = cat.ids.map(id=>TEMPLATES.find(t=>t.id===id)).filter(Boolean);
     if(!items.length) return '';
-    const cards = items.map(t => `
-      <div class="card" data-tpl="${t.id}">
-        <div class="n">${t.n}</div>
-        <div class="t">${t.title}</div>
-        <div class="d">${t.desc}</div>
-      </div>
-    `).join('');
-    return `<div class="home-section"><div class="home-section-title">${cat.label}</div><div class="grid">${cards}</div></div>`;
+    const filas = items.map(t => `
+      <button class="ms-row" data-tpl="${t.id}" ${t.id===activo?'aria-current="true"':''}>
+        <span class="ms-badge-n">${t.n}</span>
+        <span class="ms-row-main"><span class="ms-row-t">${t.title.replace(/^Consentimiento — /,'')}</span>${compacto ? '' : `<span class="ms-row-d">${t.desc}</span>`}</span>
+        ${ICON_CHEV}
+      </button>`).join('');
+    return `<section class="home-section"><h2 class="home-section-title">${cat.label}</h2><div class="ms-list">${filas}</div></section>`;
   }).join('');
+  return `<div class="ms-search" style="margin-bottom:16px;">${ICON_SEARCH}<input type="text" id="docSearch" aria-label="Buscar documento" placeholder="Buscar documento" autocomplete="off"></div>${secciones}`;
 }
 
 function specialistFieldHTML(f, d){
@@ -2789,11 +2917,13 @@ function renderForm(){
   <h2 class="screentitle">${t.title}</h2>
   <div style="height:14px"></div>
   ${patientBlock}
+  <div class="form-grid">
   <div class="field">
     <label>Fecha del documento</label>
     <input type="text" inputmode="numeric" data-key="__fecha" data-datefield="1" value="${fmtFechaCorta(state.data.__fecha||todayISO())}" placeholder="DD/MM/AAAA" maxlength="10">
   </div>
   ${fieldsHTML}
+  </div>
   ${datalistsHTML}
   <div class="actions">
     <button class="btn btn-primary" id="btnPreview">Ver vista previa</button>
@@ -3030,7 +3160,23 @@ function bindEvents(){
   });
 
   const btnBack = document.getElementById('btnBack');
-  if(btnBack) btnBack.onclick = ()=>{ state.screen='home'; state.tpl=null; render(); };
+  if(btnBack) btnBack.onclick = ()=>{ if(SCREENS_AJUSTES.includes(state.screen)){ state.screen='ajustes'; render(); return; } state.screen='home'; state.tpl=null; render(); };
+  const irAjustes = ()=>{ state.screen='ajustes'; render(); };
+  const btnAjustesIcon = document.getElementById('btnAjustesIcon');
+  if(btnAjustesIcon) btnAjustesIcon.onclick = irAjustes;
+  const tabAjustes = document.getElementById('tabAjustes');
+  if(tabAjustes) tabAjustes.onclick = irAjustes;
+  const tabDocs = document.getElementById('tabDocs');
+  if(tabDocs) tabDocs.onclick = ()=>{ state.screen='home'; state.tpl=null; render(); };
+  const docSearch = document.getElementById('docSearch');
+  if(docSearch) docSearch.oninput = ()=>{
+    const q = normalizeAccents(docSearch.value.toLowerCase().trim());
+    document.querySelectorAll('.home-section').forEach(sec=>{
+      let visibles = 0;
+      sec.querySelectorAll('.ms-row').forEach(r=>{ const ok = !q || normalizeAccents(r.textContent.toLowerCase()).includes(q); r.style.display = ok ? '' : 'none'; if(ok) visibles++; });
+      sec.style.display = visibles ? '' : 'none';
+    });
+  };
 
   const btnHistory = document.getElementById('btnHistory');
   if(btnHistory) btnHistory.onclick = ()=>{ state.screen='history'; render(); loadHistory(); };

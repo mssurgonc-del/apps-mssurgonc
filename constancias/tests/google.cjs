@@ -7,7 +7,7 @@ const ok=(c,m)=>{console.log((c?'ok: ':'FAIL: ')+m); if(!c) process.exitCode=1;}
 const ctx=await b.newContext({viewport:{width:390,height:844}}); await ctx.route(/accounts\.google\.com|apis\.google\.com|cdnjs/, r=>r.abort());
 const pg=await ctx.newPage(); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
 await pg.goto(BASE); await pg.waitForTimeout(600);
-await pg.click('#btnGoogleCfg'); await pg.waitForTimeout(200);
+await pg.click('#tabAjustes'); await pg.click('#btnGoogleCfg'); await pg.waitForTimeout(200);
 ok(await pg.isVisible('text=Conexión con Google') && await pg.isVisible('#apiKeyInput') && await pg.isVisible('#btnPickSheet'),'pantalla ⚙ Google con clave y selector');
 await pg.fill('#apiKeyInput','AIzaPrueba'); await pg.dispatchEvent('#apiKeyInput','change');
 ok(await pg.evaluate(()=>localStorage.getItem('google_api_key'))==='AIzaPrueba','la clave se guarda en el equipo');

@@ -11,7 +11,7 @@ await pg.goto(BASE); await pg.waitForTimeout(1500);
 ok(await pg.evaluate(()=>!!window.jspdf),'jsPDF cargado');
 async function hacer(tpl, fill, file){
   await pg.goto(BASE); await pg.waitForTimeout(800);
-  await pg.click(`.card[data-tpl="${tpl}"]`); await pg.waitForTimeout(200);
+  await pg.click(`[data-tpl="${tpl}"]`); await pg.waitForTimeout(200);
   await pg.click('#btnNewPatient'); await pg.waitForTimeout(200);
   for (const [k,v] of Object.entries(fill)) {
     const el=pg.locator(`[data-key="${k}"]`);
@@ -38,7 +38,7 @@ ok(t.includes('(  ) Acepto | (  ) Rechazo') && t.includes('_____________________
 t=await hacer('consent_imagen',{nombre:'Paciente Tres',autorizaImagen:'No autorizo'},'imagen.pdf');
 ok(t.includes('(  ) SÍ AUTORIZO') && t.includes('(X) NO AUTORIZO'),'anexo de imagen: marca la decisión');
 await pg.goto(BASE); await pg.waitForTimeout(600);
-await pg.click('.card[data-tpl="consent_revocacion"]'); await pg.click('#btnNewPatient');
+await pg.click('[data-tpl="consent_revocacion"]'); await pg.click('#btnNewPatient');
 await pg.fill('[data-key="nombre"]','Paciente Cuatro'); await pg.dispatchEvent('[data-key="nombre"]','change');
 await pg.check('input[data-checkgroup="opciones"][value^="Opción A"]');
 await pg.fill('[data-key="motivo"]','Segunda opinión'); await pg.dispatchEvent('[data-key="motivo"]','change');

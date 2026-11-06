@@ -76,11 +76,11 @@ function RecTip({ code }) {
           onMouseEnter={() => clearTimeout(timer.current)}
           onMouseLeave={() => { if (hoverable()) hideSoon(); }}
           style={{ top: pos.top, bottom: pos.bottom, left: pos.left, width: pos.w, maxHeight: pos.maxH }}
-          className="fixed z-50 block overflow-y-auto overscroll-contain bg-slate-900 text-white text-left font-sans text-[11.5px] font-normal normal-case tracking-normal leading-snug p-3 rounded-lg shadow-xl"
+          className="fixed z-50 block overflow-y-auto overscroll-contain bg-slate-900 text-white text-left font-sans text-[12.5px] font-normal normal-case tracking-normal leading-snug p-3 rounded-lg shadow-xl"
         >
-          <span className="block text-[10px] font-mono font-bold uppercase tracking-wider text-teal-300 mb-1">Recomendación {code} · ATA 2025</span>
+          <span className="block text-[10.5px] font-mono font-semibold uppercase tracking-wider text-teal-300 mb-1">Recomendación {code} · ATA 2025</span>
           <span className="block">{rec.es}</span>
-          <span className="block mt-2 pt-2 border-t border-white/15 text-[10.5px] italic text-slate-300">Texto original: {rec.en}</span>
+          <span className="block mt-2 pt-2 border-t border-white/15 text-[11px] italic text-slate-300">Texto original: {rec.en}</span>
         </span>
       )}
     </>
@@ -147,7 +147,7 @@ function InfoTip({ text, label }) {
         onMouseEnter={(e) => { if (window.matchMedia('(hover: hover)').matches) show(); }}
         onMouseLeave={(e) => { if (window.matchMedia('(hover: hover)').matches) hide(); }}
         onBlur={hide}
-        className="shrink-0 w-[18px] h-[18px] rounded-full bg-slate-200 hover:bg-teal-600 hover:text-white text-slate-700 text-[11px] font-black leading-none flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+        className="shrink-0 w-[18px] h-[18px] rounded-full bg-slate-200 hover:bg-teal-600 hover:text-white text-slate-700 text-[12px] font-[650] leading-none flex items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
       >
         !
       </button>
@@ -155,7 +155,7 @@ function InfoTip({ text, label }) {
         <span
           role="tooltip"
           style={{ top: pos.top, left: pos.left, width: pos.w }}
-          className="fixed z-50 bg-slate-900 text-white text-[11px] font-medium leading-snug p-2.5 rounded-lg shadow-lg"
+          className="fixed z-50 bg-slate-900 text-white text-[12px] font-[450] leading-snug p-2.5 rounded-lg shadow-lg"
         >
           {text}
         </span>
@@ -409,7 +409,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-x-3 gap-y-2">
           <div className="w-[38px] h-[38px] rounded-full bg-teal-700 text-white flex items-center justify-center shrink-0"><IconShield /></div>
           <div className="min-w-0 flex-1">
-            <h1 className="text-[17px] font-extrabold tracking-tight leading-tight truncate">ThyroidScore · ATA 2025</h1>
+            <h1 className="text-[18px] font-[650] tracking-tight leading-tight truncate">ThyroidScore · ATA 2025</h1>
             <p className="text-xs text-slate-500 leading-tight truncate">Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985 · Corrigendum 35(11):1350</p>
           </div>
           <div className="flex items-center gap-2 order-3 sm:order-none w-full sm:w-auto">
@@ -432,14 +432,14 @@ export default function App() {
           <button
             onClick={() => setShowStudyGuide(!showStudyGuide)}
             aria-label="Guía de estudio ATA 2025"
-            className={`flex items-center gap-1.5 h-9 px-3 rounded-full text-xs font-bold border transition-colors ${showStudyGuide ? 'bg-teal-700 text-white border-teal-700' : 'bg-slate-100 text-teal-700 border-slate-100 hover:bg-slate-200'}`}
+            className={`flex items-center gap-1.5 h-9 px-3 rounded-full text-xs font-semibold border transition-colors ${showStudyGuide ? 'bg-teal-700 text-white border-teal-700' : 'bg-slate-100 text-teal-700 border-slate-100 hover:bg-slate-200'}`}
           >
             <IconBook /> <span className="hidden sm:inline">Guía</span>
           </button>
           <button
             onClick={resetAll}
             aria-label="Nuevo paciente (borra todos los datos)"
-            className="flex items-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-bold bg-teal-700 hover:bg-teal-800 text-white"
+            className="flex items-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-semibold bg-teal-700 hover:bg-teal-800 text-white"
           >
             <IconReset /> <span className="sm:hidden">Nuevo</span><span className="hidden sm:inline">Nuevo paciente</span>
           </button>
@@ -461,13 +461,13 @@ export default function App() {
               onClick={() => { setActiveTab(t.id); window.scrollTo({ top: 0 }); }}
               aria-current={activeTab === t.id ? 'page' : undefined}
               className={`flex flex-col sm:flex-row items-center justify-center gap-0.5 sm:gap-2 px-1 sm:px-3 py-1.5 sm:py-2 rounded-[18px] sm:rounded-full transition-all ${
-                activeTab === t.id ? 'bg-teal-700 text-white font-bold shadow-sm' : 'bg-transparent text-slate-600 font-semibold hover:bg-white'
+                activeTab === t.id ? 'bg-teal-700 text-white font-semibold shadow-sm' : 'bg-transparent text-slate-600 font-medium hover:bg-white'
               }`}
             >
               {t.icon}
               <span className="flex flex-col items-center sm:items-start leading-tight">
-                <span className="text-[10px] min-[400px]:text-[11px] sm:text-sm">{t.l}</span>
-                <span className={`hidden md:block text-[10px] font-semibold ${activeTab === t.id ? 'text-teal-100' : 'text-slate-400'}`}>{t.s}</span>
+                <span className="text-[10.5px] min-[400px]:text-[12px] sm:text-sm">{t.l}</span>
+                <span className={`hidden md:block text-[10.5px] font-medium ${activeTab === t.id ? 'text-teal-100' : 'text-slate-400'}`}>{t.s}</span>
               </span>
             </button>
           ))}
@@ -476,41 +476,41 @@ export default function App() {
 
       {/* AVISO DESHACER «NUEVO PACIENTE» */}
       {undoSnap && (
-        <div className="fixed left-1/2 -translate-x-1/2 top-3 z-50 flex items-center gap-3 bg-slate-900 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg">
+        <div className="fixed left-1/2 -translate-x-1/2 top-3 z-50 flex items-center gap-3 bg-slate-900 text-white text-xs font-medium px-4 py-2.5 rounded-xl shadow-lg">
           Datos borrados para el siguiente paciente.
-          <button onClick={undoReset} className="font-black text-teal-300 underline">Deshacer</button>
+          <button onClick={undoReset} className="font-[650] text-teal-300 underline">Deshacer</button>
         </div>
       )}
 
       {/* CONTENIDO PRINCIPAL */}
       {linkRecs(<main className="max-w-7xl mx-auto px-4 pt-3">
-        <p className="mb-3 text-[11px] leading-snug text-slate-600 bg-white/70 border border-slate-200 rounded-lg px-3 py-1.5">
+        <p className="mb-3 text-[12px] leading-snug text-slate-600 bg-white/70 border border-slate-200 rounded-lg px-3 py-1.5">
           <b className="text-slate-800">Alcance:</b> adultos con cáncer diferenciado de tiroides (papilar, folicular/IEFVPTC, oncocítico). No aplica a carcinoma medular, anaplásico, linfoma ni a pacientes pediátricos.
         </p>
         
         {/* GUÍA DE ESTUDIO DESPLEGABLE */}
         {showStudyGuide && (
           <div className="mb-6 bg-white rounded-card border-2 border-teal-600 p-5 shadow-md">
-            <h2 className="text-base font-black text-teal-900 uppercase tracking-wide mb-3 flex items-center gap-2">
+            <h2 className="text-base font-[650] text-teal-900 uppercase tracking-wide mb-3 flex items-center gap-2">
               <IconBook /> Resumen de Aprendizaje Rápido — Cambios Clave ATA 2025
             </h2>
             <div className="grid md:grid-cols-2 gap-4 text-xs leading-relaxed text-slate-700">
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                 <strong className="text-slate-900 block mb-1 uppercase">1. Los 4 Niveles de Recurrencia Estructural (Fig. 2):</strong>
                 <ul className="space-y-1.5 mt-1">
-                  <li><span className="font-bold text-emerald-700">• Bajo (&lt;10%):</span> T1–T2 (≤4 cm) intratiroideo, unifocal, pN0 o ≤5 micrometástasis (todas ≤2 mm), márgenes R0 o R1 anterior. En FTC/OTC: mínimamente invasivo (solo cápsula).</li>
-                  <li><span className="font-bold text-amber-700">• Bajo–Intermedio (10–15%):</span> Tumor T3a (&gt;4 cm intratiroideo), o T1–T2 con <b>1 solo factor</b>: ETE microscópica, cN1a o pN1a (&gt;2 mm o &gt;5 ganglios), margen R1 posterior, multifocalidad unilateral en PTC, o invasión vascular limitada (&lt;4 vasos) en FTC/OTC.</li>
-                  <li><span className="font-bold text-orange-700">• Intermedio–Alto (≥16–30%):</span> cN1b lateral (&lt;3 cm), subtipo agresivo de PTC, invasión vascular en PTC, multifocalidad bilateral (&gt;1 cm), o <b>T1–T3a con ≥2 factores Bajo-Intermedio</b> (Fig. 2).</li>
-                  <li><span className="font-bold text-red-700">• Alto (&gt;30%):</span> T3a + ETE microscópica, T3b (músculos pretiroideos), T4a/b, alto grado (PDTC/DHGTC), R2, cN1 ≥3 cm, extensión extranodal (ENE), M1, o FTC/OTC ampliamente invasivo o con ≥4 vasos.</li>
+                  <li><span className="font-semibold text-emerald-700">• Bajo (&lt;10%):</span> T1–T2 (≤4 cm) intratiroideo, unifocal, pN0 o ≤5 micrometástasis (todas ≤2 mm), márgenes R0 o R1 anterior. En FTC/OTC: mínimamente invasivo (solo cápsula).</li>
+                  <li><span className="font-semibold text-amber-700">• Bajo–Intermedio (10–15%):</span> Tumor T3a (&gt;4 cm intratiroideo), o T1–T2 con <b>1 solo factor</b>: ETE microscópica, cN1a o pN1a (&gt;2 mm o &gt;5 ganglios), margen R1 posterior, multifocalidad unilateral en PTC, o invasión vascular limitada (&lt;4 vasos) en FTC/OTC.</li>
+                  <li><span className="font-semibold text-orange-700">• Intermedio–Alto (≥16–30%):</span> cN1b lateral (&lt;3 cm), subtipo agresivo de PTC, invasión vascular en PTC, multifocalidad bilateral (&gt;1 cm), o <b>T1–T3a con ≥2 factores Bajo-Intermedio</b> (Fig. 2).</li>
+                  <li><span className="font-semibold text-red-700">• Alto (&gt;30%):</span> T3a + ETE microscópica, T3b (músculos pretiroideos), T4a/b, alto grado (PDTC/DHGTC), R2, cN1 ≥3 cm, extensión extranodal (ENE), M1, o FTC/OTC ampliamente invasivo o con ≥4 vasos.</li>
                 </ul>
               </div>
               <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
                 <strong className="text-slate-900 block mb-1 uppercase">2. Puntos de Corte de Tiroglobulina y Desescalamiento (Tabla 9 y R48):</strong>
                 <ul className="space-y-1.5 mt-1">
-                  <li><span className="font-bold text-teal-800">• Tiroidectomía Total + RAI:</span> Excelente si Tg basal <b>&lt;0.2 ng/mL</b> (o estimulada &lt;1.0); Indeterminada <b>0.2–1.0</b> (estim. 1–10); Bioquímica Incompleta <b>&gt;1.0</b> (estim. &gt;10) o TgAb en ascenso.</li>
-                  <li><span className="font-bold text-teal-800">• Tiroidectomía Total SIN RAI:</span> Excelente si Tg basal <b>&lt;2.5 ng/mL</b>; Indeterminada <b>2.5–5.0</b>; Bioquímica Incompleta <b>&gt;5.0 ng/mL</b>.</li>
-                  <li><span className="font-bold text-teal-800">• Hemitiroidectomía (R30B / R48.6):</span> Una Tg única a las 6–12 semanas con TSH normal puede ser útil para asegurar que no esté inesperadamente elevada (punto de corte incierto), pero <b>no se recomienda medir Tg de rutina</b> en el seguimiento.</li>
-                  <li><span className="font-bold text-teal-800">• Remisión Completa (R48):</span> En bajo riesgo tratado con tiroidectomía total (± RAI) con respuesta excelente sostenida, suspender US de cuello a los <b>5–8 años</b> y dar de alta del monitoreo bioquímico a los <b>10–15 años</b>.</li>
+                  <li><span className="font-semibold text-teal-800">• Tiroidectomía Total + RAI:</span> Excelente si Tg basal <b>&lt;0.2 ng/mL</b> (o estimulada &lt;1.0); Indeterminada <b>0.2–1.0</b> (estim. 1–10); Bioquímica Incompleta <b>&gt;1.0</b> (estim. &gt;10) o TgAb en ascenso.</li>
+                  <li><span className="font-semibold text-teal-800">• Tiroidectomía Total SIN RAI:</span> Excelente si Tg basal <b>&lt;2.5 ng/mL</b>; Indeterminada <b>2.5–5.0</b>; Bioquímica Incompleta <b>&gt;5.0 ng/mL</b>.</li>
+                  <li><span className="font-semibold text-teal-800">• Hemitiroidectomía (R30B / R48.6):</span> Una Tg única a las 6–12 semanas con TSH normal puede ser útil para asegurar que no esté inesperadamente elevada (punto de corte incierto), pero <b>no se recomienda medir Tg de rutina</b> en el seguimiento.</li>
+                  <li><span className="font-semibold text-teal-800">• Remisión Completa (R48):</span> En bajo riesgo tratado con tiroidectomía total (± RAI) con respuesta excelente sostenida, suspender US de cuello a los <b>5–8 años</b> y dar de alta del monitoreo bioquímico a los <b>10–15 años</b>.</li>
                 </ul>
               </div>
             </div>
@@ -520,7 +520,7 @@ export default function App() {
         {/* ==================== INICIO: ¿QUÉ DESEA HACER? ==================== */}
         {activeTab === 'inicio' && (
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-lg font-black text-slate-900 mb-1">¿Qué desea hacer?</h2>
+            <h2 className="text-lg font-[650] text-slate-900 mb-1">¿Qué desea hacer?</h2>
             <p className="text-xs text-slate-500 mb-3">Elija una opción; le diré qué datos tener a mano y cuáles faltan por llenar.</p>
             <div className="grid gap-2">
               {TAREAS.map(t => (
@@ -529,7 +529,7 @@ export default function App() {
                   onClick={() => elegirTarea(t.tab)}
                   className="text-left bg-white p-4 rounded-card shadow-ms hover:border-teal-500 hover:bg-teal-50 transition-all"
                 >
-                  <span className="block text-sm font-black text-slate-900">{t.titulo} →</span>
+                  <span className="block text-sm font-[650] text-slate-900">{t.titulo} →</span>
                   <span className="block text-xs text-slate-500 mt-0.5">{t.sub}</span>
                 </button>
               ))}
@@ -544,22 +544,22 @@ export default function App() {
             <div className="mb-4 bg-white rounded-card shadow-ms p-3.5 text-xs" data-testid="guia">
               <div className="flex items-start justify-between gap-3">
                 <p className="text-slate-600 leading-snug"><b className="text-slate-800">Tenga a mano:</b> {A_MANO[activeTab]}</p>
-                <button onClick={() => elegirTarea('inicio')} className="shrink-0 font-bold text-teal-800 underline">Cambiar</button>
+                <button onClick={() => elegirTarea('inicio')} className="shrink-0 font-semibold text-teal-800 underline">Cambiar</button>
               </div>
               {falta.length ? (
                 <div className="mt-2.5 pt-2.5 border-t border-slate-100" data-testid="faltan">
-                  <span className="font-black text-amber-800">Falta llenar ({falta.length}):</span>{' '}
+                  <span className="font-[650] text-amber-800">Falta llenar ({falta.length}):</span>{' '}
                   <span className="text-slate-500">el resultado usa valores por defecto en estos datos. Toque uno para ir a él.</span>
                   <div className="flex flex-wrap gap-1.5 mt-1.5">
                     {falta.map(c => (
-                      <button key={c.k} onClick={() => irACampo(c.k)} className="px-2.5 py-1 rounded-full border border-amber-300 bg-amber-50 text-amber-900 font-bold hover:bg-amber-100">
+                      <button key={c.k} onClick={() => irACampo(c.k)} className="px-2.5 py-1 rounded-full border border-amber-300 bg-amber-50 text-amber-900 font-semibold hover:bg-amber-100">
                         {c.l}
                       </button>
                     ))}
                   </div>
                 </div>
               ) : (
-                <div className="mt-2.5 pt-2.5 border-t border-slate-100 font-black text-emerald-700" data-testid="completo">✓ Datos completos: el resultado corresponde a lo que usted ingresó.</div>
+                <div className="mt-2.5 pt-2.5 border-t border-slate-100 font-[650] text-emerald-700" data-testid="completo">✓ Datos completos: el resultado corresponde a lo que usted ingresó.</div>
               )}
             </div>
           );
@@ -577,13 +577,13 @@ export default function App() {
                   {/* PASO 1: EDAD E HISTOLOGÍA CON BOTONES INDIVIDUALES */}
                   <div className="bg-white p-4 sm:p-5 rounded-card shadow-ms">
                     <div className="flex items-center justify-between mb-3">
-                      <h3 data-campo="ageGroup" className="text-xs font-black uppercase text-slate-500 tracking-wider">
+                      <h3 data-campo="ageGroup" className="text-xs font-[650] uppercase text-slate-500 tracking-wider">
                         1. Edad (Para AJCC 8.ª Ed. y Dosimetría R55)
                       </h3>
                       <button
                         data-no-campo
                         onClick={() => { setPostop(INITIAL_POSTOP); setHechos(h => Object.fromEntries(Object.entries(h).filter(([k]) => !k.startsWith('postop.')))); }}
-                        className="text-xs font-bold text-slate-500 hover:text-teal-700 flex items-center gap-1"
+                        className="text-xs font-semibold text-slate-500 hover:text-teal-700 flex items-center gap-1"
                       >
                         <IconReset /> Reiniciar
                       </button>
@@ -597,7 +597,7 @@ export default function App() {
                         <button
                           key={o.v}
                           onClick={() => setPostop({ ...postop, ageGroup: o.v })}
-                          className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+                          className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all ${
                             postop.ageGroup === o.v
                               ? 'bg-teal-700 border-teal-700 text-white shadow-sm'
                               : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
@@ -608,20 +608,20 @@ export default function App() {
                       ))}
                     </div>
 
-                    <h3 data-campo="histo" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                    <h3 data-campo="histo" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-2">
                       2. Subtipo Histológico Exacto (OMS 5.ª Ed.)
                     </h3>
 
                     <div className="space-y-3">
                       <div>
-                        <span className="text-[11px] font-bold text-emerald-700 uppercase block mb-1">PTC — Subtipos No Agresivos</span>
+                        <span className="text-[12px] font-semibold text-emerald-700 uppercase block mb-1">PTC — Subtipos No Agresivos</span>
                         <div className="flex flex-wrap gap-1.5">
                           {HISTO_OPTIONS.filter(h => h.group === 'ptc_low').map(h => (
                             <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
                               onClick={() => setPostop({ ...postop, histo: h.id, coexist: postop.coexist.filter(c => c !== h.id) })}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                                 postop.histo === h.id ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -634,14 +634,14 @@ export default function App() {
                       </div>
 
                       <div>
-                        <span className="text-[11px] font-bold text-orange-700 uppercase block mb-1">PTC — Subtipos Agresivos (Intermedio–Alto directo)</span>
+                        <span className="text-[12px] font-semibold text-orange-700 uppercase block mb-1">PTC — Subtipos Agresivos (Intermedio–Alto directo)</span>
                         <div className="flex flex-wrap gap-1.5">
                           {HISTO_OPTIONS.filter(h => h.group === 'ptc_agg').map(h => (
                             <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
                               onClick={() => setPostop({ ...postop, histo: h.id, coexist: postop.coexist.filter(c => c !== h.id) })}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                                 postop.histo === h.id ? 'bg-orange-600 border-orange-600 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -654,14 +654,14 @@ export default function App() {
                       </div>
 
                       <div>
-                        <span className="text-[11px] font-bold text-blue-800 uppercase block mb-1">Espectro Folicular (FTC / IEFVPTC) y Oncocítico (OTC)</span>
+                        <span className="text-[12px] font-semibold text-blue-800 uppercase block mb-1">Espectro Folicular (FTC / IEFVPTC) y Oncocítico (OTC)</span>
                         <div className="flex flex-wrap gap-1.5">
                           {HISTO_OPTIONS.filter(h => h.group === 'foll' || h.group === 'otc').map(h => (
                             <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
                               onClick={() => setPostop({ ...postop, histo: h.id, coexist: postop.coexist.filter(c => c !== h.id) })}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                                 postop.histo === h.id ? 'bg-blue-700 border-blue-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -674,14 +674,14 @@ export default function App() {
                       </div>
 
                       <div>
-                        <span className="text-[11px] font-bold text-red-700 uppercase block mb-1">Alto Grado / Especiales / Bajo Potencial (R1)</span>
+                        <span className="text-[12px] font-semibold text-red-700 uppercase block mb-1">Alto Grado / Especiales / Bajo Potencial (R1)</span>
                         <div className="flex flex-wrap gap-1.5">
                           {HISTO_OPTIONS.filter(h => ['high_grade', 'special', 'benign_pot'].includes(h.group)).map(h => (
                             <span key={h.id} className="inline-flex items-center gap-1">
                             <button
                               key={h.id}
                               onClick={() => setPostop({ ...postop, histo: h.id, coexist: postop.coexist.filter(c => c !== h.id) })}
-                              className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                              className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                                 postop.histo === h.id ? 'bg-slate-900 border-slate-900 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -695,7 +695,7 @@ export default function App() {
                     </div>
 
                     {postop.histo !== 'dhgtc_pdtc' && postop.histo !== 'niftp' && (
-                      <label data-campo="-" className="mt-3 flex items-start gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                      <label data-campo="-" className="mt-3 flex items-start gap-2 text-xs font-medium text-slate-700 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={postop.highGradeFeatures}
@@ -708,8 +708,8 @@ export default function App() {
 
                     {isPTCMain && (
                       <div data-campo="-" className="mt-3 pt-3 border-t border-slate-100">
-                        <span className="text-[11px] font-black uppercase text-slate-600 block">Componentes coexistentes (opcional, solo documentación)</span>
-                        <span className="text-[11px] text-slate-500 block mb-1.5 leading-snug">No modifica el riesgo calculado. Si el componente agresivo alcanza el criterio de subtipo en el informe, selecciónelo arriba como histología principal.</span>
+                        <span className="text-[12px] font-[650] uppercase text-slate-600 block">Componentes coexistentes (opcional, solo documentación)</span>
+                        <span className="text-[12px] text-slate-500 block mb-1.5 leading-snug">No modifica el riesgo calculado. Si el componente agresivo alcanza el criterio de subtipo en el informe, selecciónelo arriba como histología principal.</span>
                         <div className="flex flex-wrap gap-1.5">
                           {HISTO_OPTIONS.filter(h => ['ptc_low', 'ptc_agg'].includes(h.group) && h.id !== postop.histo).map(h => {
                             const on = postop.coexist.includes(h.id);
@@ -722,7 +722,7 @@ export default function App() {
                                   const conAgresivo = coexist.some(c => HISTO_OPTIONS.find(o => o.id === c)?.group === 'ptc_agg');
                                   setPostop({ ...postop, coexist, aggPct: conAgresivo ? postop.aggPct : 'none' });
                                 }}
-                                className={`px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all ${on ? 'bg-slate-700 border-slate-700 text-white' : 'bg-white border-slate-300 border-dashed text-slate-600 hover:bg-slate-50'}`}
+                                className={`px-2.5 py-1 rounded-full text-[12px] font-semibold border transition-all ${on ? 'bg-slate-700 border-slate-700 text-white' : 'bg-white border-slate-300 border-dashed text-slate-600 hover:bg-slate-50'}`}
                               >
                                 {on ? '✓ ' : '+ '}{h.label}
                               </button>
@@ -731,7 +731,7 @@ export default function App() {
                         </div>
                         {aggCoexist.length > 0 && (
                           <div className="mt-2.5">
-                            <span data-campo="aggPct" className="text-[11px] font-black uppercase text-slate-600 block mb-1">% del componente agresivo en el informe</span>
+                            <span data-campo="aggPct" className="text-[12px] font-[650] uppercase text-slate-600 block mb-1">% del componente agresivo en el informe</span>
                             <div className="grid grid-cols-3 gap-1.5">
                               {[
                                 { v: 'lt10', l: '< 10 %' },
@@ -742,18 +742,18 @@ export default function App() {
                                   key={o.v}
                                   aria-pressed={postop.aggPct === o.v}
                                   onClick={() => setPostop({ ...postop, aggPct: o.v })}
-                                  className={`py-1.5 rounded-lg text-xs font-bold border transition-all ${postop.aggPct === o.v ? 'bg-slate-700 border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`}
+                                  className={`py-1.5 rounded-lg text-xs font-semibold border transition-all ${postop.aggPct === o.v ? 'bg-slate-700 border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-700 hover:bg-slate-50'}`}
                                 >
                                   {o.l}
                                 </button>
                               ))}
                             </div>
-                            <span className="text-[11px] text-slate-500 block mt-1 leading-snug">Umbral OMS 2022 del subtipo: células altas o hobnail ≥ 30 %; sólido/trabecular &gt; 50 %. Entre 10 y 29 % no cambia el riesgo ATA, pero se advierte en el resultado.</span>
+                            <span className="text-[12px] text-slate-500 block mt-1 leading-snug">Umbral OMS 2022 del subtipo: células altas o hobnail ≥ 30 %; sólido/trabecular &gt; 50 %. Entre 10 y 29 % no cambia el riesgo ATA, pero se advierte en el resultado.</span>
                             {postop.aggPct === 'gte30' && aggCoexist.length === 1 && (
                               <button
                                 data-no-campo
                                 onClick={() => setPostop({ ...postop, histo: aggCoexist[0].id, coexist: postop.coexist.filter(c => c !== aggCoexist[0].id), aggPct: 'none' })}
-                                className="mt-1.5 px-3 py-1.5 rounded-lg border border-orange-300 bg-orange-50 text-orange-900 text-xs font-bold"
+                                className="mt-1.5 px-3 py-1.5 rounded-lg border border-orange-300 bg-orange-50 text-orange-900 text-xs font-semibold"
                               >
                                 Usar {aggCoexist[0].label} como histología principal
                               </button>
@@ -766,7 +766,7 @@ export default function App() {
                     {/* Sub-selector exclusivo si elige FTC / IEFVPTC / OTC */}
                     {isFollSelected && (
                       <div className="mt-4 pt-3 border-t border-slate-200 bg-blue-50/60 p-3 rounded-xl">
-                        <label data-campo="follPattern" className="block text-[11px] font-black uppercase text-blue-900 mb-2">
+                        <label data-campo="follPattern" className="block text-[12px] font-[650] uppercase text-blue-900 mb-2">
                           Patrón de Invasión Capsular/Parenquimatosa (FTC/OTC):
                         </label>
                         <div className="grid sm:grid-cols-3 gap-2">
@@ -778,7 +778,7 @@ export default function App() {
                             <button
                               key={o.v}
                               onClick={() => setPostop({ ...postop, follPattern: o.v })}
-                              className={`p-2 rounded-lg text-xs font-bold border text-left transition-all ${
+                              className={`p-2 rounded-lg text-xs font-semibold border text-left transition-all ${
                                 postop.follPattern === o.v ? 'bg-blue-700 border-blue-700 text-white' : 'bg-white border-blue-200 text-slate-700'
                               }`}
                             >
@@ -794,8 +794,8 @@ export default function App() {
                   <div className="bg-white p-4 sm:p-5 rounded-card shadow-ms space-y-4">
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <h3 data-campo="size" className="text-xs font-black uppercase text-slate-500 tracking-wider">3. Tamaño del Tumor Primario</h3>
-                        <span className="text-xs font-mono font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                        <h3 data-campo="size" className="text-xs font-[650] uppercase text-slate-500 tracking-wider">3. Tamaño del Tumor Primario</h3>
+                        <span className="text-xs font-mono font-semibold text-teal-800 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
                           Estadio derivado: p{postopRes.pT}
                         </span>
                       </div>
@@ -809,7 +809,7 @@ export default function App() {
                           <button
                             key={o.v}
                             onClick={() => setPostop({ ...postop, size: o.v })}
-                            className={`py-2 px-3 rounded-xl text-xs font-bold border transition-all ${
+                            className={`py-2 px-3 rounded-xl text-xs font-semibold border transition-all ${
                               postop.size === o.v ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                             }`}
                           >
@@ -820,7 +820,7 @@ export default function App() {
                     </div>
 
                     <div>
-                      <h3 data-campo="ete" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="ete" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-2">
                         4. Extensión Extratiroidea (ETE)
                       </h3>
                       <div className="grid sm:grid-cols-2 gap-2">
@@ -834,7 +834,7 @@ export default function App() {
                           <button
                             key={o.v}
                             onClick={() => setPostop({ ...postop, ete: o.v })}
-                            className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
+                            className={`p-2.5 rounded-xl text-xs font-semibold border text-left transition-all ${
                               postop.ete === o.v ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                             }`}
                           >
@@ -848,7 +848,7 @@ export default function App() {
                   {/* PASO 3: GANGLIOS, INVASIÓN VASCULAR, MÁRGENES Y MULTIFOCALIDAD */}
                   <div className="bg-white p-4 sm:p-5 rounded-card shadow-ms space-y-4">
                     <div>
-                      <h3 data-campo="nodes" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="nodes" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-2">
                         5. Estado Ganglionar Cervical (N)
                       </h3>
                       <div className="grid sm:grid-cols-2 gap-2">
@@ -863,7 +863,7 @@ export default function App() {
                           <div key={o.v} className="flex items-center gap-1">
                           <button
                             onClick={() => setPostop({ ...postop, nodes: o.v })}
-                            className={`flex-1 h-full p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
+                            className={`flex-1 h-full p-2.5 rounded-xl text-xs font-semibold border text-left transition-all ${
                               postop.nodes === o.v ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                             }`}
                           >
@@ -873,7 +873,7 @@ export default function App() {
                           </div>
                         ))}
                       </div>
-                      <label data-campo="-" className="mt-2.5 inline-flex items-center gap-2 text-xs font-semibold text-slate-700 cursor-pointer">
+                      <label data-campo="-" className="mt-2.5 inline-flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer">
                         <input
                           type="checkbox"
                           checked={postop.lnrHigh}
@@ -886,7 +886,7 @@ export default function App() {
 
                     <div className="grid sm:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
                       <div>
-                        <h3 data-campo="vi" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                        <h3 data-campo="vi" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-2">
                           6. Invasión Vascular (Angioinvasión)
                         </h3>
                         <div className="flex flex-col gap-1.5">
@@ -898,7 +898,7 @@ export default function App() {
                             <button
                               key={o.v}
                               onClick={() => setPostop({ ...postop, vi: o.v })}
-                              className={`p-2 rounded-xl text-xs font-bold border text-left transition-all ${
+                              className={`p-2 rounded-xl text-xs font-semibold border text-left transition-all ${
                                 postop.vi === o.v ? 'bg-teal-700 border-teal-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -909,7 +909,7 @@ export default function App() {
                       </div>
 
                       <div>
-                        <h3 data-campo="margins" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                        <h3 data-campo="margins" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-2">
                           7. Márgenes Quirúrgicos (Diferenciación Anterior/Posterior)
                         </h3>
                         <div className="flex flex-col gap-1.5">
@@ -922,7 +922,7 @@ export default function App() {
                             <button
                               key={o.v}
                               onClick={() => setPostop({ ...postop, margins: o.v })}
-                              className={`p-2 rounded-xl text-xs font-bold border text-left transition-all ${
+                              className={`p-2 rounded-xl text-xs font-semibold border text-left transition-all ${
                                 postop.margins === o.v ? 'bg-teal-700 border-teal-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                               }`}
                             >
@@ -935,7 +935,7 @@ export default function App() {
 
                     <div className="grid sm:grid-cols-3 gap-3 pt-2 border-t border-slate-100">
                       <div>
-                        <h3 data-campo="focality" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-1.5">8. Focalidad</h3>
+                        <h3 data-campo="focality" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-1.5">8. Focalidad</h3>
                         <div className="flex flex-col gap-1.5">
                           {[
                             { v: 'uni', l: 'Unifocal' },
@@ -946,7 +946,7 @@ export default function App() {
                             <button
                               key={o.v}
                               onClick={() => setPostop({ ...postop, focality: o.v })}
-                              className={`p-2 rounded-lg text-xs font-bold border text-left ${
+                              className={`p-2 rounded-lg text-xs font-semibold border text-left ${
                                 postop.focality === o.v ? 'bg-teal-700 border-teal-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-700'
                               }`}
                             >
@@ -957,7 +957,7 @@ export default function App() {
                       </div>
 
                       <div>
-                        <h3 data-campo="metastasis" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-1.5">9. Metástasis (M)</h3>
+                        <h3 data-campo="metastasis" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-1.5">9. Metástasis (M)</h3>
                         <div className="flex flex-col gap-1.5">
                           {[
                             { v: 'm0', l: 'M0 (Ausente)' },
@@ -966,7 +966,7 @@ export default function App() {
                             <button
                               key={o.v}
                               onClick={() => setPostop({ ...postop, metastasis: o.v })}
-                              className={`p-2 rounded-lg text-xs font-bold border text-left ${
+                              className={`p-2 rounded-lg text-xs font-semibold border text-left ${
                                 postop.metastasis === o.v ? 'bg-red-700 border-red-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-700'
                               }`}
                             >
@@ -977,7 +977,7 @@ export default function App() {
                       </div>
 
                       <div>
-                        <h3 data-campo="mol" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-1.5">10. Molecular (R28B)</h3>
+                        <h3 data-campo="mol" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-1.5">10. Molecular (R28B)</h3>
                         <div className="flex flex-col gap-1.5">
                           {[
                             { v: 'none', l: 'No realizado / Bajo riesgo' },
@@ -987,7 +987,7 @@ export default function App() {
                             <button
                               key={o.v}
                               onClick={() => setPostop({ ...postop, mol: o.v })}
-                              className={`p-2 rounded-lg text-xs font-bold border text-left ${
+                              className={`p-2 rounded-lg text-xs font-semibold border text-left ${
                                 postop.mol === o.v ? 'bg-teal-700 border-teal-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-700'
                               }`}
                             >
@@ -1004,7 +1004,7 @@ export default function App() {
                 <div className="space-y-4">
                   <div className="bg-white p-4 sm:p-5 rounded-card shadow-ms">
                     <div>
-                      <h3 data-campo="surgeryType" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="surgeryType" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-2">
                         1. Tratamiento inicial recibido (define los umbrales de respuesta)
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-2">
@@ -1016,7 +1016,7 @@ export default function App() {
                           <button
                             key={o.v}
                             onClick={() => setDynamic({ ...dynamic, surgeryType: o.v })}
-                            className={`p-2.5 rounded-xl text-xs font-bold border transition-all ${
+                            className={`p-2.5 rounded-xl text-xs font-semibold border transition-all ${
                               dynamic.surgeryType === o.v ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700'
                             }`}
                           >
@@ -1028,7 +1028,7 @@ export default function App() {
 
                     {dynamic.surgeryType === 'hemi' && (
                       <div className="mt-4 pt-3 border-t border-slate-100">
-                        <h3 data-campo="hemiLobe" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">Lóbulo contralateral en la ecografía</h3>
+                        <h3 data-campo="hemiLobe" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-2">Lóbulo contralateral en la ecografía</h3>
                         <div className="grid sm:grid-cols-2 gap-2">
                           {[
                             { v: 'normal', l: 'Normal, o nódulos benignos / de bajo riesgo' },
@@ -1038,7 +1038,7 @@ export default function App() {
                               key={o.v}
                               aria-pressed={dynamic.hemiLobe === o.v}
                               onClick={() => setDynamic({ ...dynamic, hemiLobe: o.v })}
-                              className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
+                              className={`p-2.5 rounded-xl text-xs font-semibold border text-left transition-all ${
                                 dynamic.hemiLobe === o.v ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700'
                               }`}
                             >
@@ -1051,7 +1051,7 @@ export default function App() {
                   </div>
 
                   <div className="bg-white p-5 rounded-card border-2 border-teal-600 shadow-sm">
-                    <h3 data-campo="tg" className="text-sm font-black uppercase text-teal-900 mb-1">
+                    <h3 data-campo="tg" className="text-sm font-[650] uppercase text-teal-900 mb-1">
                       2. Valores de laboratorio
                     </h3>
                     <p className="text-xs text-slate-500 mb-4">
@@ -1061,7 +1061,7 @@ export default function App() {
                     <div className="grid sm:grid-cols-2 gap-4">
                       {/* TSH */}
                       <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">TSH Sérica (mIU/L)</label>
+                        <label className="block text-xs font-[650] text-slate-700 uppercase">TSH Sérica (mIU/L)</label>
                         <input
                           type="number"
                           inputMode="decimal"
@@ -1069,9 +1069,9 @@ export default function App() {
                           placeholder="Ej: 0.15"
                           value={dynamic.tshExact}
                           onChange={(e) => setDynamic({ ...dynamic, tshExact: e.target.value })}
-                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
+                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-semibold focus:border-teal-600 focus:outline-none"
                         />
-                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
+                        <div className="mt-2 text-[12px] text-slate-600 space-y-0.5 leading-snug">
                           <div><b>Meta de TSH según respuesta:</b></div>
                           <div><b>• Excelente / Indeterminada:</b> dentro del rango normal de referencia</div>
                           <div><b>• Bioquímica / Estructural incompleta:</b> por debajo del rango normal (individualizar; meta óptima no establecida)</div>
@@ -1080,7 +1080,7 @@ export default function App() {
 
                       {/* Tg Basal */}
                       <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">Tiroglobulina (Tg) NO Estimulada (ng/mL)</label>
+                        <label className="block text-xs font-[650] text-slate-700 uppercase">Tiroglobulina (Tg) NO Estimulada (ng/mL)</label>
                         <input
                           type="number"
                           inputMode="decimal"
@@ -1088,9 +1088,9 @@ export default function App() {
                           placeholder="Ej: 0.08"
                           value={dynamic.tgBasal}
                           onChange={(e) => setDynamic({ ...dynamic, tgBasal: e.target.value })}
-                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
+                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-semibold focus:border-teal-600 focus:outline-none"
                         />
-                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
+                        <div className="mt-2 text-[12px] text-slate-600 space-y-0.5 leading-snug">
                           <div><b>• TT + RAI:</b> Excelente &lt;0.2 | Indet. 0.2–1.0 | Incomp. &gt;1.0</div>
                           <div><b>• TT sin RAI:</b> Excelente &lt;2.5 | Indet. 2.5–5.0 | Incomp. &gt;5.0</div>
                           <div><b>• Estándar ensayo:</b> Calibrado BCR457 (R47A)</div>
@@ -1099,7 +1099,7 @@ export default function App() {
 
                       {/* Tg Estimulada */}
                       <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">Tg Estimulada (rhTSH o Suspensión) (ng/mL)</label>
+                        <label className="block text-xs font-[650] text-slate-700 uppercase">Tg Estimulada (rhTSH o Suspensión) (ng/mL)</label>
                         <input
                           type="number"
                           inputMode="decimal"
@@ -1107,9 +1107,9 @@ export default function App() {
                           placeholder="Opcional — Ej: 0.8"
                           value={dynamic.tgStim}
                           onChange={(e) => setDynamic({ ...dynamic, tgStim: e.target.value })}
-                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
+                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-semibold focus:border-teal-600 focus:outline-none"
                         />
-                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
+                        <div className="mt-2 text-[12px] text-slate-600 space-y-0.5 leading-snug">
                           <div><b>• TT + RAI:</b> Excelente &lt;1.0 | Indet. 1.0–10.0 | Incomp. &gt;10.0</div>
                           <div><b>• R58A (Sin foco en imagen):</b> Observar si &lt;10 (suspensión) o &lt;5 (rhTSH)</div>
                         </div>
@@ -1117,7 +1117,7 @@ export default function App() {
 
                       {/* TgAb Exacto */}
                       <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
-                        <label className="block text-xs font-black text-slate-700 uppercase">Anticuerpos Anti-Tg (TgAb) (IU/mL)</label>
+                        <label className="block text-xs font-[650] text-slate-700 uppercase">Anticuerpos Anti-Tg (TgAb) (IU/mL)</label>
                         <input
                           type="number"
                           inputMode="decimal"
@@ -1125,9 +1125,9 @@ export default function App() {
                           placeholder="Ej: 12.0"
                           value={dynamic.tgAbExact}
                           onChange={(e) => setDynamic({ ...dynamic, tgAbExact: e.target.value })}
-                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-bold focus:border-teal-600 focus:outline-none"
+                          className="mt-1.5 w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-mono font-semibold focus:border-teal-600 focus:outline-none"
                         />
-                        <div className="mt-2 text-[11px] text-slate-600 space-y-0.5 leading-snug">
+                        <div className="mt-2 text-[12px] text-slate-600 space-y-0.5 leading-snug">
                           <div><b>• Interpretación (R47E):</b> La tendencia de TgAb seriados con el mismo ensayo puede ser útil; los IMA/RIA de Tg suelen afectarse por TgAb; la imagen es la modalidad primaria de vigilancia en este grupo.</div>
                         </div>
                       </div>
@@ -1137,7 +1137,7 @@ export default function App() {
                   {/* PARÁMETROS CLÍNICOS TABLA 9 */}
                   <div className="bg-white p-5 rounded-card shadow-ms space-y-4">
                     <div>
-                      <h3 data-campo="tgAb" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="tgAb" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-2">
                         3. Tendencia de anticuerpos (TgAb)
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-2">
@@ -1149,7 +1149,7 @@ export default function App() {
                           <button
                             key={o.v}
                             onClick={() => setDynamic({ ...dynamic, tgAb: o.v })}
-                            className={`p-2.5 rounded-xl text-xs font-bold border transition-all ${
+                            className={`p-2.5 rounded-xl text-xs font-semibold border transition-all ${
                               dynamic.tgAb === o.v ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700'
                             }`}
                           >
@@ -1160,7 +1160,7 @@ export default function App() {
                     </div>
 
                     <div>
-                      <h3 data-campo="imaging" className="text-xs font-black uppercase text-slate-500 tracking-wider mb-2">
+                      <h3 data-campo="imaging" className="text-xs font-[650] uppercase text-slate-500 tracking-wider mb-2">
                         4. Imagen (US cervical / rastreo / TC / PET)
                       </h3>
                       <div className="grid sm:grid-cols-3 gap-2">
@@ -1172,7 +1172,7 @@ export default function App() {
                           <button
                             key={o.v}
                             onClick={() => setDynamic({ ...dynamic, imaging: o.v })}
-                            className={`p-2.5 rounded-xl text-xs font-bold border transition-all ${
+                            className={`p-2.5 rounded-xl text-xs font-semibold border transition-all ${
                               dynamic.imaging === o.v ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700'
                             }`}
                           >
@@ -1196,14 +1196,14 @@ export default function App() {
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div>
-                        <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-slate-500 block">
+                        <span className="text-[10.5px] font-mono font-semibold uppercase tracking-widest text-slate-500 block">
                           Riesgo Estructural Inicial · ATA 2025
                         </span>
-                        <div className={`text-2xl sm:text-3xl font-black tracking-tight mt-0.5 ${curStyle.text}`}>
+                        <div className={`text-2xl sm:text-3xl font-bold tracking-tight mt-0.5 ${curStyle.text}`}>
                           {postopRes.label}
                         </div>
                       </div>
-                      <span className={`px-3 py-1 rounded-full text-xs font-mono font-black shadow-sm ${curStyle.badge}`}>
+                      <span className={`px-3 py-1 rounded-full text-xs font-mono font-[650] shadow-sm ${curStyle.badge}`}>
                         Rec: {postopRes.pct}
                       </span>
                     </div>
@@ -1211,25 +1211,25 @@ export default function App() {
                     {/* BARRA PARALELA: AJCC 8va EDICIÓN (MORTALIDAD) */}
                     <div className="mt-3 bg-slate-900 text-white p-3 rounded-xl flex items-center justify-between">
                       <div>
-                        <span className="text-[10px] font-mono uppercase text-teal-300 block">
+                        <span className="text-[10.5px] font-mono uppercase text-teal-300 block">
                           AJCC 8.ª Ed. (p{postopRes.pT}) · Mortalidad
                         </span>
-                        <span className="text-sm font-black">{postopRes.ajccStage}</span>
+                        <span className="text-sm font-bold">{postopRes.ajccStage}</span>
                       </div>
                     </div>
 
                     {/* FACTORES DETERMINANTES */}
                     <div className="mt-4 bg-white/80 p-3 rounded-xl border border-black/5">
-                      <span className="text-[10px] font-black uppercase text-slate-500 block mb-1.5">
+                      <span className="text-[10.5px] font-[650] uppercase text-slate-500 block mb-1.5">
                         Factores Clínico-Patológicos Activos:
                       </span>
-                      <ul className="space-y-1 text-xs font-semibold text-slate-800">
+                      <ul className="space-y-1 text-xs font-medium text-slate-800">
                         {postopRes.drivers.map((d, i) => (
                           <li key={i} className="leading-snug">{d}</li>
                         ))}
                       </ul>
                       {isPTCMain && coexistLabels.length > 0 && (
-                        <div className="mt-2 pt-2 border-t border-slate-100 text-[11px] text-slate-600 leading-snug">
+                        <div className="mt-2 pt-2 border-t border-slate-100 text-[12px] text-slate-600 leading-snug">
                           <b>Componentes coexistentes (documentación, no modifican el riesgo):</b> {coexistLabels.join(', ')}
                         </div>
                       )}
@@ -1237,7 +1237,7 @@ export default function App() {
 
                     {/* ALERTAS DE COHERENCIA O GENÉTICA */}
                     {postopRes.warnings.map((w, idx) => (
-                      <div key={idx} className="mt-3 bg-amber-100/90 border border-amber-400 text-amber-950 p-3 rounded-xl text-xs font-semibold leading-snug">
+                      <div key={idx} className="mt-3 bg-amber-100/90 border border-amber-400 text-amber-950 p-3 rounded-xl text-xs font-medium leading-snug">
                         ⚠️ {w}
                       </div>
                     ))}
@@ -1246,21 +1246,21 @@ export default function App() {
                     {!postopRes.isNIFTP && (
                       <div className="mt-4 pt-4 border-t border-black/10 space-y-2.5 text-xs">
                         <div className="flex items-center justify-between">
-                          <span className="font-black uppercase text-slate-700">Terapia con Yodo (I-131):</span>
-                          <span className="font-mono text-[10px] bg-white px-2 py-0.5 rounded border border-slate-300 font-bold text-teal-900">
+                          <span className="font-[650] uppercase text-slate-700">Terapia con Yodo (I-131):</span>
+                          <span className="font-mono text-[10.5px] bg-white px-2 py-0.5 rounded border border-slate-300 font-semibold text-teal-900">
                             {postopRes.rai.ref}
                           </span>
                         </div>
                         <div className="bg-white p-3 rounded-xl border border-black/10">
-                          <div className="font-black text-sm text-slate-900">{postopRes.rai.rec}</div>
-                          <div className="text-teal-800 font-mono font-bold text-xs mt-0.5">
+                          <div className="font-bold text-sm text-slate-900">{postopRes.rai.rec}</div>
+                          <div className="text-teal-800 font-mono font-semibold text-xs mt-0.5">
                             Dosis sugerida: {postopRes.rai.act}
                           </div>
                           <p className="text-slate-600 mt-1 leading-snug">{postopRes.rai.goal}</p>
                         </div>
 
-                        <details className="bg-white/75 rounded-xl border border-black/5 text-[11px] leading-snug group">
-                          <summary className="cursor-pointer select-none p-3 font-black text-slate-700 list-none flex items-center justify-between">
+                        <details className="bg-white/75 rounded-xl border border-black/5 text-[12px] leading-snug group">
+                          <summary className="cursor-pointer select-none p-3 font-[650] text-slate-700 list-none flex items-center justify-between">
                             <span>Preparación, rastreo post-terapia y controles (R29–R38, R47C)</span>
                             <span className="text-slate-400 group-open:rotate-180 transition-transform">▾</span>
                           </summary>
@@ -1286,29 +1286,29 @@ export default function App() {
                   <div className={`h-1.5 w-full ${dynStyle.band}`} />
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-1">
-                      <span className="text-[10px] font-mono font-bold uppercase text-slate-500">
+                      <span className="text-[10.5px] font-mono font-semibold uppercase text-slate-500">
                         Re-estratificación Dinámica
                       </span>
                       <button
                         onClick={() => setActiveTab(activeTab === 'dynamic' ? 'postop' : 'dynamic')}
-                        className="text-[11px] font-bold text-teal-800 underline"
+                        className="text-[12px] font-semibold text-teal-800 underline"
                       >
                         {activeTab === 'dynamic' ? '← Volver a Patología' : 'Ingresar Tg / US →'}
                       </button>
                     </div>
-                    <div className={`text-lg font-black ${dynStyle.text}`}>{dynRes.cat}</div>
+                    <div className={`text-lg font-bold ${dynStyle.text}`}>{dynRes.cat}</div>
                     <p className="text-xs text-slate-700 mt-1 leading-snug">{dynRes.reason}</p>
 
                     <div className="mt-3 bg-white/85 p-3 rounded-xl border border-black/5 space-y-1.5 text-xs">
                       <div className="flex justify-between gap-2">
-                        <span className="font-bold text-slate-500">Riesgo Residual:</span>
-                        <span className="font-black text-slate-900 text-right">{dynRes.residualRisk}</span>
+                        <span className="font-semibold text-slate-500">Riesgo Residual:</span>
+                        <span className="font-[650] text-slate-900 text-right">{dynRes.residualRisk}</span>
                       </div>
                       <div className="flex justify-between gap-2 border-t border-slate-100 pt-1.5">
-                        <span className="font-bold text-slate-500">Meta de TSH:</span>
-                        <span className="font-bold text-teal-900 text-right">{dynRes.tshGoal}</span>
+                        <span className="font-semibold text-slate-500">Meta de TSH:</span>
+                        <span className="font-semibold text-teal-900 text-right">{dynRes.tshGoal}</span>
                       </div>
-                      <div className="border-t border-slate-100 pt-1.5 text-[11px] text-slate-700 leading-snug">
+                      <div className="border-t border-slate-100 pt-1.5 text-[12px] text-slate-700 leading-snug">
                         <strong className="text-slate-900 block">Plan de Vigilancia Longitudinal:</strong>
                         {dynRes.actionPlan}
                       </div>
@@ -1320,14 +1320,14 @@ export default function App() {
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     onClick={() => handleExport('emr')}
-                    className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-4 rounded-full font-black text-xs sm:text-sm shadow-md transition-all"
+                    className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-4 rounded-full font-[650] text-xs sm:text-sm shadow-md transition-all"
                   >
                     <IconCopy />
                     {copyFeedback === 'emr' ? '¡Copiado al Expediente!' : 'Copiar Expediente (EMR)'}
                   </button>
                   <button
                     onClick={() => handleExport('excel')}
-                    className="flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white py-3 px-4 rounded-full font-black text-xs sm:text-sm shadow-md transition-all"
+                    className="flex items-center justify-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white py-3 px-4 rounded-full font-[650] text-xs sm:text-sm shadow-md transition-all"
                   >
                     <IconExcel />
                     {copyFeedback === 'excel' ? '¡Fila TSV Copiada!' : 'Tabular Fila (Excel)'}
@@ -1342,16 +1342,16 @@ export default function App() {
         {activeTab === 'surgery' && (
           <div className="grid lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 bg-white p-5 rounded-card shadow-ms space-y-4" {...zonaDatos}>
-              <h2 className="text-base font-black text-slate-900">
+              <h2 className="text-base font-[650] text-slate-900">
                 Planificación Quirúrgica Preoperatoria y Vigilancia Activa (R11–R25)
               </h2>
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
-                  <label data-campo="cT" className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Estadio Clínico cT</label>
+                  <label data-campo="cT" className="block text-xs font-semibold uppercase text-slate-500 mb-1.5">Estadio Clínico cT</label>
                   <select
                     value={surg.cT}
                     onChange={(e) => setSurg({ ...surg, cT: e.target.value })}
-                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-semibold bg-slate-50"
                   >
                     <option value="t1a">cT1a (≤ 1 cm, intratiroideo)</option>
                     <option value="t1b">cT1b (&gt; 1 – 2 cm, intratiroideo)</option>
@@ -1363,13 +1363,13 @@ export default function App() {
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 mb-1.5">
-                    <label data-campo="cN" className="block text-xs font-bold uppercase text-slate-500">Ganglios Clínicos (cN)</label>
+                    <label data-campo="cN" className="block text-xs font-semibold uppercase text-slate-500">Ganglios Clínicos (cN)</label>
                     <InfoTip text={TIP_N1A + ' ' + TIP_N1B} label="cN1a y cN1b" />
                   </div>
                   <select
                     value={surg.cN}
                     onChange={(e) => setSurg({ ...surg, cN: e.target.value })}
-                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-semibold bg-slate-50"
                   >
                     <option value="n0">cN0 (Sin ganglios clínicos ni ecográficos)</option>
                     <option value="n1a">cN1a (Ganglios centrales VI/VII comprometidos)</option>
@@ -1377,22 +1377,22 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label data-campo="cM" className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Metástasis a Distancia (cM)</label>
+                  <label data-campo="cM" className="block text-xs font-semibold uppercase text-slate-500 mb-1.5">Metástasis a Distancia (cM)</label>
                   <select
                     value={surg.cM}
                     onChange={(e) => setSurg({ ...surg, cM: e.target.value })}
-                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-semibold bg-slate-50"
                   >
                     <option value="m0">cM0 (Sin metástasis a distancia)</option>
                     <option value="m1">cM1 (Metástasis a distancia)</option>
                   </select>
                 </div>
                 <div>
-                  <label data-campo="laterality" className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Lateralidad / Lóbulo Contralateral</label>
+                  <label data-campo="laterality" className="block text-xs font-semibold uppercase text-slate-500 mb-1.5">Lateralidad / Lóbulo Contralateral</label>
                   <select
                     value={surg.laterality}
                     onChange={(e) => setSurg({ ...surg, laterality: e.target.value })}
-                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-semibold bg-slate-50"
                   >
                     <option value="uni">Unilateral sin nódulos contralaterales sospechosos</option>
                     <option value="bil">Cáncer bilateral (multifocal, cT(m))</option>
@@ -1400,11 +1400,11 @@ export default function App() {
                   </select>
                 </div>
                 <div>
-                  <label data-campo="posteriorAbutment" className="block text-xs font-bold uppercase text-slate-500 mb-1.5">Relación con Cápsula Posterior / Tráquea</label>
+                  <label data-campo="posteriorAbutment" className="block text-xs font-semibold uppercase text-slate-500 mb-1.5">Relación con Cápsula Posterior / Tráquea</label>
                   <select
                     value={surg.posteriorAbutment}
                     onChange={(e) => setSurg({ ...surg, posteriorAbutment: e.target.value })}
-                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-bold bg-slate-50"
+                    className="w-full p-2.5 rounded-xl border border-slate-300 text-xs font-semibold bg-slate-50"
                   >
                     <option value="no">Alejado de cápsula posterior, tráquea y surco traqueoesofágico</option>
                     <option value="yes">Adyacente a cápsula posterior / tráquea / área del NLR</option>
@@ -1414,8 +1414,8 @@ export default function App() {
             </div>
 
             <div className="lg:col-span-5 bg-teal-950 text-white p-5 rounded-2xl shadow-lg space-y-3 text-xs leading-relaxed">
-              <div className="text-[10px] font-mono uppercase text-teal-300">Recomendación Quirúrgica · ATA 2025</div>
-              <div className="text-xl font-black text-white">
+              <div className="text-[10.5px] font-mono uppercase text-teal-300">Recomendación Quirúrgica · ATA 2025</div>
+              <div className="text-xl font-[650] text-white">
                 {surgRes.rec}
               </div>
 
@@ -1446,41 +1446,41 @@ export default function App() {
           <div className="grid lg:grid-cols-12 gap-6">
             <div className="lg:col-span-7 bg-white p-5 rounded-card shadow-ms space-y-4" {...zonaDatos}>
               <div className="flex flex-wrap items-center justify-between gap-2">
-                <h2 className="text-base font-black text-slate-900">Evaluación de Nódulo (ACR TI-RADS 2017)</h2>
-                <span className="text-[11px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">TI-RADS: Tessler FN, et al. J Am Coll Radiol 2017;14:587–595 · Bethesda 2023 (vía PathologyOutlines)</span>
+                <h2 className="text-base font-[650] text-slate-900">Evaluación de Nódulo (ACR TI-RADS 2017)</h2>
+                <span className="text-[12px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">TI-RADS: Tessler FN, et al. J Am Coll Radiol 2017;14:587–595 · Bethesda 2023 (vía PathologyOutlines)</span>
               </div>
-              <p className="text-[11px] text-slate-500 leading-snug">
+              <p className="text-[12px] text-slate-500 leading-snug">
                 Seleccione una opción en cada una de las primeras cuatro categorías y <b>todas las que apliquen</b> en focos ecogénicos; se suman los puntos.
               </p>
               <div className="grid sm:grid-cols-2 gap-3 text-xs">
                 <div>
-                  <label data-campo="comp" className="font-bold text-slate-600 block mb-1">1. Composición</label>
-                  <select value={nodule.comp} onChange={e => setNodule({ ...nodule, comp: e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold">
+                  <label data-campo="comp" className="font-semibold text-slate-600 block mb-1">1. Composición</label>
+                  <select value={nodule.comp} onChange={e => setNodule({ ...nodule, comp: e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-medium">
                     {Object.entries(TIRADS_COMP).map(([k, o]) => <option key={k} value={k}>{o.l} ({o.pts} {o.pts === 1 ? 'pt' : 'pts'})</option>)}
                   </select>
-                  <span className="text-[11px] text-slate-500 block mt-1">Espongiforme: &gt;50% de pequeños espacios quísticos. Mixto: puntuar el componente sólido predominante.</span>
+                  <span className="text-[12px] text-slate-500 block mt-1">Espongiforme: &gt;50% de pequeños espacios quísticos. Mixto: puntuar el componente sólido predominante.</span>
                 </div>
                 <div>
-                  <label data-campo="echo" className="font-bold text-slate-600 block mb-1">2. Ecogenicidad</label>
-                  <select value={nodule.echo} onChange={e => setNodule({ ...nodule, echo: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold" disabled={nodule.comp === 'spongiform'}>
+                  <label data-campo="echo" className="font-semibold text-slate-600 block mb-1">2. Ecogenicidad</label>
+                  <select value={nodule.echo} onChange={e => setNodule({ ...nodule, echo: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-medium" disabled={nodule.comp === 'spongiform'}>
                     <option value={0}>Anecoico (0 pts)</option>
                     <option value={1}>Hiper o isoecoico (1 pt)</option>
                     <option value={2}>Hipoecoico (2 pts)</option>
                     <option value={3}>Muy hipoecoico (3 pts)</option>
                     <option value={-1}>No determinable (1 pt)</option>
                   </select>
-                  <span className="text-[11px] text-slate-500 block mt-1">Anecoico: solo nódulos quísticos o casi quísticos. Muy hipoecoico: más que la musculatura pretiroidea.</span>
+                  <span className="text-[12px] text-slate-500 block mt-1">Anecoico: solo nódulos quísticos o casi quísticos. Muy hipoecoico: más que la musculatura pretiroidea.</span>
                 </div>
                 <div>
-                  <label data-campo="shape" className="font-bold text-slate-600 block mb-1">3. Forma (imagen transversal)</label>
-                  <select value={nodule.shape} onChange={e => setNodule({ ...nodule, shape: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold" disabled={nodule.comp === 'spongiform'}>
+                  <label data-campo="shape" className="font-semibold text-slate-600 block mb-1">3. Forma (imagen transversal)</label>
+                  <select value={nodule.shape} onChange={e => setNodule({ ...nodule, shape: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-medium" disabled={nodule.comp === 'spongiform'}>
                     <option value={0}>Más ancho que alto (0 pts)</option>
                     <option value={3}>Más alto que ancho (3 pts)</option>
                   </select>
                 </div>
                 <div>
-                  <label data-campo="margin" className="font-bold text-slate-600 block mb-1">4. Margen</label>
-                  <select value={nodule.margin} onChange={e => setNodule({ ...nodule, margin: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-semibold" disabled={nodule.comp === 'spongiform'}>
+                  <label data-campo="margin" className="font-semibold text-slate-600 block mb-1">4. Margen</label>
+                  <select value={nodule.margin} onChange={e => setNodule({ ...nodule, margin: +e.target.value })} className="w-full p-2 border rounded-lg bg-slate-50 font-medium" disabled={nodule.comp === 'spongiform'}>
                     <option value={0}>Liso (0 pts)</option>
                     <option value={-1}>Mal definido (0 pts)</option>
                     <option value={2}>Lobulado o irregular (2 pts)</option>
@@ -1489,7 +1489,7 @@ export default function App() {
                   </select>
                 </div>
                 <div className="sm:col-span-2">
-                  <span data-campo="foci" className="font-bold text-slate-600 block mb-1">5. Focos ecogénicos (todos los que apliquen)</span>
+                  <span data-campo="foci" className="font-semibold text-slate-600 block mb-1">5. Focos ecogénicos (todos los que apliquen)</span>
                   <div className="grid sm:grid-cols-3 gap-1.5">
                     {TIRADS_FOCI.map(f => (
                       <label key={f.k} className={`flex items-start gap-2 p-2 rounded-lg border cursor-pointer ${nodule.comp === 'spongiform' ? 'opacity-50' : ''} ${nodule.foci[f.k] ? 'bg-teal-50 border-teal-400' : 'bg-slate-50 border-slate-200'}`}>
@@ -1500,7 +1500,7 @@ export default function App() {
                           onChange={e => setNodule({ ...nodule, foci: { ...nodule.foci, [f.k]: e.target.checked } })}
                           className="mt-0.5 rounded text-teal-600"
                         />
-                        <span className="font-semibold">{f.l} ({f.pts} {f.pts === 1 ? 'pt' : 'pts'})</span>
+                        <span className="font-medium">{f.l} ({f.pts} {f.pts === 1 ? 'pt' : 'pts'})</span>
                       </label>
                     ))}
                   </div>
@@ -1509,25 +1509,25 @@ export default function App() {
                     disabled={nodule.comp === 'spongiform'}
                     aria-pressed={!Object.values(nodule.foci).some(Boolean) && !!hechos['nodule.foci']}
                     onClick={() => setNodule({ ...nodule, foci: { macro: false, rim: false, punct: false } })}
-                    className={`mt-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold ${!Object.values(nodule.foci).some(Boolean) && hechos['nodule.foci'] ? 'bg-teal-700 border-teal-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-700'}`}
+                    className={`mt-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold ${!Object.values(nodule.foci).some(Boolean) && hechos['nodule.foci'] ? 'bg-teal-700 border-teal-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-700'}`}
                   >
                     Ninguno (o artefactos en cola de cometa grandes, 0 pts)
                   </button>
                 </div>
                 <div>
-                  <label data-campo="sizeCm" className="font-bold text-slate-600 block mb-1">Diámetro máximo (cm)</label>
+                  <label data-campo="sizeCm" className="font-semibold text-slate-600 block mb-1">Diámetro máximo (cm)</label>
                   <input
                     type="number" inputMode="decimal" step="0.1" min="0"
                     value={nodule.sizeCm}
                     onChange={e => setNodule({ ...nodule, sizeCm: e.target.value })}
-                    className="w-full p-2 border rounded-lg bg-slate-50 font-semibold font-mono"
+                    className="w-full p-2 border rounded-lg bg-slate-50 font-medium font-mono"
                   />
                 </div>
                 <div className="flex items-end">
                   <button
                     data-no-campo
                     onClick={() => { setActiveTab('bethesda'); window.scrollTo({ top: 0 }); }}
-                    className="w-full p-2 rounded-lg border border-teal-300 bg-teal-50 text-teal-900 font-bold text-left hover:bg-teal-100"
+                    className="w-full p-2 rounded-lg border border-teal-300 bg-teal-50 text-teal-900 font-semibold text-left hover:bg-teal-100"
                   >
                     {nodule.bethesda === 'none' ? 'Si se puncionó: registrar citología (Bethesda) →' : `Citología: ${BETHESDA[nodule.bethesda].label} →`}
                   </button>
@@ -1541,16 +1541,16 @@ export default function App() {
                 return (
                   <>
                     <div className="p-3.5 rounded-xl bg-slate-900 text-white">
-                      <span className="text-[10px] font-mono uppercase text-teal-300 block">Puntaje ACR TI-RADS: {t.pts} puntos</span>
-                      <div className="text-base font-black mt-0.5">{t.level} · {t.name}</div>
-                      <div className="text-[11px] text-slate-300 mt-0.5">Riesgo de cáncer en la serie del comité: {t.risk}</div>
-                      <div className="text-xs font-semibold text-teal-200 mt-1.5">{t.rec}</div>
-                      {t.followUp && <div className="text-[11px] text-slate-200 mt-1">{t.followUp}</div>}
+                      <span className="text-[10.5px] font-mono uppercase text-teal-300 block">Puntaje ACR TI-RADS: {t.pts} puntos</span>
+                      <div className="text-base font-bold mt-0.5">{t.level} · {t.name}</div>
+                      <div className="text-[12px] text-slate-300 mt-0.5">Riesgo de cáncer en la serie del comité: {t.risk}</div>
+                      <div className="text-xs font-medium text-teal-200 mt-1.5">{t.rec}</div>
+                      {t.followUp && <div className="text-[12px] text-slate-200 mt-1">{t.followUp}</div>}
                     </div>
                     {t.notes.map((n, i) => (
-                      <div key={i} className="bg-amber-100/90 border border-amber-400 text-amber-950 p-3 rounded-xl font-semibold leading-snug">⚠️ {n}</div>
+                      <div key={i} className="bg-amber-100/90 border border-amber-400 text-amber-950 p-3 rounded-xl font-medium leading-snug">⚠️ {n}</div>
                     ))}
-                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-[11px] leading-snug text-slate-700">
+                    <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 space-y-1 text-[12px] leading-snug text-slate-700">
                       <strong className="text-slate-900 block">Reglas del comité ACR TI-RADS:</strong>
                       <div>• Crecimiento significativo: aumento ≥20% en al menos dos dimensiones con un mínimo de 2 mm, o ≥50% en volumen.</div>
                       <div>• Si el nivel TI-RADS aumenta en el seguimiento, el siguiente US se hace en 1 año.</div>
@@ -1577,19 +1577,19 @@ export default function App() {
             <div className="grid lg:grid-cols-12 gap-6">
               <div className="lg:col-span-7 bg-white p-5 rounded-card shadow-ms space-y-4">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h2 className="text-base font-black text-slate-900">Citología de tiroides (Bethesda 2023)</h2>
-                  <span className="text-[11px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">Fuente: PathologyOutlines (resumen de Ali SZ, et al.)</span>
+                  <h2 className="text-base font-[650] text-slate-900">Citología de tiroides (Bethesda 2023)</h2>
+                  <span className="text-[12px] font-mono bg-teal-50 border border-teal-200 px-2 py-0.5 rounded text-teal-900">Fuente: PathologyOutlines (resumen de Ali SZ, et al.)</span>
                 </div>
                 {groups.map(g => (
                   <div key={g.t}>
-                    <span className="text-[11px] font-black uppercase text-slate-500 tracking-wider block mb-1.5">{g.t}</span>
+                    <span className="text-[12px] font-[650] uppercase text-slate-500 tracking-wider block mb-1.5">{g.t}</span>
                     <div className="grid sm:grid-cols-2 gap-2">
                       {g.ids.map(id => (
                         <button
                           key={id}
                           aria-pressed={nodule.bethesda === id}
                           onClick={() => setNodule({ ...nodule, bethesda: nodule.bethesda === id ? 'none' : id })}
-                          className={`p-2.5 rounded-xl text-xs font-bold border text-left transition-all ${
+                          className={`p-2.5 rounded-xl text-xs font-semibold border text-left transition-all ${
                             nodule.bethesda === id ? 'bg-teal-700 border-teal-700 text-white shadow-sm' : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                           }`}
                         >
@@ -1599,28 +1599,28 @@ export default function App() {
                     </div>
                   </div>
                 ))}
-                <p className="text-[11px] text-slate-500 leading-snug">Toque de nuevo la categoría elegida para quitarla. El riesgo de malignidad varía según se considere a NIFTP maligno o no; se recomienda calcular el ROM institucional.</p>
+                <p className="text-[12px] text-slate-500 leading-snug">Toque de nuevo la categoría elegida para quitarla. El riesgo de malignidad varía según se considere a NIFTP maligno o no; se recomienda calcular el ROM institucional.</p>
               </div>
 
               <div className="lg:col-span-5 space-y-3 text-xs">
                 <div className={`p-4 rounded-card border-2 ${tone}`}>
-                  <span className="text-[10px] font-mono uppercase text-slate-500 block">Bethesda 2023 · Riesgo de malignidad</span>
+                  <span className="text-[10.5px] font-mono uppercase text-slate-500 block">Bethesda 2023 · Riesgo de malignidad</span>
                   {bth.rom ? (
                     <>
-                      <div className="text-lg font-black text-slate-900 mt-0.5 leading-tight">{bth.label}</div>
-                      <div className="text-sm font-bold text-slate-800 mt-2">ROM: {bth.rom}</div>
+                      <div className="text-lg font-bold text-slate-900 mt-0.5 leading-tight">{bth.label}</div>
+                      <div className="text-sm font-semibold text-slate-800 mt-2">ROM: {bth.rom}</div>
                       <div className="text-xs text-slate-700 mt-1.5 leading-snug"><b>Manejo:</b> {bth.mgmt}</div>
                     </>
                   ) : (
-                    <div className="text-sm font-bold text-slate-600 mt-1">Seleccione la categoría del informe de citología.</div>
+                    <div className="text-sm font-semibold text-slate-600 mt-1">Seleccione la categoría del informe de citología.</div>
                   )}
-                  <div className="text-[10px] text-slate-500 mt-3 leading-snug">Fuente secundaria: PathologyOutlines.com (Suzuki A, Bychkov A; act. 12-jun-2025), resumen de Ali SZ, et al. Thyroid 2023;33:1039.</div>
+                  <div className="text-[10.5px] text-slate-500 mt-3 leading-snug">Fuente secundaria: PathologyOutlines.com (Suzuki A, Bychkov A; act. 12-jun-2025), resumen de Ali SZ, et al. Thyroid 2023;33:1039.</div>
                 </div>
                 {(
                   <div className="p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-950">
                     <strong className="block mb-1">Nota de transición ATA 2025 (R9, R10):</strong>
                     Una vez confirmado el diagnóstico de cáncer diferenciado de tiroides (Bethesda VI o molecular positivo), <b>no se recomienda</b> medir Tg ni TgAb preoperatorias de rutina (R9) ni la evaluación genómica de rutina antes de la cirugía; si el perfil ya se conoce, puede considerarse para informar la extensión quirúrgica (R10).
-                    {(nodule.bethesda === '5' || nodule.bethesda === '6') && <button onClick={() => { setActiveTab('surgery'); window.scrollTo({ top: 0 }); }} className="mt-2 block w-full text-center font-black bg-teal-700 hover:bg-teal-800 text-white rounded-lg py-2">Continuar en Cirugía →</button>}
+                    {(nodule.bethesda === '5' || nodule.bethesda === '6') && <button onClick={() => { setActiveTab('surgery'); window.scrollTo({ top: 0 }); }} className="mt-2 block w-full text-center font-[650] bg-teal-700 hover:bg-teal-800 text-white rounded-lg py-2">Continuar en Cirugía →</button>}
                   </div>
                 )}
               </div>
@@ -1631,13 +1631,13 @@ export default function App() {
           <div className="mt-4 hidden lg:flex justify-end">
             <button
               onClick={() => handleExport('preop')}
-              className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-5 rounded-full font-black text-sm shadow-md"
+              className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-5 rounded-full font-[650] text-sm shadow-md"
             >
               <IconCopy /> {copyFeedback === 'preop' ? '¡Nota preoperatoria copiada!' : 'Copiar nota preoperatoria (TI-RADS + Bethesda + Cirugía)'}
             </button>
           </div>
         )}
-        <footer className="mt-8 pt-4 border-t border-slate-200 text-[11px] text-slate-500 leading-relaxed">
+        <footer className="mt-8 pt-4 border-t border-slate-200 text-[12px] text-slate-500 leading-relaxed">
           <b>Fuentes verificadas:</b> Ringel MD, Sosa JA, et al. 2025 ATA Management Guidelines for Adult Patients with DTC. Thyroid 2025;35(8):841–985 (DOI: 10.1177/10507256251363120) + Corrigendum Thyroid 2025;35(11):1350 (Fig. 2, Fig. 6, Tablas 3, 4, 5, 6, 8, 9, 10 y 11) · Pestaña TI-RADS: ACR TI-RADS 2017 (Tessler FN, et al. JACR 2017;14:587–595) · Pestaña Bethesda: Bethesda 2023 (resumen PathologyOutlines de Ali SZ, et al. Thyroid 2023;33:1039). Alcance: adultos con cáncer diferenciado de tiroides; no aplica a medular, anaplásico, linfoma ni pediatría. Herramienta de apoyo; no sustituye el juicio clínico. Los datos no salen del dispositivo.
         </footer>
       </main>)}
@@ -1649,17 +1649,17 @@ export default function App() {
           className={`lg:hidden fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 px-4 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom))] text-left text-white shadow-[0_-4px_12px_rgba(0,0,0,0.15)] ${curStyle.band}`}
         >
           <span className="min-w-0">
-            <span className="block text-[10px] font-mono uppercase tracking-wider opacity-90">Riesgo ATA · p{postopRes.pT} · {dynRes.cat}</span>
-            <span className="block text-sm font-black truncate">{postopRes.label} ({postopRes.pct})</span>
-            {faltanTab > 0 && <span className="block text-[11px] font-bold opacity-95" data-testid="barra-faltan">⚠ Faltan {faltanTab} dato{faltanTab > 1 ? 's' : ''}: resultado provisional</span>}
+            <span className="block text-[10.5px] font-mono uppercase tracking-wider opacity-90">Riesgo ATA · p{postopRes.pT} · {dynRes.cat}</span>
+            <span className="block text-sm font-[650] truncate">{postopRes.label} ({postopRes.pct})</span>
+            {faltanTab > 0 && <span className="block text-[12px] font-semibold opacity-95" data-testid="barra-faltan">⚠ Faltan {faltanTab} dato{faltanTab > 1 ? 's' : ''}: resultado provisional</span>}
           </span>
-          <span className="shrink-0 text-xs font-bold bg-white/20 px-3 py-1.5 rounded-lg">Ver ↓</span>
+          <span className="shrink-0 text-xs font-semibold bg-white/20 px-3 py-1.5 rounded-lg">Ver ↓</span>
         </button>
       )}
       {(activeTab === 'postop' || activeTab === 'dynamic') && (
         <button
           onClick={() => handleExport('emr')}
-          className="lg:hidden fixed right-3 z-50 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] flex items-center gap-1.5 bg-slate-900 text-white text-xs font-black px-3.5 py-2.5 rounded-full shadow-lg"
+          className="lg:hidden fixed right-3 z-50 bottom-[calc(4.25rem+env(safe-area-inset-bottom))] flex items-center gap-1.5 bg-slate-900 text-white text-xs font-[650] px-3.5 py-2.5 rounded-full shadow-lg"
         >
           <IconCopy /> {copyFeedback === 'emr' ? '¡Nota copiada!' : 'Copiar nota'}
         </button>
@@ -1667,7 +1667,7 @@ export default function App() {
       {['nodule', 'bethesda', 'surgery'].includes(activeTab) && (
         <button
           onClick={() => handleExport('preop')}
-          className="lg:hidden fixed right-3 z-50 bottom-[calc(1rem+env(safe-area-inset-bottom))] flex items-center gap-1.5 bg-slate-900 text-white text-xs font-black px-3.5 py-2.5 rounded-full shadow-lg"
+          className="lg:hidden fixed right-3 z-50 bottom-[calc(1rem+env(safe-area-inset-bottom))] flex items-center gap-1.5 bg-slate-900 text-white text-xs font-[650] px-3.5 py-2.5 rounded-full shadow-lg"
         >
           <IconCopy /> {copyFeedback === 'preop' ? '¡Nota copiada!' : 'Copiar nota preop.'}
         </button>

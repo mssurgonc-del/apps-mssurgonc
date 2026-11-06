@@ -556,6 +556,7 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
 /* La impresión ahora abre el documento en una pestaña nueva (ver printCurrentDoc en el script),
    por lo que no se necesitan reglas @media print en la página principal. */
 #vaultLock input::placeholder{letter-spacing:1px;}
+#vaultLock .btn-accent{background:#fff;border-color:#fff;color:var(--ms-accent-hover);box-shadow:none;min-height:44px;padding:0 26px;}
 
 /* ---- Alta Quirúrgica sobre el estilo común ---- */
 body{font-family:var(--ms-font);background:var(--ms-bg);}
@@ -1254,7 +1255,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
 </div>
 
 <!-- ============ Bóveda: desbloqueo / creación del PIN ============ -->
-<div id="vaultLock" style="display:none;position:fixed;inset:0;background:var(--topbar-bg);z-index:500;align-items:center;justify-content:center;flex-direction:column;color:#fff;padding:20px;text-align:center;overflow:auto;">
+<div id="vaultLock" style="display:none;position:fixed;inset:0;background:var(--ms-accent-hover);z-index:500;align-items:center;justify-content:center;flex-direction:column;color:#fff;padding:20px;text-align:center;overflow:auto;">
   <div style="font-size:40px;margin-bottom:6px;">🔒</div>
   <h2 style="color:#fff;margin-bottom:14px;">Alta Quirúrgica</h2>
   <div id="vlUnlock">
@@ -4799,8 +4800,9 @@ function saveManualMed(){
    DOCUMENTO — construcción del membrete/receta
    ============================================================ */
 function today(){
+  // Fecha local (en Honduras, toISOString daría el día siguiente después de las 6 p. m.)
   const d = new Date();
-  return d.toISOString().slice(0,10);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
 }
 if(!document.getElementById('rxFecha').value) document.getElementById('rxFecha').value = today();
 
@@ -4906,7 +4908,8 @@ document.getElementById('rxFirmaTipo').addEventListener('change', renderDoc);
    ============================================================ */
 function getDocStylesCSS(){
   const allCSS = document.querySelector('style').textContent;
-  const rootMatch = allCSS.match(/:root\{[\s\S]*?\n\}/);
+  // Variables del estilo común y de la app (hay dos bloques :root; la impresión necesita ambos)
+  const rootMatch = [(allCSS.match(/:root\{[\s\S]*?\n\}/g) || []).join('\n')];
   const docRulesMatch = allCSS.match(/\/\* ---------- Document preview[\s\S]*?(?=\/\* ---------- Historial)/);
   return (rootMatch? rootMatch[0] : '') + '\n' + (docRulesMatch? docRulesMatch[0] : '');
 }

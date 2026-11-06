@@ -3,7 +3,7 @@
 
 Uso: python3 scripts/sync-ui.py   (desde cualquier carpeta)
 Cada app es un solo archivo HTML que funciona sin conexión, por eso el estilo común va copiado
-dentro de ella en lugar de enlazado. Las apps que todavía no tienen los marcadores se saltan.
+dentro de ella en lugar de enlazado. Lo mismo con shared/ms-membrete.js (hoja membretada). Las apps que todavía no tienen los marcadores se saltan.
 """
 from pathlib import Path
 
@@ -24,3 +24,18 @@ for app in ['index.html', 'constancias/index.html', 'arancel-redhsa/index.html',
         print('actualizado:', app)
     else:
         print('sin cambios:', app)
+
+# Hoja membretada: el mismo código en las apps que hacen documentos.
+JS = (RAIZ / 'shared' / 'ms-membrete.js').read_text(encoding='utf-8').strip()
+JI, JF = '/* MS-MEMBRETE:INICIO */', '/* MS-MEMBRETE:FIN */'
+for app in ['constancias/index.html', 'alta-quirurgica/index.html']:
+    ruta = RAIZ / app
+    html = ruta.read_text(encoding='utf-8')
+    if JI not in html:
+        print('sin marcadores de membrete, se salta:', app)
+        continue
+    a, b = html.index(JI) + len(JI), html.index(JF)
+    nuevo = html[:a] + '\n' + JS + '\n' + html[b:]
+    if nuevo != html:
+        ruta.write_text(nuevo, encoding='utf-8')
+        print('membrete actualizado:', app)

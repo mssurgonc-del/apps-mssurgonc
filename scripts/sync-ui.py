@@ -11,7 +11,7 @@ RAIZ = Path(__file__).resolve().parent.parent
 CSS = (RAIZ / 'shared' / 'ms-ui.css').read_text(encoding='utf-8').strip()
 INI, FIN = '/* MS-UI:INICIO */', '/* MS-UI:FIN */'
 
-for app in ['constancias/index.html', 'arancel-redhsa/index.html', 'alta-quirurgica/index.html']:
+for app in ['index.html', 'constancias/index.html', 'arancel-redhsa/index.html', 'alta-quirurgica/index.html']:
     ruta = RAIZ / app
     html = ruta.read_text(encoding='utf-8')
     if INI not in html:

@@ -1,6 +1,141 @@
 <!doctype html>
 <html lang="es">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Apps MS SurgOnc</title>
-<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:40px auto;padding:0 16px;background:#f1f5f9;color:#0f172a}a{display:block;margin-bottom:12px;padding:16px;background:#fff;border:1px solid #cbd5e1;border-radius:12px;color:#0f766e;font-weight:700;text-decoration:none}</style></head>
-<body><h1>Apps · Cirugía Oncológica</h1><a href="./calculadora-ata/">ThyroidScore Pro · Calculadora ATA 2025 →</a><a href="./alta-quirurgica/">Alta Quirúrgica · Recetas, indicaciones, laboratorios y citas →</a><a href="./constancias/">Constancias · Consentimientos, referencias, incapacidades y constancias →</a><a href="./arancel-redhsa/">Arancel REDHSA · Honorarios y presupuesto para el paciente →</a></body>
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#ffffff"><title>Apps MS SurgOnc</title>
+<style>
+/* MS-UI:INICIO */
+/* Estilo común de las apps (diseño «C»: estructura Consultorio, colores Clínico).
+   Fuente única: shared/ms-ui.css. scripts/sync-ui.py lo copia dentro de cada app entre
+   los marcadores MS-UI:INICIO / MS-UI:FIN (cada app es un solo archivo y funciona sin conexión). */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+:root{
+  --ms-bg:#F1F5F9;
+  --ms-surface:#FFFFFF;
+  --ms-surface-2:#F8FAFC;
+  --ms-line:#E2E8F0;
+  --ms-line-strong:#CBD5E1;
+  --ms-ink:#0F172A;
+  --ms-ink-2:#334155;
+  --ms-muted:#475569;
+  --ms-faint:#94A3B8;
+  --ms-accent:#0F766E;
+  --ms-accent-hover:#115E59;
+  --ms-accent-soft:#CCFBF1;
+  --ms-accent-ink:#115E59;
+  --ms-warn-bg:#FFFBEB;
+  --ms-warn-line:#FCD34D;
+  --ms-warn-ink:#78350F;
+  --ms-ok-bg:#D1FAE5;
+  --ms-ok-ink:#065F46;
+  --ms-danger:#B91C1C;
+  --ms-danger-bg:#FEF2F2;
+  --ms-radius-card:18px;
+  --ms-radius-field:12px;
+  --ms-pill:999px;
+  --ms-shadow:0 1px 2px rgba(15,23,42,.06), 0 4px 14px rgba(15,23,42,.05);
+  --ms-shadow-up:0 -6px 18px rgba(15,23,42,.06);
+  --ms-font:'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+.ms-app{font-family:var(--ms-font);color:var(--ms-ink);background:var(--ms-bg);-webkit-tap-highlight-color:transparent;}
+.ms-app *{box-sizing:border-box;}
+.ms-app button,.ms-app input,.ms-app select,.ms-app textarea{font-family:inherit;}
+
+/* Encabezado */
+.ms-header{background:var(--ms-surface);display:flex;align-items:center;gap:12px;padding:12px 16px 10px;}
+.ms-mark{width:38px;height:38px;border-radius:50%;background:var(--ms-accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;}
+.ms-mark svg{width:19px;height:19px;}
+.ms-titles{flex:1;min-width:0;}
+.ms-title{font-size:17px;font-weight:800;letter-spacing:-.02em;line-height:1.2;margin:0;color:var(--ms-ink);}
+.ms-sub{font-size:12px;color:var(--ms-muted);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ms-iconbtn{width:44px;height:44px;border-radius:50%;border:none;background:var(--ms-bg);color:var(--ms-accent);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex:none;}
+.ms-iconbtn:hover{background:var(--ms-line);}
+.ms-iconbtn svg{width:20px;height:20px;}
+.ms-chip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 12px;border-radius:var(--ms-pill);border:1px solid var(--ms-line);background:var(--ms-surface);color:var(--ms-muted);font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.ms-chip .ms-dot{width:8px;height:8px;border-radius:50%;background:var(--ms-faint);}
+.ms-chip.on{background:var(--ms-accent-soft);border-color:var(--ms-accent-soft);color:var(--ms-accent-ink);}
+.ms-chip.on .ms-dot{background:var(--ms-accent);}
+
+/* Pestañas tipo píldora */
+.ms-tabsbar{background:var(--ms-surface);padding:0 12px 10px;border-bottom:1px solid var(--ms-line);}
+.ms-tabs{background:var(--ms-bg);border-radius:var(--ms-pill);padding:4px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px;}
+.ms-tab{height:38px;border-radius:var(--ms-pill);border:none;background:transparent;color:var(--ms-muted);font-size:13px;font-weight:600;cursor:pointer;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ms-tab:hover{color:var(--ms-ink);}
+.ms-tab[aria-current="page"]{background:var(--ms-accent);color:#fff;font-weight:700;box-shadow:0 1px 3px rgba(15,23,42,.15);}
+
+/* Títulos y tarjetas */
+.ms-section-title{margin:0 4px 8px;font-size:13px;font-weight:800;color:var(--ms-accent);}
+.ms-card{background:var(--ms-surface);border-radius:var(--ms-radius-card);box-shadow:var(--ms-shadow);padding:16px;}
+.ms-list{background:var(--ms-surface);border-radius:var(--ms-radius-card);box-shadow:var(--ms-shadow);overflow:hidden;}
+.ms-row{width:100%;border:none;background:transparent;text-align:left;color:var(--ms-ink);min-height:56px;padding:10px 14px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid var(--ms-bg);text-decoration:none;}
+.ms-row:last-child{border-bottom:none;}
+.ms-row:hover{background:var(--ms-surface-2);}
+.ms-row[aria-current="true"]{background:var(--ms-accent);color:#fff;}
+.ms-row[aria-current="true"] .ms-row-d{color:#CCFBF1;}
+.ms-row[aria-current="true"] .ms-badge-n{background:rgba(255,255,255,.18);color:#fff;}
+.ms-badge-n{min-width:34px;height:34px;padding:0 6px;border-radius:10px;background:var(--ms-accent-soft);color:var(--ms-accent-ink);font-size:11.5px;font-weight:800;display:flex;align-items:center;justify-content:center;flex:none;}
+.ms-row-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.ms-row-t{font-size:14.5px;font-weight:700;line-height:1.3;}
+.ms-row-d{font-size:12px;color:var(--ms-muted);line-height:1.35;}
+.ms-chev{flex:none;color:var(--ms-faint);}
+
+/* Campos */
+.ms-label{display:block;font-size:12px;font-weight:600;color:var(--ms-muted);margin-bottom:5px;}
+.ms-input{width:100%;min-height:46px;border-radius:var(--ms-radius-field);border:1px solid var(--ms-line-strong);background:var(--ms-surface-2);padding:10px 14px;font-size:15px;color:var(--ms-ink);}
+.ms-input:focus{outline:2px solid var(--ms-accent);outline-offset:1px;border-color:var(--ms-accent);background:#fff;}
+.ms-search{position:relative;}
+.ms-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);width:18px;height:18px;color:#64748B;pointer-events:none;}
+.ms-search input{width:100%;height:48px;border-radius:var(--ms-pill);border:1px solid var(--ms-line-strong);background:var(--ms-surface);padding:0 16px 0 42px;font-size:15px;color:var(--ms-ink);}
+.ms-search input:focus{outline:2px solid var(--ms-accent);outline-offset:1px;}
+.ms-seg{background:var(--ms-bg);border-radius:var(--ms-radius-field);padding:3px;display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:3px;}
+.ms-seg button{height:40px;border-radius:10px;border:none;background:transparent;color:var(--ms-muted);font-size:14px;font-weight:600;cursor:pointer;}
+.ms-seg button[aria-pressed="true"]{background:var(--ms-accent);color:#fff;font-weight:700;}
+
+/* Botones */
+.ms-btn{min-height:48px;padding:0 20px;border-radius:var(--ms-pill);border:1px solid transparent;font-size:15px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;}
+.ms-btn-primary{background:var(--ms-accent);color:#fff;box-shadow:0 4px 12px rgba(15,118,110,.28);}
+.ms-btn-primary:hover{background:var(--ms-accent-hover);}
+.ms-btn-secondary{background:var(--ms-surface);border-color:var(--ms-line-strong);color:var(--ms-ink);}
+.ms-btn-secondary:hover{background:var(--ms-surface-2);}
+.ms-btn-ghost{background:transparent;color:var(--ms-accent);}
+.ms-btn-danger{background:var(--ms-surface);border-color:var(--ms-line);color:var(--ms-danger);min-height:32px;padding:0 12px;font-size:12.5px;font-weight:600;}
+.ms-btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;}
+
+/* Barra de acciones fija abajo (celular) */
+.ms-actionbar{position:sticky;bottom:0;z-index:20;background:var(--ms-surface);border-top:1px solid var(--ms-line);box-shadow:var(--ms-shadow-up);padding:12px 14px calc(12px + env(safe-area-inset-bottom));display:flex;gap:10px;}
+.ms-actionbar>*{flex:1;}
+
+/* Avisos */
+.ms-banner{border-radius:var(--ms-radius-field);padding:10px 14px;font-size:13px;line-height:1.45;}
+.ms-banner-warn{background:var(--ms-warn-bg);color:var(--ms-warn-ink);}
+.ms-banner-ok{background:var(--ms-ok-bg);color:var(--ms-ok-ink);}
+.ms-badge{display:inline-flex;align-items:center;border-radius:var(--ms-pill);padding:4px 10px;font-size:12px;font-weight:700;}
+.ms-badge-ok{background:var(--ms-ok-bg);color:var(--ms-ok-ink);}
+.ms-toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ms-ink);color:#fff;padding:11px 18px;border-radius:var(--ms-pill);font-size:13px;box-shadow:var(--ms-shadow);z-index:60;max-width:90%;text-align:center;}
+
+/* Computadora: lista a la izquierda, contenido al centro */
+@media (min-width:1024px){
+  .ms-header{padding:14px 28px;}
+  .ms-tabsbar{padding:0 28px 12px;}
+  .ms-tabs{max-width:520px;}
+  .ms-split{display:grid;grid-template-columns:300px minmax(0,1fr);gap:24px;align-items:start;}
+  .ms-split>aside{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto;padding-bottom:16px;}
+  .ms-actionbar{position:static;box-shadow:none;border-top:none;background:transparent;padding:16px 0 0;justify-content:flex-end;}
+  .ms-actionbar>*{flex:0 1 220px;}
+}
+/* MS-UI:FIN */
+body{margin:0;background:var(--ms-bg);}
+.wrap{max-width:640px;margin:0 auto;padding:16px 14px 32px;}
+</style></head>
+<body class="ms-app">
+<header class="ms-header"><div class="ms-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg></div>
+<div class="ms-titles"><h1 class="ms-title">Apps · Cirugía Oncológica</h1><div class="ms-sub">Dr. Manuel Salinas · Cirujano Oncólogo</div></div></header>
+<div class="wrap">
+<h2 class="ms-section-title">Aplicaciones</h2>
+<nav class="ms-list" aria-label="Aplicaciones">
+<a class="ms-row" href="./calculadora-ata/"><span class="ms-badge-n">ATA</span><span class="ms-row-main"><span class="ms-row-t">ThyroidScore · Calculadora ATA 2025</span><span class="ms-row-d">TI-RADS, Bethesda, cirugía, riesgo y seguimiento</span></span><svg class="ms-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></a>
+<a class="ms-row" href="./alta-quirurgica/"><span class="ms-badge-n">Rx</span><span class="ms-row-main"><span class="ms-row-t">Alta Quirúrgica</span><span class="ms-row-d">Recetas, indicaciones, laboratorios y citas</span></span><svg class="ms-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></a>
+<a class="ms-row" href="./constancias/"><span class="ms-badge-n">Doc</span><span class="ms-row-main"><span class="ms-row-t">Constancias</span><span class="ms-row-d">Consentimientos, referencias, incapacidades y constancias</span></span><svg class="ms-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></a>
+<a class="ms-row" href="./arancel-redhsa/"><span class="ms-badge-n">L.</span><span class="ms-row-main"><span class="ms-row-t">Arancel REDHSA</span><span class="ms-row-d">Honorarios y presupuesto para el paciente</span></span><svg class="ms-chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg></a>
+</nav>
+</div>
+</body>
 </html>

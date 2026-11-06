@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Alta Quirúrgica</title>
+<title>Alta Quirúrgica — Dr. Manuel Salinas</title>
 <script>
 (function(){
   try{
@@ -606,6 +606,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
 }
 
 /* letra: A intermedia */
+.solo-pc{display:none;}
+@media (min-width:1024px){.solo-pc{display:inline;}}
 </style>
 </head>
 <body class="ms-app">
@@ -618,8 +620,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
     <div class="sub" id="topbarDoctorName">Toque ⚙️ para configurar su perfil</div>
   </div>
   <button id="syncChip" onclick="Vault.syncTap()" style="display:none;margin-left:auto;background:rgba(255,255,255,.14);border:none;color:#fff;height:36px;padding:0 10px;border-radius:9px;font-size:13px;align-items:center;white-space:nowrap;"></button>
-  <button id="newPacBtn" onclick="nuevoPaciente()" title="Nuevo paciente: guarda lo actual en el historial y deja todo en blanco" aria-label="Nuevo paciente">＋ Nuevo</button>
-  <button id="gearBtn" onclick="openConfigModal()" title="Ajustes / Perfil" aria-label="Ajustes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68 1.65 1.65 0 0 0 10 3.17V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+  <button id="newPacBtn" onclick="nuevoPaciente()" title="Nuevo paciente: guarda lo actual en el historial y deja todo en blanco" aria-label="Nuevo paciente">＋ Nuevo<span class="solo-pc"> paciente</span></button>
+  <button id="gearBtn" onclick="openConfigModal()" title="Ajustes" aria-label="Ajustes"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68 1.65 1.65 0 0 0 10 3.17V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
 
 <nav id="tabs">
@@ -662,7 +664,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
       </div>
       <div id="addSurgeryBox" style="display:none;border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:8px;background:var(--surface-alt);">
         <label>Nombre de la nueva cirugía</label>
-        <input type="text" id="newSurgeryName" placeholder="Ej. Whipple, Colecistectomía...">
+        <input type="text" id="newSurgeryName" placeholder="Ej. Whipple, Colecistectomía…">
         <div class="btn-row">
           <button class="btn btn-primary btn-sm" onclick="saveNewSurgeryType()">Agregar</button>
           <button class="btn btn-sm" onclick="closeAddSurgeryBox()">Cancelar</button>
@@ -689,7 +691,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
     <div class="card">
       <h2>Medicamentos</h2>
       <label>Buscar en base de datos</label>
-      <input type="text" id="medSearch" placeholder="Nombre genérico o comercial..." oninput="renderMedSearch()" onfocus="renderMedSearch()">
+      <input type="text" id="medSearch" placeholder="Nombre genérico o comercial…" oninput="renderMedSearch()" onfocus="renderMedSearch()">
       <div id="medSearchResults"></div>
       <div class="btn-row">
         <button class="btn btn-sm btn-ghost" onclick="openManualMed()">+ Agregar medicamento nuevo a la base de datos</button>
@@ -702,9 +704,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
           <div><label>Comercial</label><input type="text" id="mmComercial"></div>
         </div>
         <div class="grid3">
-          <div><label>Presentación</label><input type="text" id="mmPresentacion" placeholder="Tableta, jarabe..."></div>
+          <div><label>Presentación</label><input type="text" id="mmPresentacion" placeholder="Tableta, jarabe…"></div>
           <div><label>Concentración</label><input type="text" id="mmConcentracion" placeholder="500 mg"></div>
-          <div><label>Vía</label><input type="text" id="mmVia" placeholder="VO, IV, IM..."></div>
+          <div><label>Vía</label><input type="text" id="mmVia" placeholder="VO, IV, IM…"></div>
         </div>
         <div class="btn-row">
           <button class="btn btn-primary btn-sm" onclick="saveManualMed()">Guardar y agregar a la receta</button>
@@ -742,9 +744,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
         <button class="btn" onclick="saveToHistorial()">💾 Guardar en historial</button>
       </div>
       <div class="btn-row">
-        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs + Cita)</button>
+        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (receta, indicaciones, laboratorios y cita)</button>
       </div>
-      <div class="hint" style="margin-top:8px;">"Compartir imagen del documento" te deja elegir la app (WhatsApp, WA Business, etc.) y manda el documento real, con membrete y todo. "Descargar imagen" la guarda para adjuntarla vos.</div>
+      <div class="hint" style="margin-top:8px;">«Compartir imagen del documento» le permite elegir la app (WhatsApp, WhatsApp Business, etc.) y manda el documento real, con membrete y todo. «Descargar imagen» la guarda para que usted la adjunte.</div>
     </div>
 
   </section>
@@ -774,7 +776,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
       <div class="hint">Se completa automáticamente al elegir la cirugía o la condición. Puede combinar ambas — se suman al texto existente, revise antes de guardar.</div>
       <label style="font-size:11px;">Por cirugía</label>
       <select id="indCirugia" onchange="onIndCirugiaChange()"></select>
-      <div class="hint">¿No está la cirugía que busca? Agréguela desde el módulo de Receta (botón "+ Nueva") — aparece automáticamente acá también.</div>
+      <div class="hint">¿No está la cirugía que busca? Agréguela desde el módulo de Receta (botón "+ Nueva") — aparece automáticamente aquí también.</div>
       <div class="chip-row" id="indComboChips"></div>
       <details class="tpl-opts"><summary>⋯ Opciones de plantilla</summary>
       <div class="btn-row">
@@ -798,7 +800,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
       </div>
       <div id="addConditionBox_ind" style="display:none;border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:8px;background:var(--surface-alt);">
         <label>Nombre de la condición</label>
-        <input type="text" id="newConditionName_ind" placeholder="Ej. Sepsis, Insuficiencia renal...">
+        <input type="text" id="newConditionName_ind" placeholder="Ej. Sepsis, Insuficiencia renal…">
         <div class="btn-row">
           <button class="btn btn-primary btn-sm" onclick="saveNewConditionType('indCondicion')">Agregar</button>
           <button class="btn btn-sm" onclick="closeAddConditionBox('indCondicion')">Cancelar</button>
@@ -816,16 +818,16 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
 
     <div class="card">
       <h2>Cuidados de la herida</h2>
-      <textarea id="indCuidadosHerida" rows="4" placeholder="Curaciones, cobertura, cuándo retirar gasas..." oninput="renderIndDoc()"></textarea>
+      <textarea id="indCuidadosHerida" rows="4" placeholder="Curaciones, cobertura, cuándo retirar gasas…" oninput="renderIndDoc()"></textarea>
 
       <h2 style="margin-top:14px;">Dieta</h2>
-      <textarea id="indDieta" rows="2" placeholder="Ej. Dieta corriente a partir de mañana..." oninput="renderIndDoc()"></textarea>
+      <textarea id="indDieta" rows="2" placeholder="Ej. Dieta corriente a partir de mañana…" oninput="renderIndDoc()"></textarea>
 
       <h2 style="margin-top:14px;">Actividad física</h2>
-      <textarea id="indActividad" rows="2" placeholder="Reposo, restricciones, cuándo retomar actividades..." oninput="renderIndDoc()"></textarea>
+      <textarea id="indActividad" rows="2" placeholder="Reposo, restricciones, cuándo retomar actividades…" oninput="renderIndDoc()"></textarea>
 
       <h2 style="margin-top:14px;">⚠️ Signos de alarma</h2>
-      <textarea id="indSignosAlarma" rows="3" placeholder="Fiebre, dolor que empeora, sangrado... cuándo contactar de inmediato" oninput="renderIndDoc()"></textarea>
+      <textarea id="indSignosAlarma" rows="3" placeholder="Fiebre, dolor que empeora, sangrado… cuándo contactar de inmediato" oninput="renderIndDoc()"></textarea>
     </div>
 
     <div class="card">
@@ -854,9 +856,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
         <button class="btn" onclick="saveIndToHistorial()">💾 Guardar en historial</button>
       </div>
       <div class="btn-row">
-        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs + Cita)</button>
+        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (receta, indicaciones, laboratorios y cita)</button>
       </div>
-      <div class="hint" style="margin-top:8px;">"Compartir imagen del documento" te deja elegir la app (WhatsApp, WA Business, etc.) y manda el documento real, con membrete y todo. "Descargar imagen" la guarda para adjuntarla vos.</div>
+      <div class="hint" style="margin-top:8px;">«Compartir imagen del documento» le permite elegir la app (WhatsApp, WhatsApp Business, etc.) y manda el documento real, con membrete y todo. «Descargar imagen» la guarda para que usted la adjunte.</div>
     </div>
 
   </section>
@@ -910,7 +912,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
       </div>
       <div id="addConditionBox_lab" style="display:none;border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:8px;background:var(--surface-alt);">
         <label>Nombre de la condición</label>
-        <input type="text" id="newConditionName_lab" placeholder="Ej. Sepsis, Insuficiencia renal...">
+        <input type="text" id="newConditionName_lab" placeholder="Ej. Sepsis, Insuficiencia renal…">
         <div class="btn-row">
           <button class="btn btn-primary btn-sm" onclick="saveNewConditionType('labCondicion')">Agregar</button>
           <button class="btn btn-sm" onclick="closeAddConditionBox('labCondicion')">Cancelar</button>
@@ -929,7 +931,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
     <div class="card">
       <h2>Exámenes de laboratorio</h2>
       <label>Buscar en el catálogo de Cemessa</label>
-      <input type="text" id="labSearch" placeholder="Nombre del examen..." oninput="renderLabSearch()" onfocus="renderLabSearch()">
+      <input type="text" id="labSearch" placeholder="Nombre del examen…" oninput="renderLabSearch()" onfocus="renderLabSearch()">
       <div id="labSearchResults"></div>
       <div class="btn-row" style="margin-top:0;">
         <button class="btn btn-sm btn-ghost" onclick="openManualLab()">+ Agregar examen nuevo al catálogo</button>
@@ -979,9 +981,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
         <button class="btn" onclick="saveLabToHistorial()">💾 Guardar en historial</button>
       </div>
       <div class="btn-row">
-        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs + Cita)</button>
+        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (receta, indicaciones, laboratorios y cita)</button>
       </div>
-      <div class="hint" style="margin-top:8px;">"Compartir imagen del documento" te deja elegir la app (WhatsApp, WA Business, etc.) y manda el documento real, con membrete y todo. "Descargar imagen" la guarda para adjuntarla vos.</div>
+      <div class="hint" style="margin-top:8px;">«Compartir imagen del documento» le permite elegir la app (WhatsApp, WhatsApp Business, etc.) y manda el documento real, con membrete y todo. «Descargar imagen» la guarda para que usted la adjunte.</div>
     </div>
 
   </section>
@@ -1014,7 +1016,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
         </div>
       </div>
       <label>Lugar</label>
-      <input type="text" id="citLugar" placeholder="Hospital Cemesa, consultorio ___" oninput="renderCitDoc()">
+      <input type="text" id="citLugar" placeholder="Hospital CEMESA, consultorio ___" oninput="renderCitDoc()">
       <label>Motivo de la cita (opcional)</label>
       <input type="text" id="citMotivo" placeholder="Ej. Control postoperatorio" oninput="renderCitDoc()">
       <div class="btn-row">
@@ -1039,9 +1041,9 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
           </div>
         </div>
         <button class="btn" onclick="saveCitToHistorial()">💾 Guardar en historial</button>
-        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (Receta + Indicaciones + Labs + Cita)</button>
+        <button class="btn btn-sm" onclick="shareAltaCompleta()">📦 Compartir alta completa (receta, indicaciones, laboratorios y cita)</button>
       </div>
-      <div class="hint" style="margin-top:8px;">"Compartir imagen del documento" te deja elegir la app (WhatsApp, WA Business, etc.) y manda el documento real, con membrete y todo. "Descargar imagen" la guarda para adjuntarla vos.</div>
+      <div class="hint" style="margin-top:8px;">«Compartir imagen del documento» le permite elegir la app (WhatsApp, WhatsApp Business, etc.) y manda el documento real, con membrete y todo. «Descargar imagen» la guarda para que usted la adjunte.</div>
     </div>
 
   </section>
@@ -1058,24 +1060,24 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
         <button class="admin-tab-btn" id="histTabBtnCit" onclick="switchHistTab('cit')">Citas</button>
       </div>
       <div id="histTabAll">
-        <input type="text" id="histSearchAll" placeholder="Escriba el nombre del paciente..." oninput="renderHistorialTodo()">
+        <input type="text" id="histSearchAll" placeholder="Escriba el nombre del paciente…" oninput="renderHistorialTodo()">
         <div class="hint">Junta todo lo guardado de este paciente — recetas, indicaciones, laboratorios y citas — en una sola lista, ordenado por fecha.</div>
         <div id="histListAll"></div>
       </div>
       <div id="histTabRx" style="display:none;">
-        <input type="text" id="histSearch" placeholder="Buscar por nombre de paciente..." oninput="renderHistorial()">
+        <input type="text" id="histSearch" placeholder="Buscar por nombre de paciente…" oninput="renderHistorial()">
         <div id="histList"></div>
       </div>
       <div id="histTabInd" style="display:none;">
-        <input type="text" id="histSearchInd" placeholder="Buscar por nombre de paciente..." oninput="renderHistorialIndicaciones()">
+        <input type="text" id="histSearchInd" placeholder="Buscar por nombre de paciente…" oninput="renderHistorialIndicaciones()">
         <div id="histListInd"></div>
       </div>
       <div id="histTabLab" style="display:none;">
-        <input type="text" id="histSearchLab" placeholder="Buscar por nombre de paciente..." oninput="renderHistorialLabs()">
+        <input type="text" id="histSearchLab" placeholder="Buscar por nombre de paciente…" oninput="renderHistorialLabs()">
         <div id="histListLab"></div>
       </div>
       <div id="histTabCit" style="display:none;">
-        <input type="text" id="histSearchCit" placeholder="Buscar por nombre de paciente..." oninput="renderHistorialCitas()">
+        <input type="text" id="histSearchCit" placeholder="Buscar por nombre de paciente…" oninput="renderHistorialCitas()">
         <div id="histListCit"></div>
       </div>
     </div>
@@ -1098,7 +1100,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
 <div class="modal-overlay" id="configModal">
   <div class="modal-box modal-box-lg">
     <div class="modal-head">
-      <h2><span class="eyebrow">Ajustes</span>Configuración</h2>
+      <h2>Ajustes</h2>
       <button class="modal-close" onclick="closeConfigModal()" aria-label="Cerrar">✕</button>
     </div>
     <div class="admin-tabs">
@@ -1117,10 +1119,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
       <input type="text" id="cfgNombre" placeholder="Dr. Manuel ___">
       <label for="cfgEspecialidad">Especialidad</label>
       <input type="text" id="cfgEspecialidad" placeholder="Cirugía Oncológica / Cirugía General">
-      <label for="cfgColegiado">No. de colegiación (opcional)</label>
-      <input type="text" id="cfgColegiado" placeholder="CMH-00000">
+      <label for="cfgColegiado">Nº de colegiado (opcional)</label>
+      <input type="text" id="cfgColegiado" placeholder="0000">
       <label for="cfgConsultorio">Consultorio / Ubicación</label>
-      <input type="text" id="cfgConsultorio" placeholder="Hospital Cemesa, consultorio ___">
+      <input type="text" id="cfgConsultorio" placeholder="Hospital CEMESA, consultorio ___">
       <label for="cfgTelefonos">Teléfono(s) de contacto</label>
       <input type="text" id="cfgTelefonos" placeholder="+504 0000-0000">
 
@@ -1137,7 +1139,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
           <div class="upload-box">
             <img id="firmaPreview" style="display:none;">
             <input type="file" id="firmaInput" accept="image/*">
-            <div class="hint" style="margin-top:8px;">Firma electrónica (imagen). Si prefieres firmar a mano, deja esto vacío — el documento imprimirá una línea para firma física.</div>
+            <div class="hint" style="margin-top:8px;">Firma electrónica (imagen). Si prefiere firmar a mano, deje esto vacío — el documento imprimirá una línea para firma física.</div>
           </div>
         </div>
       </div>
@@ -1186,7 +1188,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
     </div>
 
     <div id="cfgTabMedicamentos" style="display:none;">
-      <input type="text" id="adminMedSearch" placeholder="Buscar medicamento..." oninput="renderAdminMeds()">
+      <input type="text" id="adminMedSearch" placeholder="Buscar medicamento…" oninput="renderAdminMeds()">
       <div class="btn-row" style="margin-top:0;">
         <button class="btn btn-sm btn-ghost" onclick="openAdminAddMed()">+ Agregar medicamento</button>
       </div>
@@ -4070,11 +4072,11 @@ document.getElementById('importBackupInput').addEventListener('change', e=>{
     try{ data = JSON.parse(evt.target.result); }
     catch(err){ showToast('Ese archivo no es un respaldo válido'); return; }
     if(data._app !== 'alta-quirurgica'){ showToast('Ese archivo no es un respaldo de esta app'); return; }
-    askConfirm('Esto reemplaza tus medicamentos, plantillas, historial y perfil actuales por los del respaldo. ¿Continuar?', ()=>{
+    askConfirm('Esto reemplaza sus medicamentos, plantillas, historial y perfil actuales por los del respaldo. ¿Continuar?', ()=>{
       BACKUP_KEYS.forEach(k=>{
         if(data[k]!==undefined && data[k]!==null) appStore.setItem(k, data[k]);
       });
-      showToast('Respaldo importado — recargando...');
+      showToast('Respaldo importado — recargando…');
       setTimeout(()=>location.reload(), 900);
     });
   };
@@ -4150,7 +4152,7 @@ function adminCreateEmptyTemplateUnified(){
   else if(plantillasModule==='ind'){ indicacionesCondTemplates[key] = {cuidadosHerida:'',dieta:'',actividad:'',signosAlarma:''}; saveJSON(LS_KEYS.indCondTemplates, indicacionesCondTemplates); }
   else if(plantillasModule==='lab' && plantillasTipo==='cirugia'){ labCombos[key] = []; saveJSON(LS_KEYS.labCombos, labCombos); }
   else { labCondCombos[key] = []; saveJSON(LS_KEYS.labCondCombos, labCondCombos); }
-  showToast('Plantilla creada — agregale contenido abajo ✅');
+  showToast('Plantilla creada — agréguele contenido abajo ✅');
   renderAdminPlantillas();
 }
 function renderAdminPlantillas(){
@@ -4268,7 +4270,7 @@ function renderAdminCombos(){
         </div>
         ${itemsHTML || '<div class="hint">Sin medicamentos todavía.</div>'}
         <div class="admin-add-row">
-          <input type="text" placeholder="+ Buscar medicamento para agregar..." oninput="adminComboSearchInput(this,'${escapeAttr(cirugia)}')">
+          <input type="text" placeholder="+ Buscar medicamento para agregar…" oninput="adminComboSearchInput(this,'${escapeAttr(cirugia)}')">
           <div class="admin-mini-results"></div>
         </div>
       </div>`;
@@ -4417,7 +4419,7 @@ function renderLabTplCardHTML(kind, key, items){
       </div>
       ${itemsHTML || '<div class="hint">Sin exámenes todavía.</div>'}
       <div class="admin-add-row">
-        <input type="text" placeholder="+ Buscar examen para agregar..." oninput="adminLabComboSearchInputUnified(this,'${kind}','${escapeAttr(key)}')">
+        <input type="text" placeholder="+ Buscar examen para agregar…" oninput="adminLabComboSearchInputUnified(this,'${kind}','${escapeAttr(key)}')">
         <div class="admin-mini-results"></div>
       </div>
     </div>`;
@@ -4793,7 +4795,7 @@ function saveManualMed(){
   addMedToRx(med.id);
   ['mmGenerico','mmComercial','mmPresentacion','mmConcentracion','mmVia'].forEach(id=>document.getElementById(id).value='');
   closeManualMed();
-  showToast('Medicamento agregado a tu base de datos ✅');
+  showToast('Medicamento agregado a su base de datos ✅');
 }
 
 /* ============================================================
@@ -4825,7 +4827,7 @@ function proximaCitaLineHTML(){
   return `
       <div class="doc-ind-section">
         <h4>Próxima cita</h4>
-        <p><b>Fecha:</b> ${fecha}${hora ? `  &nbsp;·&nbsp;  <b>Hora:</b> ${hora}` : ''}${lugar ? `<br><b>Lugar:</b> ${lugar}` : ''}</p>
+        <p><b>Fecha:</b> ${fCorta(fecha)}${hora ? `  &nbsp;·&nbsp;  <b>Hora:</b> ${hora}` : ''}${lugar ? `<br><b>Lugar:</b> ${lugar}` : ''}</p>
       </div>`;
 }
 
@@ -4866,7 +4868,7 @@ function buildDocHTML(){
     <div class="doc-title">Receta médica</div>
     <div class="doc-patient">
       <div><b>Paciente:</b> ${pac.nombre}</div>
-      <div><b>Fecha:</b> ${pac.fecha}</div>
+      <div><b>Fecha:</b> ${fCorta(pac.fecha)}</div>
       <div><b>Edad:</b> ${pac.edad} años</div>
       <div><b>Sexo:</b> ${pac.sexo}</div>
       <div style="grid-column:1/-1;"><b>Diagnóstico:</b> ${pac.dx}</div>
@@ -5039,7 +5041,7 @@ async function buildDocImageCanvas(spec){
   const colW = maxWidth/2;
   const pac = spec.paciente;
   ctx.fillText(`Paciente: ${pac.nombre}`, x, y);
-  ctx.fillText(`Fecha: ${pac.fecha}`, x+colW, y);
+  ctx.fillText(`Fecha: ${fCorta(pac.fecha)}`, x+colW, y);
   y += 20;
   ctx.fillText(`Edad: ${pac.edad} años`, x, y);
   ctx.fillText(`Sexo: ${pac.sexo}`, x+colW, y);
@@ -5097,7 +5099,7 @@ async function buildDocImageCanvas(spec){
 }
 
 async function shareDocAsImage(spec, filename, shareTitle, textFallback){
-  showToast('Generando imagen del documento...');
+  showToast('Generando imagen del documento…');
   try{
     const canvas = await buildDocImageCanvas(spec);
     const blob = await canvasToPngBlob(canvas);
@@ -5108,14 +5110,14 @@ async function shareDocAsImage(spec, filename, shareTitle, textFallback){
       catch(e){ /* el usuario canceló */ }
     } else {
       downloadBlob(blob, filename);
-      showToast('Tu navegador no admite compartir imágenes directo — se descargó, adjuntala vos en WhatsApp');
+      showToast('Su navegador no permite compartir imágenes directamente; se descargó para que la adjunte en WhatsApp');
     }
   }catch(e){
     showToast('No se pudo generar la imagen del documento');
   }
 }
 async function downloadDocAsImage(spec, filename){
-  showToast('Generando imagen...');
+  showToast('Generando imagen…');
   try{
     const canvas = await buildDocImageCanvas(spec);
     const blob = await canvasToPngBlob(canvas);
@@ -5130,7 +5132,7 @@ async function downloadDocAsImage(spec, filename){
 /* Comparte Receta + Indicaciones + Laboratorios en un solo mensaje (varios archivos a la vez).
    Solo incluye los que realmente tengan contenido cargado en este momento. */
 async function shareAltaCompleta(){
-  showToast('Generando los documentos...');
+  showToast('Generando los documentos…');
   try{
     const partes = [];
     if(currentRxItems.length>0){
@@ -5167,7 +5169,7 @@ async function shareAltaCompleta(){
       catch(e){ /* el usuario canceló */ }
     } else {
       files.forEach(f=>downloadBlob(f, f.name));
-      showToast('Tu navegador no admite compartir varios archivos juntos — se descargaron por separado');
+      showToast('Su navegador no permite compartir varios archivos juntos — se descargaron por separado');
     }
   }catch(e){
     showToast('No se pudieron generar los documentos');
@@ -5216,7 +5218,7 @@ function buildTextSummary(){
   };
   let txt = `*Receta médica*\nPaciente: ${pac.nombre} (${pac.edad} años)\n`;
   if(pac.dx) txt += `Dx: ${pac.dx}\n`;
-  txt += `Fecha: ${document.getElementById('rxFecha').value}\n\n`;
+  txt += `Fecha: ${fCorta(document.getElementById('rxFecha').value)}\n\n`;
   currentRxItems.forEach((it,i)=>{
     txt += `${i+1}. ${it.generico} ${it.concentracion||''} — ${rxLinea({...it, cantidad:''}, false)}\n`;
   });
@@ -5328,7 +5330,7 @@ function renderHistorial(){
   }
   list.innerHTML = filtered.map(h=>`
     <div class="hist-row">
-      <div class="hi-info"><b>${h.paciente}</b><span>${h.fecha} · ${h.cirugia||''} · ${h.items.length} medicamento(s)</span></div>
+      <div class="hi-info"><b>${h.paciente}</b><span>${fCorta(h.fecha)} · ${h.cirugia||''} · ${h.items.length} medicamento(s)</span></div>
       <div class="btn-row" style="margin:0;">
         <button class="btn btn-sm" onclick="loadFromHistorial('${h.id}')">Ver / reimprimir</button>
         <button class="btn btn-sm btn-danger" onclick="deleteFromHistorial('${h.id}')">✕</button>
@@ -5583,7 +5585,7 @@ function buildIndDocHTML(){
     <div class="doc-title">Indicaciones postoperatorias</div>
     <div class="doc-patient">
       <div><b>Paciente:</b> ${pac.nombre}</div>
-      <div><b>Fecha:</b> ${pac.fecha}</div>
+      <div><b>Fecha:</b> ${fCorta(pac.fecha)}</div>
       <div><b>Edad:</b> ${pac.edad} años</div>
       <div><b>Sexo:</b> ${pac.sexo}</div>
       <div style="grid-column:1/-1;"><b>Diagnóstico:</b> ${pac.dx}</div>
@@ -5650,7 +5652,7 @@ function buildIndTextSummary(){
   };
   const tpl = readIndFormAsTemplate();
   let txt = `*Indicaciones postoperatorias*\nPaciente: ${pac.nombre} (${pac.edad} años)\n`;
-  txt += `Fecha: ${document.getElementById('indFecha').value}\n\n`;
+  txt += `Fecha: ${fCorta(document.getElementById('indFecha').value)}\n\n`;
   if(tpl.cuidadosHerida) txt += `*Cuidados de la herida:*\n${tpl.cuidadosHerida}\n\n`;
   if(tpl.dieta) txt += `*Dieta:*\n${tpl.dieta}\n\n`;
   if(tpl.actividad) txt += `*Actividad física:*\n${tpl.actividad}\n\n`;
@@ -5680,7 +5682,7 @@ function buildIndImageSpec(){
       if(citaFecha){
         const hora = document.getElementById('citHora').value || '';
         const lugar = document.getElementById('citLugar').value || '';
-        let b = `Fecha: ${citaFecha}${hora? '   ·   Hora: '+hora : ''}`;
+        let b = `Fecha: ${fCorta(citaFecha)}${hora? '   ·   Hora: '+hora : ''}`;
         if(lugar) b += `\nLugar: ${lugar}`;
         secciones.push({h:'Próxima cita', b, alert:false});
       }
@@ -5786,7 +5788,7 @@ function renderHistorialIndicaciones(){
   }
   list.innerHTML = filtered.map(h=>`
     <div class="hist-row">
-      <div class="hi-info"><b>${h.paciente}</b><span>${h.fecha} · ${h.cirugia||''}</span></div>
+      <div class="hi-info"><b>${h.paciente}</b><span>${fCorta(h.fecha)} · ${h.cirugia||''}</span></div>
       <div class="btn-row" style="margin:0;">
         <button class="btn btn-sm" onclick="loadIndFromHistorial('${h.id}')">Ver / reimprimir</button>
         <button class="btn btn-sm btn-danger" onclick="deleteIndFromHistorial('${h.id}')">✕</button>
@@ -5873,7 +5875,7 @@ function renderHistorialTodo(){
   items.sort((a,b)=> (b.fecha||'').localeCompare(a.fecha||''));
   list.innerHTML = items.map(it=>`
     <div class="hist-row">
-      <div class="hi-info"><b>${it.icono} ${it.paciente}</b><span>${it.tipo} · ${it.fecha||'(sin fecha)'} · ${it.resumen}</span></div>
+      <div class="hi-info"><b>${it.icono} ${it.paciente}</b><span>${it.tipo} · ${fCorta(it.fecha)||'(sin fecha)'} · ${it.resumen}</span></div>
       <button class="btn btn-sm" onclick="${it.loader}('${it.id}')">Ver</button>
     </div>`).join('');
 }
@@ -6101,6 +6103,11 @@ function saveManualLab(){
 }
 
 /* Fecha larga para el paciente: "jueves 29 de octubre de 2026" */
+/* Fecha para mostrar: 2026-11-06 → 06/11/2026 (los campos y el historial guardan aaaa-mm-dd) */
+function fCorta(iso){
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso||''));
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : (iso||'');
+}
 function fechaLargaES(iso){
   if(!iso) return '';
   const d = new Date(iso+'T12:00:00');
@@ -6153,7 +6160,7 @@ function buildLabDocHTML(){
     <div class="doc-title">Orden de laboratorio</div>
     <div class="doc-patient">
       <div><b>Paciente:</b> ${pac.nombre}</div>
-      <div><b>Fecha:</b> ${pac.fecha}</div>
+      <div><b>Fecha:</b> ${fCorta(pac.fecha)}</div>
       <div><b>Edad:</b> ${pac.edad} años</div>
       <div><b>Sexo:</b> ${pac.sexo}</div>
       <div style="grid-column:1/-1;"><b>Diagnóstico:</b> ${pac.dx}</div>
@@ -6214,7 +6221,7 @@ function buildLabTextSummary(){
     edad: document.getElementById('labPacEdad').value || '?'
   };
   let txt = `*Orden de laboratorio*\nPaciente: ${pac.nombre} (${pac.edad} años)\n`;
-  txt += `Fecha: ${document.getElementById('labFecha').value}\n`;
+  txt += `Fecha: ${fCorta(document.getElementById('labFecha').value)}\n`;
   if(labTomarTexto()) txt += `Tomar el: ${labTomarTexto()}\n`;
   txt += `\n`;
   currentLabItems.forEach((it,i)=>{ txt += `${i+1}. ${it.nombre}\n`; });
@@ -6336,7 +6343,7 @@ function renderHistorialLabs(){
   }
   list.innerHTML = filtered.map(h=>`
     <div class="hist-row">
-      <div class="hi-info"><b>${h.paciente}</b><span>${h.fecha} · ${h.cirugia||''} · ${h.items.length} examen(es)</span></div>
+      <div class="hi-info"><b>${h.paciente}</b><span>${fCorta(h.fecha)} · ${h.cirugia||''} · ${h.items.length} examen(es)</span></div>
       <div class="btn-row" style="margin:0;">
         <button class="btn btn-sm" onclick="loadLabFromHistorial('${h.id}')">Ver / reimprimir</button>
         <button class="btn btn-sm btn-danger" onclick="deleteLabFromHistorial('${h.id}')">✕</button>
@@ -6394,7 +6401,7 @@ function populateCitaHoras(){
   if(prev && CITA_HORAS.includes(prev)) sel.value = prev;
 }
 if(!document.getElementById('citFechaEmision').value) document.getElementById('citFechaEmision').value = today();
-if(!document.getElementById('citLugar').value) document.getElementById('citLugar').value = 'Hospital Cemesa';
+if(!document.getElementById('citLugar').value) document.getElementById('citLugar').value = 'Hospital CEMESA';
 
 function buildCitDocHTML(){
   const nombre = doctorConfig.nombre || '(configure su nombre en Ajustes ⚙️)';
@@ -6425,14 +6432,14 @@ function buildCitDocHTML(){
     <div class="doc-title">Cita médica</div>
     <div class="doc-patient">
       <div><b>Paciente:</b> ${pac.nombre}</div>
-      <div><b>Fecha de emisión:</b> ${pac.fechaEmision}</div>
+      <div><b>Fecha de emisión:</b> ${fCorta(pac.fechaEmision)}</div>
       <div><b>Edad:</b> ${pac.edad} años</div>
       <div><b>Sexo:</b> ${pac.sexo}</div>
     </div>
     <div class="doc-ind-body">
       <div class="doc-ind-section">
         <h4>Próxima cita</h4>
-        <p><b>Fecha:</b> ${fechaCita}<br><b>Hora:</b> ${hora}<br><b>Lugar:</b> ${lugar}</p>
+        <p><b>Fecha:</b> ${fCorta(fechaCita)}<br><b>Hora:</b> ${hora}<br><b>Lugar:</b> ${lugar}</p>
       </div>
       ${motivo ? `<div class="doc-ind-section"><h4>Motivo</h4><p>${motivo}</p></div>` : ''}
     </div>
@@ -6466,7 +6473,7 @@ function addToGoogleCalendar(){
   const horaStr = document.getElementById('citHora').value;
   if(!fecha || !horaStr){ showToast('Elija la fecha y la hora de la cita primero'); return; }
   const t = parseHora12to24(horaStr);
-  if(!t){ showToast('No pude leer la hora — elegila de nuevo del pulldown'); return; }
+  if(!t){ showToast('No se pudo leer la hora; elíjala de nuevo de la lista'); return; }
 
   const fechaCompacta = fecha.replace(/-/g,'');
   const hhStart = String(t.hh).padStart(2,'0');
@@ -6537,7 +6544,7 @@ function buildCitTextSummary(){
   const lugar = document.getElementById('citLugar').value || '';
   const motivo = document.getElementById('citMotivo').value.trim();
   let txt = `*Cita médica*\nPaciente: ${pac.nombre} (${pac.edad} años)\n\n`;
-  txt += `Fecha: ${fechaCita}\nHora: ${hora}\nLugar: ${lugar}\n`;
+  txt += `Fecha: ${fCorta(fechaCita)}\nHora: ${hora}\nLugar: ${lugar}\n`;
   if(motivo) txt += `Motivo: ${motivo}\n`;
   txt += `\n— ${doctorConfig.nombre||''}${doctorConfig.especialidad? (', '+doctorConfig.especialidad):''}`;
   return txt;
@@ -6565,7 +6572,7 @@ function buildCitImageSpec(){
       ctx.font = 'bold 12px -apple-system, Arial, sans-serif'; ctx.fillStyle = '#123648';
       ctx.fillText('PRÓXIMA CITA', x, y); y += 18;
       ctx.font = '13px -apple-system, Arial, sans-serif'; ctx.fillStyle = '#222222';
-      y = drawParagraph(ctx, `Fecha: ${fechaCita}`, x, y, maxWidth, 19);
+      y = drawParagraph(ctx, `Fecha: ${fCorta(fechaCita)}`, x, y, maxWidth, 19);
       y = drawParagraph(ctx, `Hora: ${hora}`, x, y, maxWidth, 19);
       y = drawParagraph(ctx, `Lugar: ${lugar}`, x, y, maxWidth, 19);
       y += 14;
@@ -6642,7 +6649,7 @@ function renderHistorialCitas(){
   }
   list.innerHTML = filtered.map(h=>`
     <div class="hist-row">
-      <div class="hi-info"><b>${h.paciente}</b><span>${h.fechaCita} · ${h.hora||''} · ${h.lugar||''}</span></div>
+      <div class="hi-info"><b>${h.paciente}</b><span>${fCorta(h.fechaCita)} · ${h.hora||''} · ${h.lugar||''}</span></div>
       <div class="btn-row" style="margin:0;">
         <button class="btn btn-sm" onclick="loadCitFromHistorial('${h.id}')">Ver / reimprimir</button>
         <button class="btn btn-sm btn-danger" onclick="deleteCitFromHistorial('${h.id}')">✕</button>

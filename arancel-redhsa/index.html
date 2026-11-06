@@ -624,7 +624,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
       </div>
       <div class="tape-scroll">
         <div class="tape-list" id="cartList"></div>
-        <p class="tape-empty" id="cartEmpty">Aún no has agregado procedimientos. Toca uno en la lista de búsqueda para empezar.</p>
+        <p class="tape-empty" id="cartEmpty">Aún no ha agregado procedimientos. Toque uno en la lista de búsqueda para empezar.</p>
         <div class="tape-adjustments">
           <div class="adj-pct-row">
             <span>Ajuste inflacionario 2014 → actual</span>
@@ -700,7 +700,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
           <div class="totals-note" id="visitasNote" style="display:none"></div>
           <div class="totals-note" id="segRowVisitasNote" style="display:none">No se suman al total: lo que reconozca el seguro por las visitas se le informa al paciente al momento del alta.</div>
           <div class="seguro-grand-box"><span class="grand-label">Total paciente</span><span class="grand-value" id="segTotalPaciente">L. 0.00</span></div>
-          <button class="patient-share" id="btnSharePatient">📤 Enviar presupuesto al paciente</button>
+          <button class="patient-share" id="btnSharePatient">📤 Compartir presupuesto con el paciente</button>
         </div>
       </div>
 
@@ -726,7 +726,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
           <span>Procedimientos</span>
           <strong class="mono" id="datasetCountLabel">5,192</strong>
         </div>
-        <p class="settings-p">Si el arancel cambia, puedes subir el PDF nuevo aquí. Se procesa en tu dispositivo (no se sube a ningún servidor) y podrás revisar un resumen antes de reemplazar los datos.</p>
+        <p class="settings-p">Si el arancel cambia, puede subir el PDF nuevo aquí. Se procesa en su dispositivo (no se sube a ningún servidor) y podrá revisar un resumen antes de reemplazar los datos.</p>
         <label class="file-btn" id="fileBtnLabel">
           Subir nuevo PDF del arancel
           <input type="file" id="fileInput" accept="application/pdf" style="display:none">
@@ -931,8 +931,8 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     if (!q && sisFilter === '') {
       const todos = todosLosItems();
       const favItems = favs.map(c => todos.find(it => it[0] === c)).filter(Boolean);
-      const hint = '<p class="empty-state">Escribe un código o el nombre de un procedimiento para buscar entre los ' + dataset.items.length.toLocaleString('en-US') + ' procedimientos del arancel.' +
-        (favItems.length ? '' : ' Toca ☆ en un procedimiento para tenerlo siempre aquí.') + '</p>';
+      const hint = '<p class="empty-state">Escriba un código o el nombre de un procedimiento para buscar entre los ' + dataset.items.length.toLocaleString('en-US') + ' procedimientos del arancel.' +
+        (favItems.length ? '' : ' Toque ☆ en un procedimiento para tenerlo siempre aquí.') + '</p>';
       if (favItems.length) {
         list.innerHTML = '<div class="result-count">★ Favoritos</div>' + rowsHTML(favItems) + hint;
         bindRows(list, favItems);
@@ -1371,7 +1371,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     catch(e) { ok = fallbackCopy(text); }
     btn.textContent = ok ? '✓ Copiado: péguelo en WhatsApp' : 'No se pudo copiar';
     btn.classList.toggle('copied', ok);
-    setTimeout(() => { btn.textContent = '📤 Enviar presupuesto al paciente'; btn.classList.remove('copied'); }, 2200);
+    setTimeout(() => { btn.textContent = '📤 Compartir presupuesto con el paciente'; btn.classList.remove('copied'); }, 2200);
   });
 
   // ---------------- Drawers ----------------
@@ -1669,7 +1669,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     }
     $('previewBody').innerHTML =
       '<h3>Resumen del nuevo arancel</h3>' +
-      '<p class="settings-p">Revisa que las cifras y algunos nombres tengan sentido antes de reemplazar los datos actuales. Esta lectura es automática y puede tener pequeños errores en textos muy largos.</p>' +
+      '<p class="settings-p">Revise que las cifras y algunos nombres tengan sentido antes de reemplazar los datos actuales. Esta lectura es automática y puede tener pequeños errores en textos muy largos.</p>' +
       '<div class="preview-stats">' +
         '<div class="stat-box"><div class="num mono">'+parsed.items.length.toLocaleString('en-US')+'</div><div class="lbl">Procedimientos encontrados</div></div>' +
         '<div class="stat-box"><div class="num mono">'+withValue.toLocaleString('en-US')+'</div><div class="lbl">Con precio</div></div>' +

@@ -780,7 +780,7 @@ const TEMPLATES = [
       {key:'dni', label:'DNI', type:'text', autofill:'dni'},
       {key:'edad', label:'Edad', type:'number', autofill:'edad'},
       {key:'procedimiento', label:'Procedimiento', type:'text'},
-      {key:'monto', label:'Monto aproximado (Lps)', type:'number'},
+      {key:'monto', label:'Monto aproximado (L.)', type:'number'},
       {key:'diasVisita', label:'Días de visita médica', type:'number'},
       {key:'horasQuirofano', label:'Horas de quirófano', type:'number'},
       {key:'diasHospitalizacion', label:'Días de hospitalización', type:'number'},
@@ -790,7 +790,7 @@ const TEMPLATES = [
       {key:'serviciosNoIncluidos', label:'No incluye', type:'textarea', placeholder:'ej. anestesia, medicamentos, honorarios de otros especialistas'},
     ],
     body: (d) => [
-      {t:'p', v:`Por medio de la presente hago constar que el/la paciente ${d.nombre}, con DNI ${d.dni} de ${d.edad} años de edad requiere una ${d.procedimiento}, con un presupuesto aproximado de ${d.monto} Lps, que incluye únicamente honorarios médicos quirúrgicos, visitas médicas por el cirujano por ${d.diasVisita} días, alquiler de equipo, uso de quirófano por ${d.horasQuirofano} horas, estancia hospitalaria de ${d.diasHospitalizacion} días en ${d.hospital}, y ${d.serviciosAdicionales}. Dicha cirugía se llevará a cabo el día ${fmtFechaCorta(d.fechaCirugia)}.`},
+      {t:'p', v:`Por medio de la presente hago constar que el/la paciente ${d.nombre}, con DNI ${d.dni} de ${d.edad} años de edad requiere una ${d.procedimiento}, con un presupuesto aproximado de ${d.monto ? 'L. '+Number(String(d.monto).replace(/,/g,'')).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}) : '__________'}, que incluye únicamente honorarios médicos quirúrgicos, visitas médicas por el cirujano por ${d.diasVisita} días, alquiler de equipo, uso de quirófano por ${d.horasQuirofano} horas, estancia hospitalaria de ${d.diasHospitalizacion} días en ${d.hospital}, y ${d.serviciosAdicionales}. Dicha cirugía se llevará a cabo el día ${fmtFechaCorta(d.fechaCirugia)}.`},
       {t:'p', v:`No incluye ${d.serviciosNoIncluidos}.`},
     ]
   },
@@ -2598,7 +2598,7 @@ async function saveLogo(dataUrl){
   computeLogoAspect(dataUrl);
   if(state.accessToken){
     if(dataUrl.length > 45000){
-      toast('Logo guardado en este dispositivo. Es muy grande para sincronizar por Sheets (usa una imagen más pequeña si quieres que sincronice).', 'warn');
+      toast('Logo guardado en este dispositivo. Es muy grande para sincronizar por la hoja de Google (use una imagen más pequeña si desea que sincronice).', 'warn');
       return;
     }
     try{ await saveConfigValue('Logo', dataUrl); }
@@ -2620,7 +2620,7 @@ async function saveSignature(dataUrl){
   computeSignatureAspect(dataUrl);
   if(state.accessToken){
     if(dataUrl.length > 45000){
-      toast('Firma guardada en este dispositivo. Es muy grande para sincronizar por Sheets (usa una imagen más pequeña si quieres que sincronice).', 'warn');
+      toast('Firma guardada en este dispositivo. Es muy grande para sincronizar por la hoja de Google (use una imagen más pequeña si desea que sincronice).', 'warn');
       return;
     }
     try{ await saveConfigValue('Firma', dataUrl); }
@@ -2841,11 +2841,11 @@ function renderLogoScreen(){
       <button class="btn btn-ghost" id="btnRemoveLogo">Quitar logo</button>
     </div>
   ` : `
-    <div class="footnote" style="margin-bottom:10px;">Sube una imagen de tu logo (PNG o JPG). Se usará en el encabezado de todos los documentos generados.</div>
+    <div class="footnote" style="margin-bottom:10px;">Suba una imagen de su logo (PNG o JPG). Se usará en el encabezado de todos los documentos generados.</div>
   `}
   <div style="height:14px"></div>
   <input type="file" id="logoFile" accept="image/png,image/jpeg" style="width:100%;">
-  <div class="footnote" style="margin-top:10px;">Recomendado: imagen pequeña (menos de 200 KB) para que sincronice bien entre tus dispositivos.</div>`;
+  <div class="footnote" style="margin-top:10px;">Recomendado: imagen pequeña (menos de 200 KB) para que sincronice bien entre sus dispositivos.</div>`;
 }
 
 function renderSignatureScreen(){
@@ -2861,11 +2861,11 @@ function renderSignatureScreen(){
       <button class="btn btn-ghost" id="btnRemoveSignature">Quitar firma</button>
     </div>
   ` : `
-    <div class="footnote" style="margin-bottom:10px;">Sube una foto o escaneo de tu firma sobre fondo blanco (PNG o JPG).</div>
+    <div class="footnote" style="margin-bottom:10px;">Suba una foto o escaneo de su firma sobre fondo blanco (PNG o JPG).</div>
   `}
   <div style="height:14px"></div>
   <input type="file" id="signatureFile" accept="image/png,image/jpeg" style="width:100%;">
-  <div class="footnote" style="margin-top:10px;">Recomendado: imagen pequeña (menos de 200 KB) para que sincronice bien entre tus dispositivos.</div>`;
+  <div class="footnote" style="margin-top:10px;">Recomendado: imagen pequeña (menos de 200 KB) para que sincronice bien entre sus dispositivos.</div>`;
 }
 
 function renderGoogleScreen(){
@@ -3040,7 +3040,7 @@ function renderForm(){
       patientBlock = `
       <div class="patient-box new">
         <div class="selected-chip" style="background:none;color:var(--warn);padding:0;">
-          <span>🆕 Paciente nuevo — llenando todo a mano</span>
+          <span>🆕 Nuevo paciente — llenando todo a mano</span>
           <button id="btnPatientReset">cambiar</button>
         </div>
       </div>`;
@@ -3059,8 +3059,8 @@ function renderForm(){
           <input type="text" id="patientSearch" placeholder="Buscar paciente por nombre o DNI…" autocomplete="off">
         </div>
         <div id="searchResults"></div>
-        <button class="newpatient-btn" id="btnNewPatient">＋ Paciente nuevo (no está en la lista)</button>
-        ${!state.accessToken ? `<div class="footnote">Conecta Google para buscar en tu lista de pacientes, o continúa a mano.</div>` : ''}
+        <button class="newpatient-btn" id="btnNewPatient">＋ Nuevo paciente (no está en la lista)</button>
+        ${!state.accessToken ? `<div class="footnote">Conecte Google para buscar en su lista de pacientes, o continúe a mano.</div>` : ''}
       </div>`;
     }
   }
@@ -3117,7 +3117,7 @@ function renderCMHForm(){
     patientBlock = `
     <div class="patient-box new">
       <div class="selected-chip" style="background:none;color:var(--warn);padding:0;">
-        <span>🆕 Paciente nuevo — llenando todo a mano</span>
+        <span>🆕 Nuevo paciente — llenando todo a mano</span>
         <button id="btnPatientReset">cambiar</button>
       </div>
     </div>`;
@@ -3136,8 +3136,8 @@ function renderCMHForm(){
         <input type="text" id="patientSearch" placeholder="Buscar paciente por nombre o DNI…" autocomplete="off">
       </div>
       <div id="searchResults"></div>
-      <button class="newpatient-btn" id="btnNewPatient">＋ Paciente nuevo (no está en la lista)</button>
-      ${!state.accessToken ? `<div class="footnote">Conecta Google para buscar en tu lista de pacientes, o continúa a mano.</div>` : ''}
+      <button class="newpatient-btn" id="btnNewPatient">＋ Nuevo paciente (no está en la lista)</button>
+      ${!state.accessToken ? `<div class="footnote">Conecte Google para buscar en su lista de pacientes, o continúe a mano.</div>` : ''}
     </div>`;
   }
 
@@ -3161,14 +3161,14 @@ function renderCMHForm(){
     <button class="backbtn" id="btnBack">← Inicio</button>
   </div>
   <h2 class="screentitle">Constancia CMH</h2>
-  <div class="footnote" style="margin-bottom:16px;">Se imprime sobre el papel pre-impreso del Colegio Médico. "Colegiado No. 6414" va fijo. Todo lo demás que escribas aquí se imprime en su casilla correspondiente del formulario, y el texto de la constancia va debajo, en el espacio en blanco de la hoja.</div>
+  <div class="footnote" style="margin-bottom:16px;">Se imprime sobre el papel pre-impreso del Colegio Médico. "Colegiado No. 6414" va fijo. Todo lo demás que escriba aquí se imprime en su casilla correspondiente del formulario, y el texto de la constancia va debajo, en el espacio en blanco de la hoja.</div>
   ${patientBlock}
   ${fieldsHTML}
   ${datalistsHTML}
   <details class="cmh-tune">
     <summary>Ajuste fino de impresión</summary>
     <div style="height:10px"></div>
-    <div class="footnote">Si al imprimir el texto no cae exactamente sobre las líneas del papel, ajusta aquí (en pulgadas) y prueba de nuevo. Se recuerda para la próxima vez.</div>
+    <div class="footnote">Si al imprimir el texto no cae exactamente sobre las líneas del papel, ajuste aquí (en pulgadas) y pruebe de nuevo. Se recuerda para la próxima vez.</div>
     <div class="row2" style="margin-top:10px;">
       <div class="field" style="margin-bottom:0;">
         <label>Ajuste horizontal</label>
@@ -3228,7 +3228,7 @@ function renderPreview(){
     : '';
 
   const actionsHTML = state.previewEditMode
-    ? `<div class="footnote" style="margin-bottom:10px;">Deja una línea en blanco entre párrafos. Usa "- " al inicio de una línea para viñetas.</div>
+    ? `<div class="footnote" style="margin-bottom:10px;">Deje una línea en blanco entre párrafos. Use "- " al inicio de una línea para viñetas.</div>
        <div class="actions">
         <button class="btn btn-ghost" id="btnCancelEdit">Cancelar</button>
         <button class="btn btn-primary" id="btnSaveEdit">Guardar texto</button>
@@ -3267,7 +3267,7 @@ function renderHistory(){
     return `
     <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
     <h2 class="screentitle">Historial</h2>
-    <div class="empty">${state.accessToken ? 'Elija su hoja de pacientes en ⚙ Google para ver el historial.' : 'Conecta Google para ver el historial de constancias generadas en todos tus dispositivos.'}</div>`;
+    <div class="empty">${state.accessToken ? 'Elija su hoja de pacientes en Ajustes › Conexión con Google para ver el historial.' : 'Conecte Google para ver el historial de constancias generadas en todos sus dispositivos.'}</div>`;
   }
   if(state.historyRows===null){
     return `
@@ -3279,7 +3279,7 @@ function renderHistory(){
     return `
     <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
     <h2 class="screentitle">Historial</h2>
-    <div class="empty">Todavía no has generado ninguna constancia.</div>`;
+    <div class="empty">Todavía no ha generado ninguna constancia.</div>`;
   }
   return `
   <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
@@ -3507,7 +3507,7 @@ function bindEvents(){
     const nombre = document.getElementById('newSpecNombre').value.trim();
     const especialidad = document.getElementById('newSpecEspecialidad').value.trim();
     const telefono = document.getElementById('newSpecTelefono').value.trim();
-    if(!nombre){ toast('Ponle al menos el nombre.', 'warn'); return; }
+    if(!nombre){ toast('Escriba al menos el nombre.', 'warn'); return; }
     await addSpecialist(cat, nombre, especialidad, telefono);
     state.addingSpecialist = null;
     // selecciona automáticamente el que se acaba de agregar
@@ -3537,7 +3537,7 @@ function bindEvents(){
     const nombre = document.getElementById('editSpecNombre').value.trim();
     const especialidad = document.getElementById('editSpecEspecialidad').value.trim();
     const telefono = document.getElementById('editSpecTelefono').value.trim();
-    if(!nombre){ toast('Ponle al menos el nombre.', 'warn'); return; }
+    if(!nombre){ toast('Escriba al menos el nombre.', 'warn'); return; }
     await editSpecialist(cat, idx, nombre, especialidad, telefono);
     state.editingSpecialist = null;
     // refresca los datos del documento actual si este era el especialista seleccionado
@@ -3645,7 +3645,7 @@ function doPatientSearch(q){
   ).slice(0,8);
   box.innerHTML = matches.length ? `<div class="search-results">${matches.map((p,i)=>`
     <div class="search-item" data-pidx="${state.patients.indexOf(p)}"><b>${escapeHTML(p.nombre)}</b> — <span>DNI ${escapeHTML(p.dni||'—')}, ${escapeHTML(p.edad||'—')} años</span></div>
-  `).join('')}</div>` : `<div class="footnote" style="margin-top:8px;">Sin resultados. Puedes usar "Paciente nuevo".</div>`;
+  `).join('')}</div>` : `<div class="footnote" style="margin-top:8px;">Sin resultados. Puede usar «Nuevo paciente».</div>`;
 
   box.querySelectorAll('[data-pidx]').forEach(el=>{
     el.onclick = ()=>{
@@ -3704,10 +3704,10 @@ window.addEventListener('load', initGoogle);
 
 function connectGoogle(){
   if(GOOGLE_CLIENT_ID.startsWith('PON_AQUI')){
-    toast('Falta configurar el Client ID de Google en el código.', 'warn');
+    toast('Falta configurar el ID de cliente de Google en el código.', 'warn');
     return;
   }
-  if(!state.tokenClient){ toast('Google todavía está cargando, intenta de nuevo en un momento.', 'warn'); return; }
+  if(!state.tokenClient){ toast('Google todavía está cargando, intente de nuevo en un momento.', 'warn'); return; }
   state.tokenClient.requestAccessToken({prompt: state.accessToken?'':'consent'});
 }
 
@@ -4004,10 +4004,10 @@ async function addSpecialist(category, nombre, especialidad, telefono){
       });
     }catch(e){
       console.error(e);
-      toast('Se agregó en este dispositivo, pero no se pudo guardar en el Sheet.', 'warn');
+      toast('Se agregó en este dispositivo, pero no se pudo guardar en la hoja de Google.', 'warn');
     }
   } else {
-    toast('Guardado en este dispositivo. Conecta Google para que sincronice en todos.', 'warn');
+    toast('Guardado en este dispositivo. Conecte Google para que sincronice en todos.', 'warn');
   }
 }
 
@@ -4024,7 +4024,7 @@ async function editSpecialist(category, idx, nombre, especialidad, telefono){
       });
     }catch(e){
       console.error(e);
-      toast('Se actualizó en este dispositivo, pero no se pudo guardar en el Sheet.', 'warn');
+      toast('Se actualizó en este dispositivo, pero no se pudo guardar en la hoja de Google.', 'warn');
     }
   } else if(state.accessToken && state.sheetId && !row){
     // No teníamos el número de fila (ej. semilla no sincronizada aún) — lo agregamos como fila nueva
@@ -4035,7 +4035,7 @@ async function editSpecialist(category, idx, nombre, especialidad, telefono){
       });
     }catch(e){ console.error(e); }
   } else {
-    toast('Actualizado en este dispositivo. Conecta Google para que sincronice en todos.', 'warn');
+    toast('Actualizado en este dispositivo. Conecte Google para que sincronice en todos.', 'warn');
   }
 }
 
@@ -4043,7 +4043,7 @@ async function editSpecialist(category, idx, nombre, especialidad, telefono){
 function reprintFromHistory(idx){
   const row = state.historyRows[idx];
   const tpl = TEMPLATES.find(t=> t.title===row.tipo || t.n+'. '+t.title===row.tipo);
-  if(!tpl){ toast('No encontré esa plantilla.', 'err'); return; }
+  if(!tpl){ toast('No se encontró esa plantilla.', 'err'); return; }
   state.tpl = tpl;
   state.data = row.dataObj;
   state.patientMode = row.dataObj.__patientLabel ? 'search' : null;
@@ -4225,7 +4225,7 @@ function generateLetterPDF(){
     toast('PDF generado ✓ — guardando en Drive…');
     uploadPDFToDrive(doc, fname).then(driveLink=>{
       saveToHistory(t.n+'. '+t.title, nombre, d, driveLink);
-      toast(driveLink ? 'Guardado en tu Drive ✓' : 'PDF descargado, pero no se pudo guardar en Drive.', driveLink?undefined:'warn');
+      toast(driveLink ? 'Guardado en su Drive ✓' : 'PDF descargado, pero no se pudo guardar en Drive.', driveLink?undefined:'warn');
     });
   } else {
     saveToHistory(t.n+'. '+t.title, nombre, d, null);
@@ -4260,7 +4260,7 @@ function renderCMHPreview(){
     <div style="margin-bottom:10px;"><strong>A quien interese</strong></div>
     <div>${escapeHTML(cmhParrafo(d))}</div>
   </div>
-  <div class="footnote" style="margin-top:10px;">Firma y sello van de tu puño y letra sobre la hoja impresa.</div>
+  <div class="footnote" style="margin-top:10px;">Firma y sello van de su puño y letra sobre la hoja impresa.</div>
   <div class="actions">
     <button class="btn btn-ghost" id="btnWhatsApp">📤 Compartir PDF</button>
     <button class="btn btn-primary" id="btnCMHGenerate">Generar PDF</button>
@@ -4311,11 +4311,11 @@ function generateCMHPDF(){
     toast('PDF generado ✓ — guardando en Drive…');
     uploadPDFToDrive(doc, cmhFname).then(driveLink=>{
       saveToHistory(t.n+'. '+t.title, d.nombre||'', d, driveLink);
-      toast(driveLink ? 'Guardado en tu Drive ✓ — imprime sobre el papel del Colegio Médico' : 'PDF descargado, pero no se pudo guardar en Drive.', driveLink?undefined:'warn');
+      toast(driveLink ? 'Guardado en su Drive ✓ — imprima sobre el papel del Colegio Médico' : 'PDF descargado, pero no se pudo guardar en Drive.', driveLink?undefined:'warn');
     });
   } else {
     saveToHistory(t.n+'. '+t.title, d.nombre||'', d, null);
-    toast('PDF generado ✓ — imprime sobre el papel del Colegio Médico');
+    toast('PDF generado ✓ — imprima sobre el papel del Colegio Médico');
   }
 }
 

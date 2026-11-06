@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg'],
       manifest: {
-        name: 'ThyroidScore Pro · ATA 2025',
-        short_name: 'ThyroidScore',
+        name: 'Calculadora ATA 2025',
+        short_name: 'Calculadora ATA',
         description: 'Estratificación de riesgo en cáncer diferenciado de tiroides (ATA 2025, AJCC 8.ª, Tabla 9).',
         lang: 'es',
         start_url: '.',

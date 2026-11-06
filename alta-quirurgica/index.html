@@ -123,6 +123,20 @@
 .ms-badge-ok{background:var(--ms-ok-bg);color:var(--ms-ok-ink);}
 .ms-toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ms-ink);color:#fff;padding:11px 18px;border-radius:var(--ms-pill);font-size:14px;box-shadow:var(--ms-shadow);z-index:60;max-width:90%;text-align:center;}
 
+/* Panel de hoja membretada (shared/ms-membrete.js) */
+.ms-memb .ms-seg{margin-bottom:12px;}
+.ms-memb-fila{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;}
+.ms-memb-mini{position:relative;flex:none;width:118px;aspect-ratio:8.5/11;border:1px solid var(--ms-line-strong);border-radius:6px;overflow:hidden;background:#fff;}
+.ms-memb-mini img{width:100%;height:100%;display:block;}
+.ms-memb-zona{position:absolute;left:0;right:0;background:rgba(15,118,110,.16);border:0 dashed var(--ms-accent);}
+.ms-memb-zona:first-of-type{border-bottom-width:1.5px;}
+.ms-memb-zona:last-of-type{border-top-width:1.5px;}
+.ms-memb-campos{flex:1;min-width:0;}
+.ms-memb-nota{font-size:13px;color:var(--ms-muted);line-height:1.45;margin-bottom:10px;}
+.ms-memb-botones{display:flex;gap:10px;margin-bottom:10px;}
+.ms-memb-error{font-size:13.5px;color:var(--ms-danger);}
+.ms-memb-error:empty{display:none;}
+
 /* Computadora: lista a la izquierda, contenido al centro */
 @media (min-width:1024px){
   .ms-header{padding:14px 28px;}
@@ -446,6 +460,9 @@ input:focus,select:focus,textarea:focus,button:focus-visible{
 .doc-sign img{max-height:50px;max-width:200px;}
 .doc-sign .line{border-top:1px solid #333;margin-top:34px;padding-top:4px;}
 .doc-date{font-family:var(--sans);font-size:12.5px;text-align:right;margin-bottom:6px;color:#333;}
+/* Hoja membretada: de fondo en cada hoja carta; el texto va en su espacio blanco */
+.doc-page.con-membrete{background-size:8.5in 11in;background-repeat:repeat-y;background-position:top center;padding-left:0.95in;padding-right:0.95in;-webkit-box-decoration-break:clone;box-decoration-break:clone;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.doc-page.con-membrete .doc-membrete{display:none;}
 
 /* ---------- Historial ---------- */
 .hist-row{
@@ -1093,7 +1110,8 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
     </div>
 
     <div id="cfgTabPerfil">
-      <div class="hint" style="margin-top:0;">Esta información aparece en el membrete de todos los documentos.</div>
+      <div id="msMembPanel" class="ms-card" style="margin-bottom:16px;"></div>
+      <div class="hint" style="margin-top:0;">Esta información aparece en el encabezado de los documentos cuando no usa la hoja membretada. La firma y el número de colegiación se usan siempre.</div>
       <label for="cfgNombre">Nombre completo</label>
       <input type="text" id="cfgNombre" placeholder="Dr. Manuel ___">
       <label for="cfgEspecialidad">Especialidad</label>
@@ -1279,6 +1297,166 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script>
+/* MS-MEMBRETE:INICIO */
+/* Hoja membretada común a las apps que hacen documentos (Constancias y Alta Quirúrgica).
+   Fuente única: shared/ms-membrete.js. scripts/sync-ui.py la copia dentro de cada app entre
+   los marcadores MS-MEMBRETE:INICIO / MS-MEMBRETE:FIN.
+   La imagen se guarda solo en el aparato (localStorage). Las apps están en la misma dirección web,
+   así que la hoja que se carga en una sirve también para la otra. Nunca va en el código publicado. */
+const MS_MEMB = { img:'ms_membrete', on:'ms_membrete_on', marg:'ms_membrete_margenes' };
+const MS_MEMB_DPI = 150, MS_MEMB_W = 1275, MS_MEMB_H = 1650; // carta a 150 ppp
+
+function msMembLeer(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function msMembEscribir(k, v){ try{ if(v===null) localStorage.removeItem(k); else localStorage.setItem(k, v); return true; }catch(e){ return false; } }
+
+/* Hoja guardada en este aparato (o null). */
+function msMembreteGuardado(){
+  const img = msMembLeer(MS_MEMB.img);
+  if(!img) return null;
+  let m = {};
+  try{ m = JSON.parse(msMembLeer(MS_MEMB.marg) || '{}'); }catch(e){}
+  return { img, top: m.top || 1.8, bottom: m.bottom || 1.4 };
+}
+/* Hoja que se debe usar en los documentos: solo si hay una guardada y está elegida. */
+function msMembrete(){
+  return msMembLeer(MS_MEMB.on) === '1' ? msMembreteGuardado() : null;
+}
+
+/* Calcula dónde termina el encabezado y dónde empieza el pie. Busca renglones con tinta oscura;
+   el dibujo de fondo de color claro (marca de agua) no cuenta. Devuelve pulgadas de margen. */
+function msMembreteDetectar(ctx, W, H){
+  const datos = ctx.getImageData(0, 0, W, H).data;
+  const oscuro = new Array(H).fill(false);
+  for(let y = 0; y < H; y++){
+    let n = 0;
+    for(let x = 0; x < W; x++){
+      const i = (y*W + x)*4;
+      const lum = 0.299*datos[i] + 0.587*datos[i+1] + 0.114*datos[i+2];
+      if(lum < 170 && ++n > 2){ oscuro[y] = true; break; }
+    }
+  }
+  let finEnc = -1, iniPie = H;
+  for(let y = 0; y < H*0.35; y++) if(oscuro[y]) finEnc = y;
+  for(let y = H-1; y > H*0.65; y--) if(oscuro[y]) iniPie = y;
+  const dpi = H/11;
+  const top = finEnc < 0 ? 0.9 : Math.max(0.9, finEnc/dpi + 0.3);
+  const bottom = iniPie >= H ? 0.8 : Math.max(0.8, (H - iniPie)/dpi + 0.25);
+  return { top: Math.round(top*100)/100, bottom: Math.round(bottom*100)/100 };
+}
+
+/* Carga una imagen (PNG o JPG), la lleva a tamaño carta, calcula los márgenes y la guarda. */
+function msMembreteCargar(file){
+  return new Promise((resolve, reject)=>{
+    if(!file || !/^image\/(png|jpe?g)$/.test(file.type)){ reject(new Error('Use una imagen PNG o JPG. Si su hoja está en Word o PDF, conviértala primero a imagen.')); return; }
+    const fr = new FileReader();
+    fr.onerror = ()=>reject(new Error('No se pudo leer el archivo.'));
+    fr.onload = ()=>{
+      const img = new Image();
+      img.onerror = ()=>reject(new Error('No se pudo abrir la imagen.'));
+      img.onload = ()=>{
+        const c = document.createElement('canvas'); c.width = MS_MEMB_W; c.height = MS_MEMB_H;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, MS_MEMB_W, MS_MEMB_H);
+        ctx.drawImage(img, 0, 0, MS_MEMB_W, MS_MEMB_H);
+        const m = msMembreteDetectar(ctx, MS_MEMB_W, MS_MEMB_H);
+        const url = c.toDataURL('image/jpeg', 0.85);
+        if(!msMembEscribir(MS_MEMB.img, url)){ reject(new Error('No hay espacio en este aparato para guardar la hoja. Pruebe con una imagen más liviana.')); return; }
+        msMembEscribir(MS_MEMB.marg, JSON.stringify(m));
+        msMembEscribir(MS_MEMB.on, '1');
+        const proporcion = img.width / img.height, carta = 8.5/11;
+        resolve({ margenes: m, aviso: Math.abs(proporcion - carta) > 0.04 ? 'La imagen no tiene la proporción de una hoja carta; se estiró para llenarla. Revise un documento antes de usarla.' : '' });
+      };
+      img.src = fr.result;
+    };
+    fr.readAsDataURL(file);
+  });
+}
+function msMembreteRecalcular(){
+  const g = msMembreteGuardado(); if(!g) return Promise.resolve(null);
+  return new Promise(resolve=>{
+    const img = new Image();
+    img.onload = ()=>{
+      const c = document.createElement('canvas'); c.width = MS_MEMB_W; c.height = MS_MEMB_H;
+      const ctx = c.getContext('2d'); ctx.drawImage(img, 0, 0, MS_MEMB_W, MS_MEMB_H);
+      const m = msMembreteDetectar(ctx, MS_MEMB_W, MS_MEMB_H);
+      msMembEscribir(MS_MEMB.marg, JSON.stringify(m)); resolve(m);
+    };
+    img.onerror = ()=>resolve(null);
+    img.src = g.img;
+  });
+}
+
+/* Panel de ajustes, igual en las dos apps. */
+function msMembretePanelHTML(){
+  const g = msMembreteGuardado(), usar = !!msMembrete();
+  const cm = v => (Math.round(v*2.54*10)/10).toString();
+  return `
+  <div class="ms-memb">
+    <div class="ms-label" style="font-size:14px;color:var(--ms-ink);margin-bottom:8px;">Qué usar como encabezado de los documentos</div>
+    <div class="ms-seg" role="group" aria-label="Qué usar como encabezado">
+      <button type="button" id="msMembDatos" aria-pressed="${!usar}">Datos del médico</button>
+      <button type="button" id="msMembHoja" aria-pressed="${usar}">Hoja membretada</button>
+    </div>
+    ${g ? `
+    <div class="ms-memb-fila">
+      <div class="ms-memb-mini" aria-hidden="true">
+        <img src="${g.img}" alt="">
+        <span class="ms-memb-zona" style="top:0;height:${g.top/11*100}%"></span>
+        <span class="ms-memb-zona" style="bottom:0;height:${g.bottom/11*100}%"></span>
+      </div>
+      <div class="ms-memb-campos">
+        <div class="ms-memb-nota">El texto va en el espacio blanco del centro. Lo sombreado queda libre para su encabezado y su pie.</div>
+        <label class="ms-label" for="msMembTop">Espacio para el encabezado (cm)</label>
+        <input class="ms-input" type="number" id="msMembTop" min="1" max="10" step="0.1" inputmode="decimal" value="${cm(g.top)}">
+        <label class="ms-label" for="msMembBot" style="margin-top:8px;">Espacio para el pie (cm)</label>
+        <input class="ms-input" type="number" id="msMembBot" min="1" max="10" step="0.1" inputmode="decimal" value="${cm(g.bottom)}">
+        <button type="button" class="ms-btn ms-btn-ghost" id="msMembAuto" style="min-height:36px;padding:0;margin-top:6px;">Calcular de nuevo</button>
+      </div>
+    </div>` : `
+    <div class="ms-memb-nota" style="margin-top:10px;">Cargue su hoja membretada como imagen PNG o JPG de tamaño carta. La app calcula sola dónde termina el encabezado y dónde empieza el pie.</div>`}
+    <div class="ms-memb-botones">
+      <label class="ms-btn ms-btn-secondary" for="msMembFile" style="flex:1;">${g ? 'Cambiar hoja' : 'Cargar hoja'}</label>
+      <input type="file" id="msMembFile" accept="image/png,image/jpeg" hidden>
+      ${g ? `<button type="button" class="ms-btn ms-btn-danger" id="msMembQuitar" style="min-height:48px;">Quitar hoja</button>` : ''}
+    </div>
+    <div class="ms-memb-nota">Se guarda solo en este aparato y sirve para Constancias y Alta Quirúrgica. En otro teléfono o computadora hay que cargarla otra vez.</div>
+    <div class="ms-memb-error" id="msMembMsg" role="status"></div>
+  </div>`;
+}
+/* Conecta los botones del panel. alCambiar() vuelve a dibujar la pantalla de la app. */
+function msMembreteConectar(alCambiar, avisar){
+  const $ = id => document.getElementById(id);
+  const msg = t => { const el = $('msMembMsg'); if(el) el.textContent = t || ''; };
+  if(!$('msMembHoja')) return;
+  $('msMembDatos').onclick = ()=>{ msMembEscribir(MS_MEMB.on, '0'); alCambiar(); };
+  $('msMembHoja').onclick = ()=>{
+    if(!msMembreteGuardado()){ $('msMembFile').click(); return; }
+    msMembEscribir(MS_MEMB.on, '1'); alCambiar();
+  };
+  $('msMembFile').onchange = async e=>{
+    const f = e.target.files && e.target.files[0]; if(!f) return;
+    try{
+      const r = await msMembreteCargar(f);
+      alCambiar();
+      if(avisar) avisar(r.aviso || 'Hoja membretada guardada');
+    }catch(err){ msg(err.message); }
+  };
+  const guardarMargen = ()=>{
+    const t = parseFloat($('msMembTop').value), b = parseFloat($('msMembBot').value);
+    if(!(t >= 1 && t <= 10 && b >= 1 && b <= 10)){ msg('Use valores entre 1 y 10 cm.'); return; }
+    msMembEscribir(MS_MEMB.marg, JSON.stringify({ top: Math.round(t/2.54*100)/100, bottom: Math.round(b/2.54*100)/100 }));
+    alCambiar();
+  };
+  if($('msMembTop')){ $('msMembTop').onchange = guardarMargen; $('msMembBot').onchange = guardarMargen; }
+  if($('msMembAuto')) $('msMembAuto').onclick = async ()=>{ await msMembreteRecalcular(); alCambiar(); };
+  if($('msMembQuitar')) $('msMembQuitar').onclick = ()=>{
+    const b = $('msMembQuitar');
+    if(b.dataset.confirmar !== '1'){ b.dataset.confirmar = '1'; b.textContent = 'Toque otra vez para quitar'; return; }
+    msMembEscribir(MS_MEMB.img, null); msMembEscribir(MS_MEMB.marg, null); msMembEscribir(MS_MEMB.on, '0');
+    alCambiar(); if(avisar) avisar('Hoja membretada quitada');
+  };
+}
+/* MS-MEMBRETE:FIN */
 /* ============================================================
    BÓVEDA CIFRADA + SINCRONIZACIÓN CON GOOGLE DRIVE
    - Todos los datos de la app (historial, plantillas, perfil y firma) se guardan
@@ -3724,6 +3902,7 @@ function openConfigModal(){
   document.getElementById('configModal').classList.add('show');
   lockBodyScroll();
   switchConfigTab('perfil');
+  renderMembretePanel();
 }
 function closeConfigModal(){
   document.getElementById('configModal').classList.remove('show');
@@ -4699,6 +4878,22 @@ function buildDocHTML(){
 }
 function renderDoc(){
   document.getElementById('rxDocPage').innerHTML = buildDocHTML();
+  aplicarMembreteDoc(document.getElementById('rxDocPage'));
+}
+/* Pone o quita la hoja membretada en la hoja de vista previa (y por tanto en la impresión). */
+function aplicarMembreteDoc(el){
+  if(!el) return;
+  const m = msMembrete();
+  el.classList.toggle('con-membrete', !!m);
+  el.style.backgroundImage = m ? `url(${m.img})` : '';
+  el.style.paddingTop = m ? m.top+'in' : '';
+  el.style.paddingBottom = m ? m.bottom+'in' : '';
+}
+function renderMembretePanel(){
+  const box = document.getElementById('msMembPanel');
+  if(!box) return;
+  box.innerHTML = msMembretePanelHTML();
+  msMembreteConectar(()=>{ renderMembretePanel(); renderDoc(); renderIndDoc(); renderLabDoc(); renderCitDoc(); }, showToast);
 }
 document.getElementById('rxFirmaTipo').addEventListener('change', renderDoc);
 ['rxPacNombre','rxPacEdad','rxPacSexo','rxFecha','rxPacDx'].forEach(id=>{
@@ -4782,10 +4977,18 @@ async function buildDocImageCanvas(spec){
   canvas.width = DOC_IMG_W; canvas.height = DOC_IMG_H;
   const ctx = canvas.getContext('2d');
   ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,DOC_IMG_W,DOC_IMG_H);
-  const x = DOC_IMG_MARGIN;
-  const maxWidth = DOC_IMG_W - DOC_IMG_MARGIN*2;
+  const memb = msMembrete();
+  const hoja = memb ? await loadImageAsync(memb.img) : null;
+  const margenX = hoja ? Math.round(0.95*DOC_IMG_DPI) : DOC_IMG_MARGIN;
+  const x = margenX;
+  const maxWidth = DOC_IMG_W - margenX*2;
   let y = Math.round(0.5*DOC_IMG_DPI);
 
+  if(hoja){
+    // --- hoja membretada de fondo; el texto empieza debajo de su encabezado ---
+    ctx.drawImage(hoja, 0, 0, DOC_IMG_W, DOC_IMG_H);
+    y = Math.round(memb.top*DOC_IMG_DPI) + 16;
+  } else {
   // --- membrete: logo centrado + nombre/especialidad/contacto ---
   const logo = await loadImageAsync(doctorConfig.logo);
   if(logo){
@@ -4818,6 +5021,7 @@ async function buildDocImageCanvas(spec){
   ctx.strokeStyle = '#1B4B66'; ctx.lineWidth = 2.5;
   ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(DOC_IMG_W-x,y); ctx.stroke();
   y += 28;
+  }
 
   ctx.textAlign = 'center';
   ctx.font = 'bold 16px -apple-system, Arial, sans-serif';
@@ -4848,7 +5052,7 @@ async function buildDocImageCanvas(spec){
   y = spec.drawBody(ctx, x, y, maxWidth);
 
   // --- pie: nota + firma (o texto libre a la derecha si no hay firma) ---
-  const footerY = DOC_IMG_H - Math.round(0.75*DOC_IMG_DPI);
+  const footerY = DOC_IMG_H - Math.round((hoja ? memb.bottom + 0.35 : 0.75)*DOC_IMG_DPI);
   ctx.textAlign = 'left';
   ctx.font = '11.5px -apple-system, Arial, sans-serif';
   ctx.fillStyle = '#555555';
@@ -5397,6 +5601,7 @@ function buildIndDocHTML(){
 }
 function renderIndDoc(){
   const el = document.getElementById('indDocPage');
+  aplicarMembreteDoc(el);
   if(el) el.innerHTML = buildIndDocHTML();
 }
 if(!document.getElementById('indFecha').value) document.getElementById('indFecha').value = today();
@@ -5961,6 +6166,7 @@ function buildLabDocHTML(){
 }
 function renderLabDoc(){
   const el = document.getElementById('labDocPage');
+  aplicarMembreteDoc(el);
   if(el) el.innerHTML = buildLabDocHTML();
 }
 if(!document.getElementById('labFecha').value) document.getElementById('labFecha').value = today();
@@ -6237,6 +6443,7 @@ function buildCitDocHTML(){
 }
 function renderCitDoc(){
   const el = document.getElementById('citDocPage');
+  aplicarMembreteDoc(el);
   if(el) el.innerHTML = buildCitDocHTML();
 }
 

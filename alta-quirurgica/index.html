@@ -4828,7 +4828,7 @@ function proximaCitaLineHTML(){
 }
 
 function buildDocHTML(){
-  const nombre = doctorConfig.nombre || '(configura tu nombre en Ajustes ⚙️)';
+  const nombre = doctorConfig.nombre || '(configure su nombre en Ajustes ⚙️)';
   const esp = doctorConfig.especialidad || '';
   const contacto = [doctorConfig.consultorio, doctorConfig.telefonos].filter(Boolean).join(' · ');
   const logo = doctorConfig.logo ? `<img src="${doctorConfig.logo}">` : '';
@@ -5002,7 +5002,7 @@ async function buildDocImageCanvas(spec){
   ctx.textAlign = 'center';
   ctx.fillStyle = '#123648';
   ctx.font = 'bold 27px Georgia, "Times New Roman", serif';
-  ctx.fillText(doctorConfig.nombre || '(configura tu nombre en Ajustes)', DOC_IMG_W/2, y+22);
+  ctx.fillText(doctorConfig.nombre || '(configure su nombre en Ajustes)', DOC_IMG_W/2, y+22);
   y += 34;
   if(doctorConfig.especialidad){
     ctx.font = '15px -apple-system, Arial, sans-serif';
@@ -5548,7 +5548,7 @@ function deleteIndCondTemplateFor(){
 }
 
 function buildIndDocHTML(){
-  const nombre = doctorConfig.nombre || '(configura tu nombre en Ajustes ⚙️)';
+  const nombre = doctorConfig.nombre || '(configure su nombre en Ajustes ⚙️)';
   const esp = doctorConfig.especialidad || '';
   const contacto = [doctorConfig.consultorio, doctorConfig.telefonos].filter(Boolean).join(' · ');
   const logo = doctorConfig.logo ? `<img src="${doctorConfig.logo}">` : '';
@@ -6105,7 +6105,7 @@ function fechaLargaES(iso){
 }
 function labTomarTexto(){ const v = document.getElementById('labTomar').value; return v ? fechaLargaES(v) : ''; }
 function buildLabDocHTML(){
-  const nombre = doctorConfig.nombre || '(configura tu nombre en Ajustes ⚙️)';
+  const nombre = doctorConfig.nombre || '(configure su nombre en Ajustes ⚙️)';
   const esp = doctorConfig.especialidad || '';
   const contacto = [doctorConfig.consultorio, doctorConfig.telefonos].filter(Boolean).join(' · ');
   const logo = doctorConfig.logo ? `<img src="${doctorConfig.logo}">` : '';
@@ -6394,7 +6394,7 @@ if(!document.getElementById('citFechaEmision').value) document.getElementById('c
 if(!document.getElementById('citLugar').value) document.getElementById('citLugar').value = 'Hospital Cemesa';
 
 function buildCitDocHTML(){
-  const nombre = doctorConfig.nombre || '(configura tu nombre en Ajustes ⚙️)';
+  const nombre = doctorConfig.nombre || '(configure su nombre en Ajustes ⚙️)';
   const esp = doctorConfig.especialidad || '';
   const contacto = [doctorConfig.consultorio, doctorConfig.telefonos].filter(Boolean).join(' · ');
   const logo = doctorConfig.logo ? `<img src="${doctorConfig.logo}">` : '';

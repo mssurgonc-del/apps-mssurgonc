@@ -15,7 +15,7 @@ await ctx.addInitScript(([l,a])=>{ localStorage.setItem('doctor_logo', l); local
 }, [logo, process.env.LOGO_ASPECT||'3']);
 const pg=await ctx.newPage(); const errs=[]; pg.on('pageerror',e=>errs.push(e.message));
 await pg.goto(BASE); await pg.waitForTimeout(800);
-await pg.click('.card[data-tpl="consulta"]'); await pg.click('#btnNewPatient');
+await pg.click('[data-tpl="consulta"]'); await pg.click('#btnNewPatient');
 for (const el of await pg.$$('input[data-key]:not([readonly])')) { const k=await el.getAttribute('data-key'); if(k==='__fecha') continue; const t=await el.getAttribute('type'); await el.fill(t==='number'?'30':t==='time'?'10:00':'Paciente Prueba'); await el.dispatchEvent('change'); }
 await pg.click('#btnPreview'); await pg.waitForTimeout(300);
 ok(await pg.$eval('.paper-preview img', i=>getComputedStyle(i.parentElement).textAlign==='center'),'vista previa: logo centrado');

@@ -595,7 +595,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
   <img class="brand-logo" id="topbarLogo" style="display:none;">
   <div class="titlewrap" style="margin-right:auto;">
     <h1>Alta Quirúrgica</h1>
-    <div class="sub" id="topbarDoctorName">Tocá ⚙️ para configurar tu perfil</div>
+    <div class="sub" id="topbarDoctorName">Toque ⚙️ para configurar su perfil</div>
   </div>
   <button id="syncChip" onclick="Vault.syncTap()" style="display:none;margin-left:auto;background:rgba(255,255,255,.14);border:none;color:#fff;height:36px;padding:0 10px;border-radius:9px;font-size:13px;align-items:center;white-space:nowrap;"></button>
   <button id="newPacBtn" onclick="nuevoPaciente()" title="Nuevo paciente: guarda lo actual en el historial y deja todo en blanco" aria-label="Nuevo paciente">＋ Nuevo</button>
@@ -648,7 +648,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
           <button class="btn btn-sm" onclick="closeAddSurgeryBox()">Cancelar</button>
         </div>
       </div>
-      <div class="hint" style="margin-top:10px;">Se aplica automáticamente al elegir la cirugía. Podés editar o quitar medicamentos después.</div>
+      <div class="hint" style="margin-top:10px;">Se aplica automáticamente al elegir la cirugía. Puede editar o quitar medicamentos después.</div>
       <div class="chip-row" id="comboChips"></div>
       <details class="tpl-opts"><summary>⋯ Opciones de plantilla</summary>
       <div class="btn-row">
@@ -693,7 +693,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
       </div>
 
       <div id="recetaItems"></div>
-      <div class="empty-state" id="rxEmptyState">Aún no has agregado medicamentos. Buscá arriba o usá una plantilla.</div>
+      <div class="empty-state" id="rxEmptyState">Aún no ha agregado medicamentos. Busque arriba o use una plantilla.</div>
     </div>
 
     <div class="card">
@@ -751,10 +751,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
 
     <div class="card">
       <h2>Plantillas rápidas</h2>
-      <div class="hint">Se completa automáticamente al elegir la cirugía o la condición. Podés combinar ambas — se suman al texto existente, revisá antes de guardar.</div>
+      <div class="hint">Se completa automáticamente al elegir la cirugía o la condición. Puede combinar ambas — se suman al texto existente, revise antes de guardar.</div>
       <label style="font-size:11px;">Por cirugía</label>
       <select id="indCirugia" onchange="onIndCirugiaChange()"></select>
-      <div class="hint">¿No está la cirugía que buscás? Agregala desde el módulo de Receta (botón "+ Nueva") — aparece automáticamente acá también.</div>
+      <div class="hint">¿No está la cirugía que busca? Agréguela desde el módulo de Receta (botón "+ Nueva") — aparece automáticamente acá también.</div>
       <div class="chip-row" id="indComboChips"></div>
       <details class="tpl-opts"><summary>⋯ Opciones de plantilla</summary>
       <div class="btn-row">
@@ -863,10 +863,10 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
 
     <div class="card">
       <h2>Plantillas rápidas</h2>
-      <div class="hint">Se agrega automáticamente al elegir la cirugía o la condición. Podés combinar ambas — se suman en la misma orden.</div>
+      <div class="hint">Se agrega automáticamente al elegir la cirugía o la condición. Puede combinar ambas — se suman en la misma orden.</div>
       <label style="font-size:11px;">Por cirugía</label>
       <select id="labCirugia" onchange="onLabCirugiaChange()"></select>
-      <div class="hint">¿No está la cirugía que buscás? Agregala desde el módulo de Receta (botón "+ Nueva").</div>
+      <div class="hint">¿No está la cirugía que busca? Agréguela desde el módulo de Receta (botón "+ Nueva").</div>
       <div class="chip-row" id="labComboChips"></div>
       <details class="tpl-opts"><summary>⋯ Opciones de plantilla</summary>
       <div class="btn-row">
@@ -930,7 +930,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
       <input type="date" id="labTomar" onchange="renderLabDoc()">
       <div class="hint" style="margin-top:-4px;">Opcional. Aparece en la orden como “Tomar el: jueves 29 de octubre de 2026”.</div>
       <div id="labItems"></div>
-      <div class="empty-state" id="labEmptyState">Aún no agregaste exámenes. Buscá arriba o usá una plantilla.</div>
+      <div class="empty-state" id="labEmptyState">Aún no ha agregado exámenes. Busque arriba o use una plantilla.</div>
     </div>
 
     <div class="card">
@@ -1000,7 +1000,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
       <div class="btn-row">
         <button class="btn btn-sm btn-accent" onclick="addToGoogleCalendar()">📅 Agregar a Google Calendar</button>
       </div>
-      <div class="hint">Abre Google Calendar con la cita ya rellenada — solo confirmás "Guardar" ahí. No requiere iniciar sesión dentro de esta app.</div>
+      <div class="hint">Abre Google Calendar con la cita ya rellenada — solo confirma "Guardar" ahí. No requiere iniciar sesión dentro de esta app.</div>
     </div>
 
     <div class="card doc-card">
@@ -1038,7 +1038,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
         <button class="admin-tab-btn" id="histTabBtnCit" onclick="switchHistTab('cit')">Citas</button>
       </div>
       <div id="histTabAll">
-        <input type="text" id="histSearchAll" placeholder="Escribí el nombre del paciente..." oninput="renderHistorialTodo()">
+        <input type="text" id="histSearchAll" placeholder="Escriba el nombre del paciente..." oninput="renderHistorialTodo()">
         <div class="hint">Junta todo lo guardado de este paciente — recetas, indicaciones, laboratorios y citas — en una sola lista, ordenado por fecha.</div>
         <div id="histListAll"></div>
       </div>
@@ -1208,7 +1208,7 @@ input:focus,select:focus,textarea:focus{outline:2px solid var(--ms-accent);outli
 
     <div id="cfgTabRespaldo" style="display:none;">
       <div class="hint" style="margin-top:0;">⚠️ El archivo de respaldo <b>no está cifrado</b>: contiene los nombres y diagnósticos de sus pacientes. Guárdelo en un lugar seguro.</div>
-      <div class="hint" style="margin-top:6px;">Descargá o restaurá un archivo con todo lo guardado en este dispositivo: tu perfil, la base de medicamentos y de exámenes de laboratorio, las plantillas por cirugía y por condición asociada, y el historial completo de recetas, indicaciones y órdenes de laboratorio.</div>
+      <div class="hint" style="margin-top:6px;">Descargue o restaure un archivo con todo lo guardado en este dispositivo: su perfil, la base de medicamentos y de exámenes de laboratorio, las plantillas por cirugía y por condición asociada, y el historial completo de recetas, indicaciones y órdenes de laboratorio.</div>
       <div class="btn-row">
         <button class="btn btn-sm" onclick="exportBackup()">⬇️ Exportar respaldo</button>
         <button class="btn btn-sm" onclick="document.getElementById('importBackupInput').click()">⬆️ Importar respaldo</button>
@@ -3793,7 +3793,7 @@ function fillConfigForm(){
 }
 function updateTopbarName(){
   document.getElementById('topbarDoctorName').textContent =
-    doctorConfig.nombre ? (doctorConfig.nombre + (doctorConfig.especialidad? ' · '+doctorConfig.especialidad : '')) : 'Tocá ⚙️ para configurar tu perfil';
+    doctorConfig.nombre ? (doctorConfig.nombre + (doctorConfig.especialidad? ' · '+doctorConfig.especialidad : '')) : 'Toque ⚙️ para configurar su perfil';
 }
 
 function fileToDataURL(file, cb){
@@ -3984,10 +3984,10 @@ function renderAdminPlantillas(){
    puntual de la cirugía/condición seleccionada, sin mostrar las demás. */
 function jumpToPlantillaEdit(module, tipo, key){
   if(tipo==='condicion' && (!key || key==='Ninguna')){
-    showToast('Seleccioná una condición específica primero');
+    showToast('Seleccione una condición específica primero');
     return;
   }
-  if(!key){ showToast('Seleccioná una cirugía primero'); return; }
+  if(!key){ showToast('Seleccione una cirugía primero'); return; }
   openConfigModal();
   plantillasModule = module;
   plantillasTipo = tipo;
@@ -4036,7 +4036,7 @@ function openAdminAddMed(){ document.getElementById('adminAddMedBox').style.disp
 function closeAdminAddMed(){ document.getElementById('adminAddMedBox').style.display='none'; }
 function adminAddMed(){
   const generico = document.getElementById('admGenerico').value.trim();
-  if(!generico){ showToast('Escribí al menos el nombre genérico'); return; }
+  if(!generico){ showToast('Escriba al menos el nombre genérico'); return; }
   medsDB.push({
     id:'custom_'+Date.now(),
     generico,
@@ -4059,8 +4059,8 @@ function renderAdminCombos(){
   const surgeries = applyPlantillasFilter(Object.keys(combos));
   if(surgeries.length===0){
     const msg = plantillasFilterKey
-      ? `Todavía no hay plantilla de recetas para "${plantillasFilterKey}". Usá "+ Crear plantilla" arriba, o armá una receta en el módulo de Receta y usá "Guardar como plantilla".`
-      : 'Todavía no hay plantillas de recetas. Creá una arriba, o armá una receta en el módulo de Receta y usá "Guardar como plantilla".';
+      ? `Todavía no hay plantilla de recetas para "${plantillasFilterKey}". Use "+ Crear plantilla" arriba, o arme una receta en el módulo de Receta y use "Guardar como plantilla".`
+      : 'Todavía no hay plantillas de recetas. Cree una arriba, o arme una receta en el módulo de Receta y use "Guardar como plantilla".';
     list.innerHTML = plantillasFilterBarHTML() + `<div class="empty-state">${msg}</div>`;
     return;
   }
@@ -4141,8 +4141,8 @@ function renderAdminIndTemplatesUnified(){
   const surgeries = applyPlantillasFilter(Object.keys(indicacionesTemplates));
   if(surgeries.length===0){
     const msg = plantillasFilterKey
-      ? `Todavía no hay plantilla de indicaciones para "${plantillasFilterKey}". Usá "+ Crear plantilla" arriba, o armala en el módulo de Indicaciones.`
-      : 'Todavía no hay plantillas de indicaciones por cirugía. Creá una arriba, o armala en el módulo de Indicaciones.';
+      ? `Todavía no hay plantilla de indicaciones para "${plantillasFilterKey}". Use "+ Crear plantilla" arriba, o ármela en el módulo de Indicaciones.`
+      : 'Todavía no hay plantillas de indicaciones por cirugía. Cree una arriba, o ármela en el módulo de Indicaciones.';
     list.innerHTML = plantillasFilterBarHTML() + `<div class="empty-state">${msg}</div>`;
     return;
   }
@@ -4153,8 +4153,8 @@ function renderAdminIndCondTemplatesUnified(){
   const conds = applyPlantillasFilter(Object.keys(indicacionesCondTemplates));
   if(conds.length===0){
     const msg = plantillasFilterKey
-      ? `Todavía no hay plantilla de indicaciones para "${plantillasFilterKey}". Usá "+ Crear plantilla" arriba, o armala en el módulo de Indicaciones.`
-      : 'Todavía no hay plantillas de indicaciones por condición asociada. Creá una arriba, o armala en el módulo de Indicaciones.';
+      ? `Todavía no hay plantilla de indicaciones para "${plantillasFilterKey}". Use "+ Crear plantilla" arriba, o ármela en el módulo de Indicaciones.`
+      : 'Todavía no hay plantillas de indicaciones por condición asociada. Cree una arriba, o ármela en el módulo de Indicaciones.';
     list.innerHTML = plantillasFilterBarHTML() + `<div class="empty-state">${msg}</div>`;
     return;
   }
@@ -4202,8 +4202,8 @@ function renderAdminLabCombosUnified(){
   const surgeries = applyPlantillasFilter(Object.keys(labCombos));
   if(surgeries.length===0){
     const msg = plantillasFilterKey
-      ? `Todavía no hay plantilla de laboratorios para "${plantillasFilterKey}". Usá "+ Crear plantilla" arriba, o armala en el módulo de Laboratorios.`
-      : 'Todavía no hay plantillas de laboratorios por cirugía. Creá una arriba, o armala en el módulo de Laboratorios.';
+      ? `Todavía no hay plantilla de laboratorios para "${plantillasFilterKey}". Use "+ Crear plantilla" arriba, o ármela en el módulo de Laboratorios.`
+      : 'Todavía no hay plantillas de laboratorios por cirugía. Cree una arriba, o ármela en el módulo de Laboratorios.';
     list.innerHTML = plantillasFilterBarHTML() + `<div class="empty-state">${msg}</div>`;
     return;
   }
@@ -4214,8 +4214,8 @@ function renderAdminLabCondCombosUnified(){
   const conds = applyPlantillasFilter(Object.keys(labCondCombos));
   if(conds.length===0){
     const msg = plantillasFilterKey
-      ? `Todavía no hay plantilla de laboratorios para "${plantillasFilterKey}". Usá "+ Crear plantilla" arriba, o armala en el módulo de Laboratorios.`
-      : 'Todavía no hay plantillas de laboratorios por condición asociada. Creá una arriba, o armala en el módulo de Laboratorios.';
+      ? `Todavía no hay plantilla de laboratorios para "${plantillasFilterKey}". Use "+ Crear plantilla" arriba, o ármela en el módulo de Laboratorios.`
+      : 'Todavía no hay plantillas de laboratorios por condición asociada. Cree una arriba, o ármela en el módulo de Laboratorios.';
     list.innerHTML = plantillasFilterBarHTML() + `<div class="empty-state">${msg}</div>`;
     return;
   }
@@ -4313,7 +4313,7 @@ function closeAddSurgeryBox(){
 }
 function saveNewSurgeryType(){
   const name = document.getElementById('newSurgeryName').value.trim();
-  if(!name){ showToast('Escribí un nombre para la cirugía'); return; }
+  if(!name){ showToast('Escriba un nombre para la cirugía'); return; }
   const exists = surgeryTypes.some(s=>normalizeText(s)===normalizeText(name));
   if(exists){ showToast('Esa cirugía ya existe en la lista'); return; }
   surgeryTypes.push(name);
@@ -4408,7 +4408,7 @@ function closeAddConditionBox(ctx){
 function saveNewConditionType(ctx){
   const s = ctxShort(ctx);
   const name = document.getElementById('newConditionName_'+s).value.trim();
-  if(!name){ showToast('Escribí un nombre para la condición'); return; }
+  if(!name){ showToast('Escriba un nombre para la condición'); return; }
   if(normalizeText(name)===normalizeText('Ninguna')){ showToast('Ese nombre está reservado'); return; }
   const exists = getAllConditionTypes().some(x=>normalizeText(x)===normalizeText(name));
   if(exists){ showToast('Esa condición ya existe en la lista'); return; }
@@ -4470,7 +4470,7 @@ function applyCombo(cirugia, updateTracking=true){
   });
   if(updateTracking) lastAppliedRxCirugia = cirugia;
   renderRxItems();
-  showToast('Plantilla aplicada — revisá y ajustá cada medicamento');
+  showToast('Plantilla aplicada — revise y ajuste cada medicamento');
 }
 function toggleAddAnotherRx(){
   const box = document.getElementById('rxAddAnotherBox');
@@ -4493,7 +4493,7 @@ function addAnotherRxCombo(){
 }
 
 function saveCurrentAsTemplate(){
-  if(currentRxItems.length===0){ showToast('Agregá al menos un medicamento primero'); return; }
+  if(currentRxItems.length===0){ showToast('Agregue al menos un medicamento primero'); return; }
   const cirugia = document.getElementById('rxCirugia').value;
   const doSave = ()=>{
     combos[cirugia] = currentRxItems.map(it=>({
@@ -4537,7 +4537,7 @@ function renderMedSearch(){
   const enBase = new Set(medsDB.map(m=>m.fuenteNombre).filter(Boolean));
   const catalogo = catalogoMatches(q).filter(p=>!enBase.has(p.name));
   if(results.length===0 && catalogo.length===0){
-    box.innerHTML = '<div class="med-result"><div class="info">Sin resultados. Podés agregarlo con "+ Agregar medicamento nuevo".</div></div>';
+    box.innerHTML = '<div class="med-result"><div class="info">Sin resultados. Puede agregarlo con "+ Agregar medicamento nuevo".</div></div>';
   } else {
     box.innerHTML = results.map(m=>`
       <div class="med-result">
@@ -4592,7 +4592,7 @@ function openManualMed(){ document.getElementById('manualMedBox').style.display=
 function closeManualMed(){ document.getElementById('manualMedBox').style.display='none'; const f = document.getElementById('mmFuente'); f.style.display='none'; f.innerHTML=''; }
 function saveManualMed(){
   const generico = document.getElementById('mmGenerico').value.trim();
-  if(!generico){ showToast('Escribí al menos el nombre genérico'); return; }
+  if(!generico){ showToast('Escriba al menos el nombre genérico'); return; }
   const med = {
     id: 'custom_'+Date.now(),
     generico,
@@ -4972,7 +4972,7 @@ function printCurrentDoc(){
   const css = getDocStylesCSS();
   const w = window.open('', '_blank');
   if(!w){
-    showToast('El navegador bloqueó la ventana emergente. Permití ventanas emergentes para este archivo e intentá de nuevo.');
+    showToast('El navegador bloqueó la ventana emergente. Permita ventanas emergentes para este archivo e intente de nuevo.');
     return;
   }
   w.document.open();
@@ -4984,7 +4984,7 @@ function printCurrentDoc(){
     @media print{ .hint-bar{display:none;} body{background:#fff;padding:0;} }
     ${css}
   </style></head><body>
-    <div class="hint-bar">Si el diálogo de impresión no se abrió automáticamente, usá el menú de tu navegador (⋮ o Compartir) y elegí "Imprimir" o "Guardar como PDF".</div>
+    <div class="hint-bar">Si el diálogo de impresión no se abrió automáticamente, use el menú de su navegador (⋮ o Compartir) y elija "Imprimir" o "Guardar como PDF".</div>
     ${docHTML}
   </body></html>`);
   w.document.close();
@@ -5076,7 +5076,7 @@ async function shareViaNative(){
     try{ await navigator.share({title:'Receta médica', text}); }
     catch(e){ /* el usuario canceló */ }
   } else {
-    showToast('Tu navegador no ofrece el menú nativo — probá WhatsApp móvil o WhatsApp Web');
+    showToast('Su navegador no ofrece el menú nativo — pruebe WhatsApp móvil o WhatsApp Web');
   }
 }
 function shareViaWhatsAppMobile(){
@@ -5089,7 +5089,7 @@ function shareViaWhatsAppWeb(){
 }
 
 function saveToHistorial(){
-  if(currentRxItems.length===0){ showToast('Agregá al menos un medicamento antes de guardar'); return; }
+  if(currentRxItems.length===0){ showToast('Agregue al menos un medicamento antes de guardar'); return; }
   const entry = {
     id: 'rx_'+Date.now(),
     fecha: document.getElementById('rxFecha').value,
@@ -5141,7 +5141,7 @@ function loadFromHistorial(id){
   updateDeleteSurgeryBtn();
   renderRxItems();
   switchView('receta');
-  showToast('Receta cargada — podés editarla y reimprimir');
+  showToast('Receta cargada — puede editarla y reimprimir');
 }
 function deleteFromHistorial(id){
   askConfirm('¿Eliminar esta receta del historial? No se puede deshacer.', ()=>{
@@ -5216,7 +5216,7 @@ function renderIndCondComboChips(){
   const condicion = document.getElementById('indCondicion').value;
   wrap.innerHTML='';
   if(!condicion || condicion==='Ninguna'){
-    wrap.innerHTML = '<span class="hint" style="margin:0;">Seleccioná una condición asociada arriba para ver su plantilla.</span>';
+    wrap.innerHTML = '<span class="hint" style="margin:0;">Seleccione una condición asociada arriba para ver su plantilla.</span>';
     return;
   }
   const tpl = indicacionesCondTemplates[condicion];
@@ -5247,7 +5247,7 @@ function applyIndCombo(cirugia, updateTracking=true){
   if(!tpl) return;
   applyIndTemplateGeneric(tpl);
   if(updateTracking) lastAppliedInd = {cirugia, texts:tpl};
-  showToast('Plantilla de cirugía aplicada — revisá y ajustá el texto');
+  showToast('Plantilla de cirugía aplicada — revise y ajuste el texto');
 }
 function toggleAddAnotherInd(){
   const box = document.getElementById('indAddAnotherBox');
@@ -5273,7 +5273,7 @@ function applyIndCondCombo(condicion){
   if(!tpl) return;
   applyIndTemplateGeneric(tpl);
   lastAppliedIndCond = {condicion, texts:tpl};
-  showToast('Plantilla de condición aplicada — revisá y ajustá el texto');
+  showToast('Plantilla de condición aplicada — revise y ajuste el texto');
 }
 function readIndFormAsTemplate(){
   return {
@@ -5286,7 +5286,7 @@ function readIndFormAsTemplate(){
 function saveCurrentAsIndTemplate(){
   const tpl = readIndFormAsTemplate();
   if(!tpl.cuidadosHerida && !tpl.dieta && !tpl.actividad && !tpl.signosAlarma){
-    showToast('Escribí al menos una sección antes de guardar la plantilla'); return;
+    showToast('Escriba al menos una sección antes de guardar la plantilla'); return;
   }
   const cirugia = document.getElementById('indCirugia').value;
   const doSave = ()=>{
@@ -5314,10 +5314,10 @@ function deleteIndTemplateFor(){
 function saveCurrentAsIndCondTemplate(){
   const tpl = readIndFormAsTemplate();
   if(!tpl.cuidadosHerida && !tpl.dieta && !tpl.actividad && !tpl.signosAlarma){
-    showToast('Escribí al menos una sección antes de guardar la plantilla'); return;
+    showToast('Escriba al menos una sección antes de guardar la plantilla'); return;
   }
   const condicion = document.getElementById('indCondicion').value;
-  if(!condicion || condicion==='Ninguna'){ showToast('Seleccioná una condición específica primero'); return; }
+  if(!condicion || condicion==='Ninguna'){ showToast('Seleccione una condición específica primero'); return; }
   const doSave = ()=>{
     indicacionesCondTemplates[condicion] = tpl;
     saveJSON(LS_KEYS.indCondTemplates, indicacionesCondTemplates);
@@ -5406,7 +5406,7 @@ function printIndicaciones(){
   const css = getDocStylesCSS();
   const w = window.open('', '_blank');
   if(!w){
-    showToast('El navegador bloqueó la ventana emergente. Permití ventanas emergentes para este archivo e intentá de nuevo.');
+    showToast('El navegador bloqueó la ventana emergente. Permita ventanas emergentes para este archivo e intente de nuevo.');
     return;
   }
   w.document.open();
@@ -5418,7 +5418,7 @@ function printIndicaciones(){
     @media print{ .hint-bar{display:none;} body{background:#fff;padding:0;} }
     ${css}
   </style></head><body>
-    <div class="hint-bar">Si el diálogo de impresión no se abrió automáticamente, usá el menú de tu navegador (⋮ o Compartir) y elegí "Imprimir" o "Guardar como PDF".</div>
+    <div class="hint-bar">Si el diálogo de impresión no se abrió automáticamente, use el menú de su navegador (⋮ o Compartir) y elija "Imprimir" o "Guardar como PDF".</div>
     ${docHTML}
   </body></html>`);
   w.document.close();
@@ -5533,7 +5533,7 @@ async function shareIndViaNative(){
     try{ await navigator.share({title:'Indicaciones postoperatorias', text}); }
     catch(e){}
   } else {
-    showToast('Tu navegador no ofrece el menú nativo — probá WhatsApp móvil o WhatsApp Web');
+    showToast('Su navegador no ofrece el menú nativo — pruebe WhatsApp móvil o WhatsApp Web');
   }
 }
 function shareIndViaWhatsAppMobile(){
@@ -5548,7 +5548,7 @@ function shareIndViaWhatsAppWeb(){
 function saveIndToHistorial(){
   const tpl = readIndFormAsTemplate();
   if(!tpl.cuidadosHerida && !tpl.dieta && !tpl.actividad && !tpl.signosAlarma){
-    showToast('Escribí al menos una sección antes de guardar'); return;
+    showToast('Escriba al menos una sección antes de guardar'); return;
   }
   const entry = {
     id: 'ind_'+Date.now(),
@@ -5603,7 +5603,7 @@ function loadIndFromHistorial(id){
   updateDeleteSurgeryBtn();
   renderIndDoc();
   switchView('indicaciones');
-  showToast('Indicaciones cargadas — podés editarlas y reimprimir');
+  showToast('Indicaciones cargadas — puede editarlas y reimprimir');
 }
 function deleteIndFromHistorial(id){
   askConfirm('¿Eliminar estas indicaciones del historial? No se puede deshacer.', ()=>{
@@ -5640,7 +5640,7 @@ function renderHistorialTodo(){
   const q = normalizeText(document.getElementById('histSearchAll').value);
   const list = document.getElementById('histListAll');
   if(!q){
-    list.innerHTML = '<div class="empty-state">Escribí un nombre para buscar en todo el historial.</div>';
+    list.innerHTML = '<div class="empty-state">Escriba un nombre para buscar en todo el historial.</div>';
     return;
   }
   const items = [];
@@ -5710,7 +5710,7 @@ function applyLabCombo(cirugia, updateTracking=true){
   });
   if(updateTracking) lastAppliedLabCirugia = cirugia;
   renderLabItems();
-  showToast('Plantilla aplicada — revisá y ajustá la orden');
+  showToast('Plantilla aplicada — revise y ajuste la orden');
 }
 function toggleAddAnotherLab(){
   const box = document.getElementById('labAddAnotherBox');
@@ -5732,7 +5732,7 @@ function addAnotherLabCombo(){
   applyLabCombo(cirugia, false);
 }
 function saveCurrentAsLabTemplate(){
-  if(currentLabItems.length===0){ showToast('Agregá al menos un examen primero'); return; }
+  if(currentLabItems.length===0){ showToast('Agregue al menos un examen primero'); return; }
   const cirugia = document.getElementById('labCirugia').value;
   const doSave = ()=>{
     labCombos[cirugia] = currentLabItems.map(it=>it.nombre);
@@ -5774,7 +5774,7 @@ function renderLabCondComboChips(){
   const condicion = document.getElementById('labCondicion').value;
   wrap.innerHTML='';
   if(!condicion || condicion==='Ninguna'){
-    wrap.innerHTML = '<span class="hint" style="margin:0;">Seleccioná una condición asociada arriba para ver su plantilla.</span>';
+    wrap.innerHTML = '<span class="hint" style="margin:0;">Seleccione una condición asociada arriba para ver su plantilla.</span>';
     return;
   }
   const combo = labCondCombos[condicion];
@@ -5798,12 +5798,12 @@ function applyLabCondCombo(condicion){
   });
   lastAppliedLabCondicion = condicion;
   renderLabItems();
-  showToast('Plantilla de condición aplicada — revisá y ajustá la orden');
+  showToast('Plantilla de condición aplicada — revise y ajuste la orden');
 }
 function saveCurrentAsLabCondTemplate(){
-  if(currentLabItems.length===0){ showToast('Agregá al menos un examen primero'); return; }
+  if(currentLabItems.length===0){ showToast('Agregue al menos un examen primero'); return; }
   const condicion = document.getElementById('labCondicion').value;
-  if(!condicion || condicion==='Ninguna'){ showToast('Seleccioná una condición específica primero'); return; }
+  if(!condicion || condicion==='Ninguna'){ showToast('Seleccione una condición específica primero'); return; }
   const doSave = ()=>{
     labCondCombos[condicion] = currentLabItems.map(it=>it.nombre);
     saveJSON(LS_KEYS.labCondCombos, labCondCombos);
@@ -5833,7 +5833,7 @@ function renderLabSearch(){
   if(!q){ box.classList.remove('show'); box.innerHTML=''; return; }
   const results = labsDB.filter(l=> normalizeText(l.nombre).includes(q)).slice(0,30);
   if(results.length===0){
-    box.innerHTML = '<div class="lab-result"><div class="info">Sin resultados. Podés agregarlo con "+ Agregar examen nuevo".</div></div>';
+    box.innerHTML = '<div class="lab-result"><div class="info">Sin resultados. Puede agregarlo con "+ Agregar examen nuevo".</div></div>';
   } else {
     box.innerHTML = results.map(l=>`
       <div class="lab-result">
@@ -5878,7 +5878,7 @@ function openManualLab(){
 function closeManualLab(){ document.getElementById('manualLabBox').style.display='none'; }
 function saveManualLab(){
   const nombre = document.getElementById('mlNombre').value.trim();
-  if(!nombre){ showToast('Escribí el nombre del examen'); return; }
+  if(!nombre){ showToast('Escriba el nombre del examen'); return; }
   const categoria = document.getElementById('mlCategoria').value.trim() || 'Otros';
   const lab = {id:'customlab_'+Date.now(), nombre, categoria};
   labsDB.push(lab);
@@ -5970,7 +5970,7 @@ function printLabDoc(){
   const css = getDocStylesCSS();
   const w = window.open('', '_blank');
   if(!w){
-    showToast('El navegador bloqueó la ventana emergente. Permití ventanas emergentes para este archivo e intentá de nuevo.');
+    showToast('El navegador bloqueó la ventana emergente. Permita ventanas emergentes para este archivo e intente de nuevo.');
     return;
   }
   w.document.open();
@@ -5982,7 +5982,7 @@ function printLabDoc(){
     @media print{ .hint-bar{display:none;} body{background:#fff;padding:0;} }
     ${css}
   </style></head><body>
-    <div class="hint-bar">Si el diálogo de impresión no se abrió automáticamente, usá el menú de tu navegador (⋮ o Compartir) y elegí "Imprimir" o "Guardar como PDF".</div>
+    <div class="hint-bar">Si el diálogo de impresión no se abrió automáticamente, use el menú de su navegador (⋮ o Compartir) y elija "Imprimir" o "Guardar como PDF".</div>
     ${docHTML}
   </body></html>`);
   w.document.close();
@@ -6084,7 +6084,7 @@ async function shareLabViaNative(){
     try{ await navigator.share({title:'Orden de laboratorio', text}); }
     catch(e){}
   } else {
-    showToast('Tu navegador no ofrece el menú nativo — probá WhatsApp móvil o WhatsApp Web');
+    showToast('Su navegador no ofrece el menú nativo — pruebe WhatsApp móvil o WhatsApp Web');
   }
 }
 function shareLabViaWhatsAppMobile(){
@@ -6097,7 +6097,7 @@ function shareLabViaWhatsAppWeb(){
 }
 
 function saveLabToHistorial(){
-  if(currentLabItems.length===0){ showToast('Agregá al menos un examen antes de guardar'); return; }
+  if(currentLabItems.length===0){ showToast('Agregue al menos un examen antes de guardar'); return; }
   const entry = {
     id: 'lab_'+Date.now(),
     fecha: document.getElementById('labFecha').value,
@@ -6150,7 +6150,7 @@ function loadLabFromHistorial(id){
   updateDeleteSurgeryBtn();
   renderLabItems();
   switchView('laboratorios');
-  showToast('Orden cargada — podés editarla y reimprimir');
+  showToast('Orden cargada — puede editarla y reimprimir');
 }
 function deleteLabFromHistorial(id){
   askConfirm('¿Eliminar esta orden del historial? No se puede deshacer.', ()=>{
@@ -6252,7 +6252,7 @@ function parseHora12to24(horaStr){
 function addToGoogleCalendar(){
   const fecha = document.getElementById('citFecha').value;
   const horaStr = document.getElementById('citHora').value;
-  if(!fecha || !horaStr){ showToast('Elegí la fecha y la hora de la cita primero'); return; }
+  if(!fecha || !horaStr){ showToast('Elija la fecha y la hora de la cita primero'); return; }
   const t = parseHora12to24(horaStr);
   if(!t){ showToast('No pude leer la hora — elegila de nuevo del pulldown'); return; }
 
@@ -6288,7 +6288,7 @@ function printCitDoc(){
   const css = getDocStylesCSS();
   const w = window.open('', '_blank');
   if(!w){
-    showToast('El navegador bloqueó la ventana emergente. Permití ventanas emergentes para este archivo e intentá de nuevo.');
+    showToast('El navegador bloqueó la ventana emergente. Permita ventanas emergentes para este archivo e intente de nuevo.');
     return;
   }
   w.document.open();
@@ -6300,7 +6300,7 @@ function printCitDoc(){
     @media print{ .hint-bar{display:none;} body{background:#fff;padding:0;} }
     ${css}
   </style></head><body>
-    <div class="hint-bar">Si el diálogo de impresión no se abrió automáticamente, usá el menú de tu navegador (⋮ o Compartir) y elegí "Imprimir" o "Guardar como PDF".</div>
+    <div class="hint-bar">Si el diálogo de impresión no se abrió automáticamente, use el menú de su navegador (⋮ o Compartir) y elija "Imprimir" o "Guardar como PDF".</div>
     ${docHTML}
   </body></html>`);
   w.document.close();
@@ -6390,7 +6390,7 @@ async function shareCitViaNative(){
     try{ await navigator.share({title:'Cita médica', text}); }
     catch(e){}
   } else {
-    showToast('Tu navegador no ofrece el menú nativo — probá WhatsApp móvil o WhatsApp Web');
+    showToast('Su navegador no ofrece el menú nativo — pruebe WhatsApp móvil o WhatsApp Web');
   }
 }
 function shareCitViaWhatsAppMobile(){
@@ -6404,7 +6404,7 @@ function shareCitViaWhatsAppWeb(){
 
 function saveCitToHistorial(){
   const fechaCita = document.getElementById('citFecha').value;
-  if(!fechaCita){ showToast('Elegí la fecha de la cita antes de guardar'); return; }
+  if(!fechaCita){ showToast('Elija la fecha de la cita antes de guardar'); return; }
   const entry = {
     id: 'cit_'+Date.now(),
     fechaEmision: document.getElementById('citFechaEmision').value,
@@ -6450,7 +6450,7 @@ function loadCitFromHistorial(id){
   document.getElementById('citMotivo').value = h.motivo || '';
   renderCitDoc();
   switchView('citas');
-  showToast('Cita cargada — podés editarla y reimprimir');
+  showToast('Cita cargada — puede editarla y reimprimir');
 }
 function deleteCitFromHistorial(id){
   askConfirm('¿Eliminar esta cita del historial? No se puede deshacer.', ()=>{
@@ -6786,7 +6786,7 @@ scheduleFitDocPages();
 
 if(!doctorConfig.nombre){
   openConfigModal();
-  showToast('Completá tu perfil para que aparezca en tus documentos 👋');
+  showToast('Complete su perfil para que aparezca en sus documentos 👋');
 }
 </script>
 </body>

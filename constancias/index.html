@@ -117,6 +117,33 @@
 .ms-badge-ok{background:var(--ms-ok-bg);color:var(--ms-ok-ink);}
 .ms-toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ms-ink);color:#fff;padding:11px 18px;border-radius:var(--ms-pill);font-size:14px;box-shadow:var(--ms-shadow);z-index:60;max-width:90%;text-align:center;}
 
+/* Íconos de línea (en lugar de emojis). Uso: class="ms-i ms-i-print" en el botón; el ícono va antes del texto. */
+.ms-i::before{content:"";display:inline-block;width:1.15em;height:1.15em;margin-right:.45em;vertical-align:-.2em;background:currentColor;-webkit-mask:var(--ms-ico) center/contain no-repeat;mask:var(--ms-ico) center/contain no-repeat;flex:none;}
+.ms-i:empty::before{margin-right:0;}
+.ms-svg{width:1.15em;height:1.15em;vertical-align:-.2em;flex:none;}
+.ms-i-save{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z%22/%3E%3Cpath d=%22M17 21v-8H7v8M7 3v5h8%22/%3E%3C/svg%3E");}
+.ms-i-trash{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6%22/%3E%3C/svg%3E");}
+.ms-i-edit{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 20h9%22/%3E%3Cpath d=%22M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z%22/%3E%3C/svg%3E");}
+.ms-i-print{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 9V2h12v7%22/%3E%3Cpath d=%22M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2%22/%3E%3Cpath d=%22M6 14h12v8H6z%22/%3E%3C/svg%3E");}
+.ms-i-share{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8%22/%3E%3Cpath d=%22M16 6l-4-4-4 4M12 2v13%22/%3E%3C/svg%3E");}
+.ms-i-image{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22/%3E%3Ccircle cx=%228.5%22 cy=%228.5%22 r=%221.5%22/%3E%3Cpath d=%22M21 15l-5-5L5 21%22/%3E%3C/svg%3E");}
+.ms-i-download{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3%22/%3E%3C/svg%3E");}
+.ms-i-upload{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12%22/%3E%3C/svg%3E");}
+.ms-i-text{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 2v6h6M16 13H8M16 17H8%22/%3E%3C/svg%3E");}
+.ms-i-package{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M21 16V8l-9-5-9 5v8l9 5z%22/%3E%3Cpath d=%22M3.3 7 12 12l8.7-5M12 22V12%22/%3E%3C/svg%3E");}
+.ms-i-search{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2211%22 cy=%2211%22 r=%227%22/%3E%3Cpath d=%22M21 21l-4.3-4.3%22/%3E%3C/svg%3E");}
+.ms-i-calendar{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223%22 y=%224%22 width=%2218%22 height=%2218%22 rx=%222%22/%3E%3Cpath d=%22M16 2v4M8 2v4M3 10h18%22/%3E%3C/svg%3E");}
+.ms-i-alert{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z%22/%3E%3Cpath d=%22M12 9v4M12 17h.01%22/%3E%3C/svg%3E");}
+.ms-i-lock{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223%22 y=%2211%22 width=%2218%22 height=%2211%22 rx=%222%22/%3E%3Cpath d=%22M7 11V7a5 5 0 0 1 10 0v4%22/%3E%3C/svg%3E");}
+.ms-i-copy{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%229%22 y=%229%22 width=%2213%22 height=%2213%22 rx=%222%22/%3E%3Cpath d=%22M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1%22/%3E%3C/svg%3E");}
+.ms-i-refresh{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M23 4v6h-6M1 20v-6h6%22/%3E%3Cpath d=%22M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15%22/%3E%3C/svg%3E");}
+.ms-i-cloud{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M18 10h-1.3A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z%22/%3E%3C/svg%3E");}
+.ms-i-pill{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M10.5 20.5 20.5 10.5a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7zM8.5 8.5l7 7%22/%3E%3C/svg%3E");}
+.ms-i-clipboard{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2%22/%3E%3Crect x=%228%22 y=%222%22 width=%228%22 height=%224%22 rx=%221%22/%3E%3C/svg%3E");}
+.ms-i-flask{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3%22/%3E%3C/svg%3E");}
+.ms-i-user{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2%22/%3E%3Ccircle cx=%2212%22 cy=%227%22 r=%224%22/%3E%3C/svg%3E");}
+.ms-i-userplus{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2%22/%3E%3Ccircle cx=%229%22 cy=%227%22 r=%224%22/%3E%3Cpath d=%22M20 8v6M23 11h-6%22/%3E%3C/svg%3E");}
+
 /* Panel de hoja membretada (shared/ms-membrete.js) */
 .ms-memb .ms-seg{margin-bottom:12px;}
 .ms-memb-fila{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;}
@@ -198,7 +225,7 @@
   .btn-ghost{background:var(--ms-surface);border-color:var(--ms-line-strong);color:var(--ms-ink);}
   .btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none;}
 
-  .paper-preview{background:#fff;border:1px solid var(--ms-line);border-radius:var(--ms-radius-field);box-shadow:var(--ms-shadow);padding:38px 34px;font-family:Georgia,'Times New Roman',serif;font-size:14.5px;line-height:1.55;color:#20242B;margin-bottom:18px;}
+  .paper-preview{background:#fff;border:1px solid var(--ms-line);border-radius:var(--ms-radius-field);box-shadow:var(--ms-shadow);padding:38px 34px;font-family:Arial,Helvetica,'Liberation Sans',sans-serif;font-size:14.5px;line-height:1.55;color:#20242B;margin-bottom:18px;}
   @media (max-width:480px){ .paper-preview{padding:24px 18px;} }
   .paper-preview .ph{font-size:13px;line-height:1.5;margin-bottom:18px;}
   .paper-preview .ph b{display:block;font-size:14.5px;}
@@ -416,7 +443,7 @@ const DRIVE_FOLDER_NAME = 'Constancias - Dr. Manuel Salinas';
 const SCOPES = 'https://www.googleapis.com/auth/drive.file';
 
 // Encabezado de los documentos: se configura en «🖼 Encabezado»; un campo vacío no se imprime.
-// Sin símbolos ☎/✉: la fuente estándar del PDF (Times) no los tiene.
+// Sin símbolos ☎/✉: la fuente estándar del PDF (Helvetica) no los tiene.
 const HEADER_DEFAULT = {
   nombre: '',
   direccion: 'Hospital CEMESA, Consultorio #42\nSan Pedro Sula, Cortés',
@@ -780,7 +807,7 @@ const TEMPLATES = [
       {key:'dni', label:'DNI', type:'text', autofill:'dni'},
       {key:'edad', label:'Edad', type:'number', autofill:'edad'},
       {key:'procedimiento', label:'Procedimiento', type:'text'},
-      {key:'monto', label:'Monto aproximado (Lps)', type:'number'},
+      {key:'monto', label:'Monto aproximado (L.)', type:'number'},
       {key:'diasVisita', label:'Días de visita médica', type:'number'},
       {key:'horasQuirofano', label:'Horas de quirófano', type:'number'},
       {key:'diasHospitalizacion', label:'Días de hospitalización', type:'number'},
@@ -790,7 +817,7 @@ const TEMPLATES = [
       {key:'serviciosNoIncluidos', label:'No incluye', type:'textarea', placeholder:'ej. anestesia, medicamentos, honorarios de otros especialistas'},
     ],
     body: (d) => [
-      {t:'p', v:`Por medio de la presente hago constar que el/la paciente ${d.nombre}, con DNI ${d.dni} de ${d.edad} años de edad requiere una ${d.procedimiento}, con un presupuesto aproximado de ${d.monto} Lps, que incluye únicamente honorarios médicos quirúrgicos, visitas médicas por el cirujano por ${d.diasVisita} días, alquiler de equipo, uso de quirófano por ${d.horasQuirofano} horas, estancia hospitalaria de ${d.diasHospitalizacion} días en ${d.hospital}, y ${d.serviciosAdicionales}. Dicha cirugía se llevará a cabo el día ${fmtFechaCorta(d.fechaCirugia)}.`},
+      {t:'p', v:`Por medio de la presente hago constar que el/la paciente ${d.nombre}, con DNI ${d.dni} de ${d.edad} años de edad requiere una ${d.procedimiento}, con un presupuesto aproximado de ${d.monto ? 'L. '+Number(String(d.monto).replace(/,/g,'')).toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2}) : '__________'}, que incluye únicamente honorarios médicos quirúrgicos, visitas médicas por el cirujano por ${d.diasVisita} días, alquiler de equipo, uso de quirófano por ${d.horasQuirofano} horas, estancia hospitalaria de ${d.diasHospitalizacion} días en ${d.hospital}, y ${d.serviciosAdicionales}. Dicha cirugía se llevará a cabo el día ${fmtFechaCorta(d.fechaCirugia)}.`},
       {t:'p', v:`No incluye ${d.serviciosNoIncluidos}.`},
     ]
   },
@@ -2598,7 +2625,7 @@ async function saveLogo(dataUrl){
   computeLogoAspect(dataUrl);
   if(state.accessToken){
     if(dataUrl.length > 45000){
-      toast('Logo guardado en este dispositivo. Es muy grande para sincronizar por Sheets (usa una imagen más pequeña si quieres que sincronice).', 'warn');
+      toast('Logo guardado en este dispositivo. Es muy grande para sincronizar por la hoja de Google (use una imagen más pequeña si desea que sincronice).', 'warn');
       return;
     }
     try{ await saveConfigValue('Logo', dataUrl); }
@@ -2620,7 +2647,7 @@ async function saveSignature(dataUrl){
   computeSignatureAspect(dataUrl);
   if(state.accessToken){
     if(dataUrl.length > 45000){
-      toast('Firma guardada en este dispositivo. Es muy grande para sincronizar por Sheets (usa una imagen más pequeña si quieres que sincronice).', 'warn');
+      toast('Firma guardada en este dispositivo. Es muy grande para sincronizar por la hoja de Google (use una imagen más pequeña si desea que sincronice).', 'warn');
       return;
     }
     try{ await saveConfigValue('Firma', dataUrl); }
@@ -2841,11 +2868,11 @@ function renderLogoScreen(){
       <button class="btn btn-ghost" id="btnRemoveLogo">Quitar logo</button>
     </div>
   ` : `
-    <div class="footnote" style="margin-bottom:10px;">Sube una imagen de tu logo (PNG o JPG). Se usará en el encabezado de todos los documentos generados.</div>
+    <div class="footnote" style="margin-bottom:10px;">Suba una imagen de su logo (PNG o JPG). Se usará en el encabezado de todos los documentos generados.</div>
   `}
   <div style="height:14px"></div>
   <input type="file" id="logoFile" accept="image/png,image/jpeg" style="width:100%;">
-  <div class="footnote" style="margin-top:10px;">Recomendado: imagen pequeña (menos de 200 KB) para que sincronice bien entre tus dispositivos.</div>`;
+  <div class="footnote" style="margin-top:10px;">Recomendado: imagen pequeña (menos de 200 KB) para que sincronice bien entre sus dispositivos.</div>`;
 }
 
 function renderSignatureScreen(){
@@ -2861,11 +2888,11 @@ function renderSignatureScreen(){
       <button class="btn btn-ghost" id="btnRemoveSignature">Quitar firma</button>
     </div>
   ` : `
-    <div class="footnote" style="margin-bottom:10px;">Sube una foto o escaneo de tu firma sobre fondo blanco (PNG o JPG).</div>
+    <div class="footnote" style="margin-bottom:10px;">Suba una foto o escaneo de su firma sobre fondo blanco (PNG o JPG).</div>
   `}
   <div style="height:14px"></div>
   <input type="file" id="signatureFile" accept="image/png,image/jpeg" style="width:100%;">
-  <div class="footnote" style="margin-top:10px;">Recomendado: imagen pequeña (menos de 200 KB) para que sincronice bien entre tus dispositivos.</div>`;
+  <div class="footnote" style="margin-top:10px;">Recomendado: imagen pequeña (menos de 200 KB) para que sincronice bien entre sus dispositivos.</div>`;
 }
 
 function renderGoogleScreen(){
@@ -3040,7 +3067,7 @@ function renderForm(){
       patientBlock = `
       <div class="patient-box new">
         <div class="selected-chip" style="background:none;color:var(--warn);padding:0;">
-          <span>🆕 Paciente nuevo — llenando todo a mano</span>
+          <span class="ms-i ms-i-userplus">Nuevo paciente — llenando todo a mano</span>
           <button id="btnPatientReset">cambiar</button>
         </div>
       </div>`;
@@ -3059,8 +3086,8 @@ function renderForm(){
           <input type="text" id="patientSearch" placeholder="Buscar paciente por nombre o DNI…" autocomplete="off">
         </div>
         <div id="searchResults"></div>
-        <button class="newpatient-btn" id="btnNewPatient">＋ Paciente nuevo (no está en la lista)</button>
-        ${!state.accessToken ? `<div class="footnote">Conecta Google para buscar en tu lista de pacientes, o continúa a mano.</div>` : ''}
+        <button class="newpatient-btn" id="btnNewPatient">＋ Nuevo paciente (no está en la lista)</button>
+        ${!state.accessToken ? `<div class="footnote">Conecte Google para buscar en su lista de pacientes, o continúe a mano.</div>` : ''}
       </div>`;
     }
   }
@@ -3117,7 +3144,7 @@ function renderCMHForm(){
     patientBlock = `
     <div class="patient-box new">
       <div class="selected-chip" style="background:none;color:var(--warn);padding:0;">
-        <span>🆕 Paciente nuevo — llenando todo a mano</span>
+        <span class="ms-i ms-i-userplus">Nuevo paciente — llenando todo a mano</span>
         <button id="btnPatientReset">cambiar</button>
       </div>
     </div>`;
@@ -3136,8 +3163,8 @@ function renderCMHForm(){
         <input type="text" id="patientSearch" placeholder="Buscar paciente por nombre o DNI…" autocomplete="off">
       </div>
       <div id="searchResults"></div>
-      <button class="newpatient-btn" id="btnNewPatient">＋ Paciente nuevo (no está en la lista)</button>
-      ${!state.accessToken ? `<div class="footnote">Conecta Google para buscar en tu lista de pacientes, o continúa a mano.</div>` : ''}
+      <button class="newpatient-btn" id="btnNewPatient">＋ Nuevo paciente (no está en la lista)</button>
+      ${!state.accessToken ? `<div class="footnote">Conecte Google para buscar en su lista de pacientes, o continúe a mano.</div>` : ''}
     </div>`;
   }
 
@@ -3161,14 +3188,14 @@ function renderCMHForm(){
     <button class="backbtn" id="btnBack">← Inicio</button>
   </div>
   <h2 class="screentitle">Constancia CMH</h2>
-  <div class="footnote" style="margin-bottom:16px;">Se imprime sobre el papel pre-impreso del Colegio Médico. "Colegiado No. 6414" va fijo. Todo lo demás que escribas aquí se imprime en su casilla correspondiente del formulario, y el texto de la constancia va debajo, en el espacio en blanco de la hoja.</div>
+  <div class="footnote" style="margin-bottom:16px;">Se imprime sobre el papel pre-impreso del Colegio Médico. "Colegiado No. 6414" va fijo. Todo lo demás que escriba aquí se imprime en su casilla correspondiente del formulario, y el texto de la constancia va debajo, en el espacio en blanco de la hoja.</div>
   ${patientBlock}
   ${fieldsHTML}
   ${datalistsHTML}
   <details class="cmh-tune">
     <summary>Ajuste fino de impresión</summary>
     <div style="height:10px"></div>
-    <div class="footnote">Si al imprimir el texto no cae exactamente sobre las líneas del papel, ajusta aquí (en pulgadas) y prueba de nuevo. Se recuerda para la próxima vez.</div>
+    <div class="footnote">Si al imprimir el texto no cae exactamente sobre las líneas del papel, ajuste aquí (en pulgadas) y pruebe de nuevo. Se recuerda para la próxima vez.</div>
     <div class="row2" style="margin-top:10px;">
       <div class="field" style="margin-bottom:0;">
         <label>Ajuste horizontal</label>
@@ -3195,7 +3222,7 @@ function renderPreview(){
   let bodyHTML = '';
   if(state.previewEditMode){
     const seedText = d.__editedBody || bodyToEditableText(freshParas);
-    bodyHTML = `<textarea id="previewEditText" rows="16" style="width:100%;box-sizing:border-box;font-family:Georgia,'Times New Roman',serif;font-size:13.5px;line-height:1.55;border:1px solid var(--line);border-radius:8px;padding:10px;">${escapeHTML(seedText)}</textarea>`;
+    bodyHTML = `<textarea id="previewEditText" rows="16" style="width:100%;box-sizing:border-box;font-family:Arial,Helvetica,'Liberation Sans',sans-serif;font-size:13.5px;line-height:1.55;border:1px solid var(--line);border-radius:8px;padding:10px;">${escapeHTML(seedText)}</textarea>`;
   } else {
     paras.forEach(p=>{
       if(p.t==='p') bodyHTML += `<p>${escapeHTML(p.v)}</p>`;
@@ -3224,19 +3251,19 @@ function renderPreview(){
   }
 
   const editedBadge = (!state.previewEditMode && d.__editedBody)
-    ? `<div class="footnote" style="margin:10px 0;">✏️ Este texto fue editado a mano. <button id="btnResetEdit" style="background:none;border:none;color:var(--accent-dark);text-decoration:underline;cursor:pointer;padding:0;font-size:inherit;">Restablecer al original</button></div>`
+    ? `<div class="ms-i ms-i-edit footnote" style="margin:10px 0;">Este texto fue editado a mano. <button id="btnResetEdit" style="background:none;border:none;color:var(--accent-dark);text-decoration:underline;cursor:pointer;padding:0;font-size:inherit;">Restablecer al original</button></div>`
     : '';
 
   const actionsHTML = state.previewEditMode
-    ? `<div class="footnote" style="margin-bottom:10px;">Deja una línea en blanco entre párrafos. Usa "- " al inicio de una línea para viñetas.</div>
+    ? `<div class="footnote" style="margin-bottom:10px;">Deje una línea en blanco entre párrafos. Use "- " al inicio de una línea para viñetas.</div>
        <div class="actions">
         <button class="btn btn-ghost" id="btnCancelEdit">Cancelar</button>
         <button class="btn btn-primary" id="btnSaveEdit">Guardar texto</button>
       </div>`
     : `<div class="actions">
         <button class="btn btn-ghost" id="btnEdit">Editar datos</button>
-        <button class="btn btn-ghost" id="btnToggleEdit">✏️ Editar texto</button>
-        <button class="btn btn-ghost" id="btnWhatsApp">📤 Compartir PDF</button>
+        <button class="ms-i ms-i-edit btn btn-ghost" id="btnToggleEdit">Editar texto</button>
+        <button class="ms-i ms-i-share btn btn-ghost" id="btnWhatsApp">Compartir PDF</button>
         <button class="btn btn-primary" id="btnGeneratePDF">Generar PDF</button>
       </div>`;
 
@@ -3267,7 +3294,7 @@ function renderHistory(){
     return `
     <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
     <h2 class="screentitle">Historial</h2>
-    <div class="empty">${state.accessToken ? 'Elija su hoja de pacientes en ⚙ Google para ver el historial.' : 'Conecta Google para ver el historial de constancias generadas en todos tus dispositivos.'}</div>`;
+    <div class="empty">${state.accessToken ? 'Elija su hoja de pacientes en Ajustes › Conexión con Google para ver el historial.' : 'Conecte Google para ver el historial de constancias generadas en todos sus dispositivos.'}</div>`;
   }
   if(state.historyRows===null){
     return `
@@ -3279,7 +3306,7 @@ function renderHistory(){
     return `
     <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
     <h2 class="screentitle">Historial</h2>
-    <div class="empty">Todavía no has generado ninguna constancia.</div>`;
+    <div class="empty">Todavía no ha generado ninguna constancia.</div>`;
   }
   return `
   <div class="backbar"><button class="backbtn" id="btnBack">← Inicio</button></div>
@@ -3507,7 +3534,7 @@ function bindEvents(){
     const nombre = document.getElementById('newSpecNombre').value.trim();
     const especialidad = document.getElementById('newSpecEspecialidad').value.trim();
     const telefono = document.getElementById('newSpecTelefono').value.trim();
-    if(!nombre){ toast('Ponle al menos el nombre.', 'warn'); return; }
+    if(!nombre){ toast('Escriba al menos el nombre.', 'warn'); return; }
     await addSpecialist(cat, nombre, especialidad, telefono);
     state.addingSpecialist = null;
     // selecciona automáticamente el que se acaba de agregar
@@ -3537,7 +3564,7 @@ function bindEvents(){
     const nombre = document.getElementById('editSpecNombre').value.trim();
     const especialidad = document.getElementById('editSpecEspecialidad').value.trim();
     const telefono = document.getElementById('editSpecTelefono').value.trim();
-    if(!nombre){ toast('Ponle al menos el nombre.', 'warn'); return; }
+    if(!nombre){ toast('Escriba al menos el nombre.', 'warn'); return; }
     await editSpecialist(cat, idx, nombre, especialidad, telefono);
     state.editingSpecialist = null;
     // refresca los datos del documento actual si este era el especialista seleccionado
@@ -3645,7 +3672,7 @@ function doPatientSearch(q){
   ).slice(0,8);
   box.innerHTML = matches.length ? `<div class="search-results">${matches.map((p,i)=>`
     <div class="search-item" data-pidx="${state.patients.indexOf(p)}"><b>${escapeHTML(p.nombre)}</b> — <span>DNI ${escapeHTML(p.dni||'—')}, ${escapeHTML(p.edad||'—')} años</span></div>
-  `).join('')}</div>` : `<div class="footnote" style="margin-top:8px;">Sin resultados. Puedes usar "Paciente nuevo".</div>`;
+  `).join('')}</div>` : `<div class="footnote" style="margin-top:8px;">Sin resultados. Puede usar «Nuevo paciente».</div>`;
 
   box.querySelectorAll('[data-pidx]').forEach(el=>{
     el.onclick = ()=>{
@@ -3704,10 +3731,10 @@ window.addEventListener('load', initGoogle);
 
 function connectGoogle(){
   if(GOOGLE_CLIENT_ID.startsWith('PON_AQUI')){
-    toast('Falta configurar el Client ID de Google en el código.', 'warn');
+    toast('Falta configurar el ID de cliente de Google en el código.', 'warn');
     return;
   }
-  if(!state.tokenClient){ toast('Google todavía está cargando, intenta de nuevo en un momento.', 'warn'); return; }
+  if(!state.tokenClient){ toast('Google todavía está cargando, intente de nuevo en un momento.', 'warn'); return; }
   state.tokenClient.requestAccessToken({prompt: state.accessToken?'':'consent'});
 }
 
@@ -3729,7 +3756,7 @@ async function sheetsFetch(path, opts){
 function loadSheetData(){
   loadSheetTabs().then(()=>{ loadPatients(); if(state.screen==='google') render(); }).catch(e=>{
     console.error(e);
-    toast(e.message==='sheets_error_404' || e.message==='sheets_error_403' ? 'No hay acceso a la hoja elegida: elíjala otra vez en ⚙ Google.' : 'No se pudo leer la hoja de pacientes.', 'warn');
+    toast(e.message==='sheets_error_404' || e.message==='sheets_error_403' ? 'No hay acceso a la hoja elegida: elíjala otra vez en Ajustes › Conexión con Google.' : 'No se pudo leer la hoja de pacientes.', 'warn');
   });
   loadSpecialistsFromSheet();
   loadConfigFromSheet();
@@ -4004,10 +4031,10 @@ async function addSpecialist(category, nombre, especialidad, telefono){
       });
     }catch(e){
       console.error(e);
-      toast('Se agregó en este dispositivo, pero no se pudo guardar en el Sheet.', 'warn');
+      toast('Se agregó en este dispositivo, pero no se pudo guardar en la hoja de Google.', 'warn');
     }
   } else {
-    toast('Guardado en este dispositivo. Conecta Google para que sincronice en todos.', 'warn');
+    toast('Guardado en este dispositivo. Conecte Google para que sincronice en todos.', 'warn');
   }
 }
 
@@ -4024,7 +4051,7 @@ async function editSpecialist(category, idx, nombre, especialidad, telefono){
       });
     }catch(e){
       console.error(e);
-      toast('Se actualizó en este dispositivo, pero no se pudo guardar en el Sheet.', 'warn');
+      toast('Se actualizó en este dispositivo, pero no se pudo guardar en la hoja de Google.', 'warn');
     }
   } else if(state.accessToken && state.sheetId && !row){
     // No teníamos el número de fila (ej. semilla no sincronizada aún) — lo agregamos como fila nueva
@@ -4035,7 +4062,7 @@ async function editSpecialist(category, idx, nombre, especialidad, telefono){
       });
     }catch(e){ console.error(e); }
   } else {
-    toast('Actualizado en este dispositivo. Conecta Google para que sincronice en todos.', 'warn');
+    toast('Actualizado en este dispositivo. Conecte Google para que sincronice en todos.', 'warn');
   }
 }
 
@@ -4043,7 +4070,7 @@ async function editSpecialist(category, idx, nombre, especialidad, telefono){
 function reprintFromHistory(idx){
   const row = state.historyRows[idx];
   const tpl = TEMPLATES.find(t=> t.title===row.tipo || t.n+'. '+t.title===row.tipo);
-  if(!tpl){ toast('No encontré esa plantilla.', 'err'); return; }
+  if(!tpl){ toast('No se encontró esa plantilla.', 'err'); return; }
   state.tpl = tpl;
   state.data = row.dataObj;
   state.patientMode = row.dataObj.__patientLabel ? 'search' : null;
@@ -4110,41 +4137,41 @@ function generateLetterPDF(){
       y += h + 0.15;
     }
 
-    doc.setFont('times','normal');
+    doc.setFont('helvetica','normal');
 
     if(!memb) headerLines().forEach(l=>{
-      doc.setFont('times', l.nombre ? 'bold' : 'normal'); doc.setFontSize(l.nombre ? 11 : 10);
+      doc.setFont('helvetica', l.nombre ? 'bold' : 'normal'); doc.setFontSize(l.nombre ? 11 : 10);
       doc.text(l.v, 4.25, y, {align:'center'}); y += l.nombre ? 0.21 : 0.19;
     });
-    doc.setFont('times','normal'); doc.setFontSize(10);
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
     y += 0.05;
     doc.text(fmtFechaCorta(d.__fecha)||fmtFechaCorta(todayISO()), marginL, y);
     y += 0.4;
 
     if(t.docTitle){
-      doc.setFont('times','bold'); doc.setFontSize(12);
+      doc.setFont('helvetica','bold'); doc.setFontSize(12);
       const titleLines = doc.splitTextToSize(t.docTitle, width);
       titleLines.forEach(line=>{ doc.text(line, 4.25, y, {align:'center'}); y += 0.22; });
-      doc.setFont('times','normal');
+      doc.setFont('helvetica','normal');
       y += 0.13;
     }
     if(t.addressee){
-      doc.setFont('times','bold'); doc.setFontSize(11);
+      doc.setFont('helvetica','bold'); doc.setFontSize(11);
       const lines = doc.splitTextToSize(t.addressee(d), width);
       doc.text(lines, marginL, y); y += lines.length*0.2 + 0.15;
-      doc.setFont('times','normal');
+      doc.setFont('helvetica','normal');
     }
 
     doc.setFontSize(10.5);
     (d.__editedBody ? editableTextToBody(d.__editedBody) : t.body(d)).forEach(p=>{
       if(p.t==='p'){
-        doc.setFont('times','normal');
+        doc.setFont('helvetica','normal');
         const lines = doc.splitTextToSize(p.v, width);
         if(y + lines.length*0.2 > LIM-0.2){ y=nuevaPagina(); }
         doc.text(lines, marginL, y);
         y += lines.length*0.2 + 0.14;
       } else if(p.t==='ul'){
-        doc.setFont('times','normal');
+        doc.setFont('helvetica','normal');
         p.v.forEach(item=>{
           const lines = doc.splitTextToSize('•  '+item, width-0.15);
           if(y + lines.length*0.2 > LIM-0.2){ y=nuevaPagina(); }
@@ -4154,18 +4181,18 @@ function generateLetterPDF(){
         y += 0.1;
       } else if(p.t==='h2'){
         if(y > LIM-0.8){ y=nuevaPagina(); }
-        doc.setFont('times','bold'); doc.setFontSize(11.5);
+        doc.setFont('helvetica','bold'); doc.setFontSize(11.5);
         const lines = doc.splitTextToSize(p.v, width);
         doc.text(lines, marginL, y);
         y += lines.length*0.22 + 0.12;
-        doc.setFont('times','normal'); doc.setFontSize(10.5);
+        doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
       } else if(p.t==='h3'){
         if(y > LIM-0.7){ y=nuevaPagina(); }
-        doc.setFont('times','bold'); doc.setFontSize(10.5);
+        doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
         const lines = doc.splitTextToSize(p.v, width);
         doc.text(lines, marginL, y);
         y += lines.length*0.2 + 0.08;
-        doc.setFont('times','normal'); doc.setFontSize(10.5);
+        doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
       }
     });
 
@@ -4173,7 +4200,7 @@ function generateLetterPDF(){
     const useElectronicSig = t.electronicSignature && state.signatureDataUrl && !t.signatureBlocks;
     if(useElectronicSig){
       if(y + 1.1 > LIM){ y=nuevaPagina(); }
-      doc.setFont('times','normal'); doc.setFontSize(10);
+      doc.setFont('helvetica','normal'); doc.setFontSize(10);
       doc.text('Atte.', marginL, y); y += 0.22;
       const maxW = 1.6, maxH = 0.55;
       const aspect = state.signatureAspect || 2.5;
@@ -4189,7 +4216,7 @@ function generateLetterPDF(){
       const colWidth = width/sigBlocks.length;
       const maxLines = Math.max(...sigBlocks.map(b=>b.length));
       if(y + maxLines*0.2 > LIM){ y=nuevaPagina(); }
-      doc.setFont('times','normal'); doc.setFontSize(10);
+      doc.setFont('helvetica','normal'); doc.setFontSize(10);
       sigBlocks.forEach((block, i)=>{
         let sy = y;
         block.forEach(l=>{ doc.text(l, marginL + i*colWidth, sy); sy+=0.2; });
@@ -4210,10 +4237,10 @@ function generateLetterPDF(){
   if(t.dosCopias) tramos.forEach(([c, a, b])=>{
     for(let pg = a; pg <= b; pg++){
       doc.setPage(pg);
-      doc.setFont('times','italic'); doc.setFontSize(8.5);
+      doc.setFont('helvetica','italic'); doc.setFontSize(8.5);
       doc.text(`${c} · Página ${pg-a+1} de ${b-a+1}`, 4.25, memb ? LIM + 0.15 : 10.6, {align:'center'});
     }
-    doc.setFont('times','normal');
+    doc.setFont('helvetica','normal');
   });
 
   const fnameFecha = d.__fecha || todayISO();
@@ -4225,7 +4252,7 @@ function generateLetterPDF(){
     toast('PDF generado ✓ — guardando en Drive…');
     uploadPDFToDrive(doc, fname).then(driveLink=>{
       saveToHistory(t.n+'. '+t.title, nombre, d, driveLink);
-      toast(driveLink ? 'Guardado en tu Drive ✓' : 'PDF descargado, pero no se pudo guardar en Drive.', driveLink?undefined:'warn');
+      toast(driveLink ? 'Guardado en su Drive ✓' : 'PDF descargado, pero no se pudo guardar en Drive.', driveLink?undefined:'warn');
     });
   } else {
     saveToHistory(t.n+'. '+t.title, nombre, d, null);
@@ -4260,9 +4287,9 @@ function renderCMHPreview(){
     <div style="margin-bottom:10px;"><strong>A quien interese</strong></div>
     <div>${escapeHTML(cmhParrafo(d))}</div>
   </div>
-  <div class="footnote" style="margin-top:10px;">Firma y sello van de tu puño y letra sobre la hoja impresa.</div>
+  <div class="footnote" style="margin-top:10px;">Firma y sello van de su puño y letra sobre la hoja impresa.</div>
   <div class="actions">
-    <button class="btn btn-ghost" id="btnWhatsApp">📤 Compartir PDF</button>
+    <button class="ms-i ms-i-share btn btn-ghost" id="btnWhatsApp">Compartir PDF</button>
     <button class="btn btn-primary" id="btnCMHGenerate">Generar PDF</button>
   </div>`;
 }
@@ -4311,11 +4338,11 @@ function generateCMHPDF(){
     toast('PDF generado ✓ — guardando en Drive…');
     uploadPDFToDrive(doc, cmhFname).then(driveLink=>{
       saveToHistory(t.n+'. '+t.title, d.nombre||'', d, driveLink);
-      toast(driveLink ? 'Guardado en tu Drive ✓ — imprime sobre el papel del Colegio Médico' : 'PDF descargado, pero no se pudo guardar en Drive.', driveLink?undefined:'warn');
+      toast(driveLink ? 'Guardado en su Drive ✓ — imprima sobre el papel del Colegio Médico' : 'PDF descargado, pero no se pudo guardar en Drive.', driveLink?undefined:'warn');
     });
   } else {
     saveToHistory(t.n+'. '+t.title, d.nombre||'', d, null);
-    toast('PDF generado ✓ — imprime sobre el papel del Colegio Médico');
+    toast('PDF generado ✓ — imprima sobre el papel del Colegio Médico');
   }
 }
 

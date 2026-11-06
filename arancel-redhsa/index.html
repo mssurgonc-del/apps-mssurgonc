@@ -12,7 +12,6 @@
 <title>Arancel REDHSA — Dr. Manuel Salinas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 /* MS-UI:INICIO */
@@ -124,6 +123,33 @@
 .ms-badge-ok{background:var(--ms-ok-bg);color:var(--ms-ok-ink);}
 .ms-toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ms-ink);color:#fff;padding:11px 18px;border-radius:var(--ms-pill);font-size:14px;box-shadow:var(--ms-shadow);z-index:60;max-width:90%;text-align:center;}
 
+/* Íconos de línea (en lugar de emojis). Uso: class="ms-i ms-i-print" en el botón; el ícono va antes del texto. */
+.ms-i::before{content:"";display:inline-block;width:1.15em;height:1.15em;margin-right:.45em;vertical-align:-.2em;background:currentColor;-webkit-mask:var(--ms-ico) center/contain no-repeat;mask:var(--ms-ico) center/contain no-repeat;flex:none;}
+.ms-i:empty::before{margin-right:0;}
+.ms-svg{width:1.15em;height:1.15em;vertical-align:-.2em;flex:none;}
+.ms-i-save{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z%22/%3E%3Cpath d=%22M17 21v-8H7v8M7 3v5h8%22/%3E%3C/svg%3E");}
+.ms-i-trash{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6M10 11v6M14 11v6%22/%3E%3C/svg%3E");}
+.ms-i-edit{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M12 20h9%22/%3E%3Cpath d=%22M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z%22/%3E%3C/svg%3E");}
+.ms-i-print{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M6 9V2h12v7%22/%3E%3Cpath d=%22M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2%22/%3E%3Cpath d=%22M6 14h12v8H6z%22/%3E%3C/svg%3E");}
+.ms-i-share{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8%22/%3E%3Cpath d=%22M16 6l-4-4-4 4M12 2v13%22/%3E%3C/svg%3E");}
+.ms-i-image{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223%22 y=%223%22 width=%2218%22 height=%2218%22 rx=%222%22/%3E%3Ccircle cx=%228.5%22 cy=%228.5%22 r=%221.5%22/%3E%3Cpath d=%22M21 15l-5-5L5 21%22/%3E%3C/svg%3E");}
+.ms-i-download{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3%22/%3E%3C/svg%3E");}
+.ms-i-upload{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12%22/%3E%3C/svg%3E");}
+.ms-i-text{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z%22/%3E%3Cpath d=%22M14 2v6h6M16 13H8M16 17H8%22/%3E%3C/svg%3E");}
+.ms-i-package{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M21 16V8l-9-5-9 5v8l9 5z%22/%3E%3Cpath d=%22M3.3 7 12 12l8.7-5M12 22V12%22/%3E%3C/svg%3E");}
+.ms-i-search{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Ccircle cx=%2211%22 cy=%2211%22 r=%227%22/%3E%3Cpath d=%22M21 21l-4.3-4.3%22/%3E%3C/svg%3E");}
+.ms-i-calendar{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223%22 y=%224%22 width=%2218%22 height=%2218%22 rx=%222%22/%3E%3Cpath d=%22M16 2v4M8 2v4M3 10h18%22/%3E%3C/svg%3E");}
+.ms-i-alert{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z%22/%3E%3Cpath d=%22M12 9v4M12 17h.01%22/%3E%3C/svg%3E");}
+.ms-i-lock{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%223%22 y=%2211%22 width=%2218%22 height=%2211%22 rx=%222%22/%3E%3Cpath d=%22M7 11V7a5 5 0 0 1 10 0v4%22/%3E%3C/svg%3E");}
+.ms-i-copy{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Crect x=%229%22 y=%229%22 width=%2213%22 height=%2213%22 rx=%222%22/%3E%3Cpath d=%22M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1%22/%3E%3C/svg%3E");}
+.ms-i-refresh{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M23 4v6h-6M1 20v-6h6%22/%3E%3Cpath d=%22M3.5 9a9 9 0 0 1 14.9-3.4L23 10M1 14l4.6 4.4A9 9 0 0 0 20.5 15%22/%3E%3C/svg%3E");}
+.ms-i-cloud{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M18 10h-1.3A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z%22/%3E%3C/svg%3E");}
+.ms-i-pill{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M10.5 20.5 20.5 10.5a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7zM8.5 8.5l7 7%22/%3E%3C/svg%3E");}
+.ms-i-clipboard{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2%22/%3E%3Crect x=%228%22 y=%222%22 width=%228%22 height=%224%22 rx=%221%22/%3E%3C/svg%3E");}
+.ms-i-flask{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3%22/%3E%3C/svg%3E");}
+.ms-i-user{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2%22/%3E%3Ccircle cx=%2212%22 cy=%227%22 r=%224%22/%3E%3C/svg%3E");}
+.ms-i-userplus{--ms-ico:url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22black%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22%3E%3Cpath d=%22M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2%22/%3E%3Ccircle cx=%229%22 cy=%227%22 r=%224%22/%3E%3Cpath d=%22M20 8v6M23 11h-6%22/%3E%3C/svg%3E");}
+
 /* Panel de hoja membretada (shared/ms-membrete.js) */
 .ms-memb .ms-seg{margin-bottom:12px;}
 .ms-memb-fila{display:flex;gap:14px;align-items:flex-start;margin-bottom:12px;}
@@ -163,8 +189,8 @@
     --ink-paper-muted:var(--ms-muted);
     --accent:var(--ms-accent);
     --accent-strong:var(--ms-accent);
-    --gold:#B45309;
-    --gold-ink:#92400E;
+    --gold:var(--ms-accent);
+    --gold-ink:var(--ms-accent-ink);
     --highlight:rgba(15,118,110,.10);
     --danger:var(--ms-danger);
     --rule-dark:var(--ms-line-strong);
@@ -185,7 +211,7 @@
   }
   h1,h2,h3{font-family:var(--ms-font);font-weight:500;margin:0;}
   button{font-family:inherit;}
-  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+  .mono{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-variant-numeric:tabular-nums;}
 
   #app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:640px;margin:0 auto;position:relative;}
 
@@ -218,9 +244,9 @@
   .propio-check{display:flex;gap:8px;align-items:center;font-size:14px !important;color:var(--ink) !important;margin-top:2px;}
   .propio-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
   .propio-actions button{padding:9px 14px;border-radius:10px;font:inherit;font-size:15px;font-weight:500;cursor:pointer;}
-  .propio-actions button[type=submit]{background:var(--accent);border:1px solid var(--accent);color:#0d1a16;}
+  .propio-actions button[type=submit]{background:var(--accent);border:1px solid var(--accent);color:#fff;}
   .propio-actions .btn-ghost{background:transparent;border:1px solid var(--rule-dark);color:var(--ink);}
-  .badge-propio{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;background:#7fb8a4;color:#0d1a16;vertical-align:1px;font-family:system-ui,sans-serif;}
+  .badge-propio{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;background:#7fb8a4;color:#fff;vertical-align:1px;font-family:var(--ms-font);}
   .propio-lista .preview-sample-row{display:flex;justify-content:space-between;gap:8px;align-items:center;}
   .propio-lista button{background:none;border:none;color:#e06c5a;font-size:19.5px;cursor:pointer;}
   #searchInput{
@@ -262,7 +288,7 @@
     display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
     transition:transform .15s;
   }
-  .result-row.just-added .result-add{background:var(--accent);color:#0d1a16;transform:scale(1.15);}
+  .result-row.just-added .result-add{background:var(--accent);color:#fff;transform:scale(1.15);}
   .result-sistema{font-size:11px;color:var(--ink-faint);margin-top:3px;}
 
   /* ---------- Cart tab ---------- */
@@ -284,9 +310,9 @@
   .cart-tab .ct-count{
     background:var(--ink-paper);color:var(--paper);border-radius:20px;
     min-width:22px;height:22px;padding:0 6px;font-size:13px;
-    display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    display:flex;align-items:center;justify-content:center;font-family:var(--ms-font);font-variant-numeric:tabular-nums;
   }
-  .cart-tab .ct-total{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;color:var(--ink-paper);}
+  .cart-tab .ct-total{font-family:var(--ms-font);font-variant-numeric:tabular-nums;color:var(--ink-paper);}
   .cart-tab.hidden{transform:translateX(-50%) translateY(120%);}
 
   /* ---------- Overlay & Drawers ---------- */
@@ -330,7 +356,7 @@
     display:flex;align-items:center;gap:5px;transition:background .15s,color .15s,border-color .15s;
   }
   .tape-copy-btn:active{background:var(--ink-paper);color:var(--paper);border-color:var(--ink-paper);}
-  .tape-copy-btn.copied{background:var(--accent);color:#0d1a16;border-color:var(--accent);}
+  .tape-copy-btn.copied{background:var(--accent);color:#fff;border-color:var(--accent);}
   .tape-copy-btn:disabled{opacity:.4;cursor:default;}
   .tape-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;min-height:0;}
   .tape-list{padding:6px 20px 4px;}
@@ -339,10 +365,10 @@
     border-bottom:1px dotted var(--rule-paper);
   }
   .tape-item .ti-main{flex:1;min-width:0;}
-  .tape-item .ti-code{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink-paper-muted);}
+  .tape-item .ti-code{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-paper-muted);}
   .tape-item .ti-name{font-size:14.5px;line-height:1.3;margin-top:1px;}
-  .tape-item .ti-value{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:14.5px;white-space:nowrap;padding-top:1px;}
-  .tape-item .ti-value.novalue{color:var(--ink-paper-muted);font-family:'Inter';font-size:12px;}
+  .tape-item .ti-value{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:14.5px;white-space:nowrap;padding-top:1px;}
+  .tape-item .ti-value.novalue{color:var(--ink-paper-muted);font-family:var(--ms-font);font-size:12px;}
   .ti-remove{
     background:none;border:none;color:var(--danger);font-size:19.5px;cursor:pointer;
     width:24px;height:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
@@ -366,7 +392,7 @@
   }
   .toggle-row .tr-label{flex:1;}
   .pct-input{
-    width:42px;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:14px;border:1px solid var(--rule-paper);
+    width:42px;font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:14px;border:1px solid var(--rule-paper);
     border-radius:6px;padding:3px 4px;text-align:center;background:#fff;color:var(--ink-paper);
   }
 
@@ -386,16 +412,16 @@
   .totals-grid-header span:nth-child(2), .totals-grid-header span:nth-child(3){text-align:right;}
   .totals-grid-row{font-size:13.5px;color:var(--ink-paper-muted);padding:5px 0;border-top:1px dotted var(--rule-paper);}
   .totals-grid-row span:nth-child(2), .totals-grid-row span:nth-child(3){text-align:right;color:var(--ink-paper);}
-  .totals-grid-row span:nth-child(3){color:var(--gold-ink,#8a5c1e);font-weight:500;}
+  .totals-grid-row span:nth-child(3){color:var(--gold-ink);font-weight:500;}
   .totals-grid-grand{
     padding:10px 0 4px;margin-top:4px;
     border-top:3px double var(--ink-paper);
     font-family:var(--ms-font);font-size:16.5px;font-weight:500;
   }
   .totals-grid-grand span:nth-child(2), .totals-grid-grand span:nth-child(3){
-    text-align:right;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:17px;
+    text-align:right;font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:17px;
   }
-  .totals-grid-grand span:nth-child(3){color:var(--gold-ink,#8a5c1e);}
+  .totals-grid-grand span:nth-child(3){color:var(--gold-ink);}
   .totals-note{font-size:12px;color:var(--ink-paper-muted);padding-top:2px;}
 
   .tape-seguro{
@@ -420,7 +446,7 @@
     border-left:3px solid var(--gold-ink);
   }
   .seguro-pay-row .pay-label{font-size:13.5px;color:var(--ink-paper);font-weight:500;}
-  .seguro-pay-row .pay-value{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:16px;font-weight:600;color:var(--gold-ink);white-space:nowrap;}
+  .seguro-pay-row .pay-value{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--gold-ink);white-space:nowrap;}
 
   .seguro-grand-box{
     margin-top:12px;padding:14px 16px;border-radius:10px;
@@ -431,7 +457,7 @@
     font-family:var(--ms-font);font-size:15px;font-weight:500;color:var(--paper);
   }
   .seguro-grand-box .grand-value{
-    font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:23.5px;font-weight:600;color:var(--gold);white-space:nowrap;
+    font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:23.5px;font-weight:600;color:var(--gold);white-space:nowrap;
   }
 
   .tape-actions{
@@ -471,7 +497,7 @@
   /* ---------- Upload preview ---------- */
   .preview-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}
   .stat-box{background:var(--surface-2);border-radius:10px;padding:12px;text-align:center;}
-  .stat-box .num{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:23.5px;color:var(--accent-strong);}
+  .stat-box .num{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:23.5px;color:var(--accent-strong);}
   .stat-box .lbl{font-size:12px;color:var(--ink-muted);margin-top:2px;}
   .preview-sample{background:var(--surface);border:1px solid var(--rule-dark);border-radius:10px;padding:4px 14px;max-height:180px;overflow-y:auto;margin:12px 0;}
   .preview-sample-row{padding:8px 0;border-bottom:1px solid var(--rule-dark);font-size:13.5px;}
@@ -493,17 +519,17 @@
     .spinner{animation:none;}
   }
 .result-fav{flex:0 0 auto;background:none;border:none;font-size:23.5px;line-height:1;padding:4px 6px 4px 0;color:var(--muted,#8a9a93);cursor:pointer;align-self:flex-start;}
-.result-fav.on{color:#e0b341;}
-.result-fav:focus-visible{outline:2px solid #e0b341;border-radius:6px;}
-button.armado{background:#b3261e !important;border-color:#b3261e !important;color:#fff !important;}
-.badge-anexo{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;background:#e0b341;color:#1b1500;vertical-align:1px;font-family:system-ui,sans-serif;}
-.manual-val{width:110px;margin-top:4px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--gold-ink,#8a5c1e);font:inherit;font-size:15px;text-align:right;background:transparent;color:inherit;}
+.result-fav.on{color:#D97706;}
+.result-fav:focus-visible{outline:2px solid var(--ms-accent);border-radius:6px;}
+button.armado{background:var(--ms-danger) !important;border-color:var(--ms-danger) !important;color:#fff !important;}
+.badge-anexo{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;background:var(--ms-warn-bg);color:var(--ms-warn-ink);border:1px solid var(--ms-warn-line);vertical-align:1px;font-family:var(--ms-font);}
+.manual-val{width:110px;margin-top:4px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--gold-ink);font:inherit;font-size:15px;text-align:right;background:transparent;color:inherit;}
 .ti-pct{font-size:12px;font-weight:450;opacity:.75;}
 .visitas-valor{width:72px;}
 .total-manual{width:100px;}
 .visitas-row{flex-direction:column;align-items:flex-start;gap:6px;}
 .visitas-modo{width:100%;padding:6px 8px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit;font-size:14px;}
-.manual-pct{width:52px;margin-right:2px;padding:3px 5px;border-radius:6px;border:1.5px solid var(--gold-ink,#8a5c1e);font:inherit;font-size:13px;text-align:right;background:transparent;color:inherit;}
+.manual-pct{width:52px;margin-right:2px;padding:3px 5px;border-radius:6px;border:1.5px solid var(--gold-ink);font:inherit;font-size:13px;text-align:right;background:transparent;color:inherit;}
 
   /* ---- Arancel sobre el estilo común ---- */
   body{font-family:var(--ms-font);background:var(--ms-bg);}
@@ -572,7 +598,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
     <div class="ms-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/><path d="M19 15v6M16 18h6"/></svg></div>
     <div class="ms-titles">
       <h1 class="ms-title">Arancel REDHSA</h1>
-      <div class="ms-sub">Honorarios médico quirúrgicos</div>
+      <div class="ms-sub">Honorarios médico-quirúrgicos</div>
     </div>
     <button class="ms-iconbtn" id="btnSettings" aria-label="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68 1.65 1.65 0 0 0 10 3.17V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </header>
@@ -620,11 +646,11 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
     <div class="tape">
       <div class="tape-header">
         <span>Procedimientos seleccionados</span>
-        <button class="tape-copy-btn" id="btnCopyList" aria-label="Copiar lista de códigos y procedimientos">⧉ Copiar lista</button>
+        <button class="ms-i ms-i-copy tape-copy-btn" id="btnCopyList" aria-label="Copiar lista de códigos y procedimientos">Copiar lista</button>
       </div>
       <div class="tape-scroll">
         <div class="tape-list" id="cartList"></div>
-        <p class="tape-empty" id="cartEmpty">Aún no has agregado procedimientos. Toca uno en la lista de búsqueda para empezar.</p>
+        <p class="tape-empty" id="cartEmpty">Aún no ha agregado procedimientos. Toque uno en la lista de búsqueda para empezar.</p>
         <div class="tape-adjustments">
           <div class="adj-pct-row">
             <span>Ajuste inflacionario 2014 → actual</span>
@@ -700,7 +726,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
           <div class="totals-note" id="visitasNote" style="display:none"></div>
           <div class="totals-note" id="segRowVisitasNote" style="display:none">No se suman al total: lo que reconozca el seguro por las visitas se le informa al paciente al momento del alta.</div>
           <div class="seguro-grand-box"><span class="grand-label">Total paciente</span><span class="grand-value" id="segTotalPaciente">L. 0.00</span></div>
-          <button class="patient-share" id="btnSharePatient">📤 Enviar presupuesto al paciente</button>
+          <button class="ms-i ms-i-share patient-share" id="btnSharePatient">Compartir presupuesto con el paciente</button>
         </div>
       </div>
 
@@ -726,7 +752,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
           <span>Procedimientos</span>
           <strong class="mono" id="datasetCountLabel">5,192</strong>
         </div>
-        <p class="settings-p">Si el arancel cambia, puedes subir el PDF nuevo aquí. Se procesa en tu dispositivo (no se sube a ningún servidor) y podrás revisar un resumen antes de reemplazar los datos.</p>
+        <p class="settings-p">Si el arancel cambia, puede subir el PDF nuevo aquí. Se procesa en su dispositivo (no se sube a ningún servidor) y podrá revisar un resumen antes de reemplazar los datos.</p>
         <label class="file-btn" id="fileBtnLabel">
           Subir nuevo PDF del arancel
           <input type="file" id="fileInput" accept="application/pdf" style="display:none">
@@ -931,8 +957,8 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     if (!q && sisFilter === '') {
       const todos = todosLosItems();
       const favItems = favs.map(c => todos.find(it => it[0] === c)).filter(Boolean);
-      const hint = '<p class="empty-state">Escribe un código o el nombre de un procedimiento para buscar entre los ' + dataset.items.length.toLocaleString('en-US') + ' procedimientos del arancel.' +
-        (favItems.length ? '' : ' Toca ☆ en un procedimiento para tenerlo siempre aquí.') + '</p>';
+      const hint = '<p class="empty-state">Escriba un código o el nombre de un procedimiento para buscar entre los ' + dataset.items.length.toLocaleString('en-US') + ' procedimientos del arancel.' +
+        (favItems.length ? '' : ' Toque ☆ en un procedimiento para tenerlo siempre aquí.') + '</p>';
       if (favItems.length) {
         list.innerHTML = '<div class="result-count">★ Favoritos</div>' + rowsHTML(favItems) + hint;
         bindRows(list, favItems);
@@ -1310,8 +1336,8 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
   }
   function flashCopyBtn(ok){
     const btn = $('btnCopyList');
-    const original = '⧉ Copiar lista';
-    btn.textContent = ok ? '✓ Copiado' : 'No se pudo copiar';
+    const original = 'Copiar lista';
+    btn.textContent = ok ? 'Copiado' : 'No se pudo copiar';
     btn.classList.toggle('copied', ok);
     setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1600);
   }
@@ -1369,9 +1395,9 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     let ok = false;
     try { if (navigator.clipboard && window.isSecureContext) { await navigator.clipboard.writeText(text); ok = true; } else ok = fallbackCopy(text); }
     catch(e) { ok = fallbackCopy(text); }
-    btn.textContent = ok ? '✓ Copiado: péguelo en WhatsApp' : 'No se pudo copiar';
+    btn.textContent = ok ? 'Copiado: péguelo en WhatsApp' : 'No se pudo copiar';
     btn.classList.toggle('copied', ok);
-    setTimeout(() => { btn.textContent = '📤 Enviar presupuesto al paciente'; btn.classList.remove('copied'); }, 2200);
+    setTimeout(() => { btn.textContent = 'Compartir presupuesto con el paciente'; btn.classList.remove('copied'); }, 2200);
   });
 
   // ---------------- Drawers ----------------
@@ -1669,13 +1695,13 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
     }
     $('previewBody').innerHTML =
       '<h3>Resumen del nuevo arancel</h3>' +
-      '<p class="settings-p">Revisa que las cifras y algunos nombres tengan sentido antes de reemplazar los datos actuales. Esta lectura es automática y puede tener pequeños errores en textos muy largos.</p>' +
+      '<p class="settings-p">Revise que las cifras y algunos nombres tengan sentido antes de reemplazar los datos actuales. Esta lectura es automática y puede tener pequeños errores en textos muy largos.</p>' +
       '<div class="preview-stats">' +
         '<div class="stat-box"><div class="num mono">'+parsed.items.length.toLocaleString('en-US')+'</div><div class="lbl">Procedimientos encontrados</div></div>' +
         '<div class="stat-box"><div class="num mono">'+withValue.toLocaleString('en-US')+'</div><div class="lbl">Con precio</div></div>' +
       '</div>' +
       '<div class="preview-sample">'+sampleHtml+'</div>' + avisoHtml +
-      '<button class="btn-secondary" id="btnConfirmUpload" style="background:var(--accent);border-color:var(--accent);color:#0d1a16;">Usar este arancel</button>' +
+      '<button class="btn-secondary" id="btnConfirmUpload" style="background:var(--accent);border-color:var(--accent);color:#fff;">Usar este arancel</button>' +
       '<button class="btn-secondary" id="btnCancelUpload">Cancelar</button>';
     $('btnConfirmUpload').addEventListener('click', () => {
       const meta = { source:'custom', updatedAt: new Date().toLocaleDateString('es-HN', {year:'numeric',month:'long',day:'numeric'}) };

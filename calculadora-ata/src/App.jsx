@@ -288,7 +288,7 @@ export default function App() {
   const handleExport = (mode) => {
     if (mode === 'emr') {
       let out = `📋 EVALUACIÓN CLÍNICA DE CÁNCER DE TIROIDES (GUÍAS ATA 2025)\n`;
-      out += `📅 Fecha: ${patientMeta.fecha}${patientMeta.id ? ` | ID: ${patientMeta.id}` : ''}\n`;
+      out += `📅 Fecha: ${String(patientMeta.fecha||'').split('-').reverse().join('/')}${patientMeta.id ? ` | ID: ${patientMeta.id}` : ''}\n`;
       out += `──────────────────────────────────────────────────\n`;
       out += `1. ESTRATIFICACIÓN POSOPERATORIA INICIAL (ATA 2025 & AJCC 8.ª Ed.):\n`;
       out += `• Histotipo (OMS 5.ª ed.): ${postopRes.histObj?.full || 'NIFTP'}\n`;
@@ -317,7 +317,7 @@ export default function App() {
       const bth = BETHESDA[nodule.bethesda];
       const L = SURG_LABELS;
       let out = `📋 EVALUACIÓN PREOPERATORIA — NÓDULO / CÁNCER DE TIROIDES\n`;
-      out += `📅 Fecha: ${patientMeta.fecha}${patientMeta.id ? ` | ID: ${patientMeta.id}` : ''}\n`;
+      out += `📅 Fecha: ${String(patientMeta.fecha||'').split('-').reverse().join('/')}${patientMeta.id ? ` | ID: ${patientMeta.id}` : ''}\n`;
       out += `──────────────────────────────────────────────────\n`;
       out += `1. ECOGRAFÍA (ACR TI-RADS 2017):\n`;
       out += `• Puntaje: ${t.pts} → ${t.level} (${t.name}); riesgo de cáncer en la serie del comité: ${t.risk}\n`;
@@ -409,7 +409,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-x-3 gap-y-2">
           <div className="w-[38px] h-[38px] rounded-full bg-teal-700 text-white flex items-center justify-center shrink-0"><IconShield /></div>
           <div className="min-w-0 flex-1">
-            <h1 className="text-[18px] font-[650] tracking-tight leading-tight truncate">ThyroidScore · ATA 2025</h1>
+            <h1 className="text-[18px] font-[650] tracking-tight leading-tight truncate">Calculadora ATA 2025</h1>
             <p className="text-xs text-slate-500 leading-tight truncate">Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985 · Corrigendum 35(11):1350</p>
           </div>
           <div className="flex items-center gap-2 order-3 sm:order-none w-full sm:w-auto">
@@ -1323,7 +1323,7 @@ export default function App() {
                     className="flex items-center justify-center gap-2 bg-teal-700 hover:bg-teal-800 text-white py-3 px-4 rounded-full font-[650] text-xs sm:text-sm shadow-md transition-all"
                   >
                     <IconCopy />
-                    {copyFeedback === 'emr' ? '¡Copiado al Expediente!' : 'Copiar Expediente (EMR)'}
+                    {copyFeedback === 'emr' ? '¡Nota copiada!' : 'Copiar nota para el expediente'}
                   </button>
                   <button
                     onClick={() => handleExport('excel')}
@@ -1669,7 +1669,7 @@ export default function App() {
           onClick={() => handleExport('preop')}
           className="lg:hidden fixed right-3 z-50 bottom-[calc(1rem+env(safe-area-inset-bottom))] flex items-center gap-1.5 bg-slate-900 text-white text-xs font-[650] px-3.5 py-2.5 rounded-full shadow-lg"
         >
-          <IconCopy /> {copyFeedback === 'preop' ? '¡Nota copiada!' : 'Copiar nota preop.'}
+          <IconCopy /> {copyFeedback === 'preop' ? '¡Nota copiada!' : 'Copiar nota preoperatoria'}
         </button>
       )}
     </div>

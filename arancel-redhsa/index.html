@@ -12,7 +12,6 @@
 <title>Arancel REDHSA — Dr. Manuel Salinas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <style>
 /* MS-UI:INICIO */
@@ -163,8 +162,8 @@
     --ink-paper-muted:var(--ms-muted);
     --accent:var(--ms-accent);
     --accent-strong:var(--ms-accent);
-    --gold:#B45309;
-    --gold-ink:#92400E;
+    --gold:var(--ms-accent);
+    --gold-ink:var(--ms-accent-ink);
     --highlight:rgba(15,118,110,.10);
     --danger:var(--ms-danger);
     --rule-dark:var(--ms-line-strong);
@@ -185,7 +184,7 @@
   }
   h1,h2,h3{font-family:var(--ms-font);font-weight:500;margin:0;}
   button{font-family:inherit;}
-  .mono{font-family:'IBM Plex Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums;}
+  .mono{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-variant-numeric:tabular-nums;}
 
   #app{display:flex;flex-direction:column;height:100vh;height:100dvh;max-width:640px;margin:0 auto;position:relative;}
 
@@ -218,9 +217,9 @@
   .propio-check{display:flex;gap:8px;align-items:center;font-size:14px !important;color:var(--ink) !important;margin-top:2px;}
   .propio-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
   .propio-actions button{padding:9px 14px;border-radius:10px;font:inherit;font-size:15px;font-weight:500;cursor:pointer;}
-  .propio-actions button[type=submit]{background:var(--accent);border:1px solid var(--accent);color:#0d1a16;}
+  .propio-actions button[type=submit]{background:var(--accent);border:1px solid var(--accent);color:#fff;}
   .propio-actions .btn-ghost{background:transparent;border:1px solid var(--rule-dark);color:var(--ink);}
-  .badge-propio{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;background:#7fb8a4;color:#0d1a16;vertical-align:1px;font-family:system-ui,sans-serif;}
+  .badge-propio{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;background:#7fb8a4;color:#fff;vertical-align:1px;font-family:var(--ms-font);}
   .propio-lista .preview-sample-row{display:flex;justify-content:space-between;gap:8px;align-items:center;}
   .propio-lista button{background:none;border:none;color:#e06c5a;font-size:19.5px;cursor:pointer;}
   #searchInput{
@@ -262,7 +261,7 @@
     display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
     transition:transform .15s;
   }
-  .result-row.just-added .result-add{background:var(--accent);color:#0d1a16;transform:scale(1.15);}
+  .result-row.just-added .result-add{background:var(--accent);color:#fff;transform:scale(1.15);}
   .result-sistema{font-size:11px;color:var(--ink-faint);margin-top:3px;}
 
   /* ---------- Cart tab ---------- */
@@ -284,9 +283,9 @@
   .cart-tab .ct-count{
     background:var(--ink-paper);color:var(--paper);border-radius:20px;
     min-width:22px;height:22px;padding:0 6px;font-size:13px;
-    display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+    display:flex;align-items:center;justify-content:center;font-family:var(--ms-font);font-variant-numeric:tabular-nums;
   }
-  .cart-tab .ct-total{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;color:var(--ink-paper);}
+  .cart-tab .ct-total{font-family:var(--ms-font);font-variant-numeric:tabular-nums;color:var(--ink-paper);}
   .cart-tab.hidden{transform:translateX(-50%) translateY(120%);}
 
   /* ---------- Overlay & Drawers ---------- */
@@ -330,7 +329,7 @@
     display:flex;align-items:center;gap:5px;transition:background .15s,color .15s,border-color .15s;
   }
   .tape-copy-btn:active{background:var(--ink-paper);color:var(--paper);border-color:var(--ink-paper);}
-  .tape-copy-btn.copied{background:var(--accent);color:#0d1a16;border-color:var(--accent);}
+  .tape-copy-btn.copied{background:var(--accent);color:#fff;border-color:var(--accent);}
   .tape-copy-btn:disabled{opacity:.4;cursor:default;}
   .tape-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1;min-height:0;}
   .tape-list{padding:6px 20px 4px;}
@@ -339,10 +338,10 @@
     border-bottom:1px dotted var(--rule-paper);
   }
   .tape-item .ti-main{flex:1;min-width:0;}
-  .tape-item .ti-code{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:12px;color:var(--ink-paper-muted);}
+  .tape-item .ti-code{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:12px;color:var(--ink-paper-muted);}
   .tape-item .ti-name{font-size:14.5px;line-height:1.3;margin-top:1px;}
-  .tape-item .ti-value{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:14.5px;white-space:nowrap;padding-top:1px;}
-  .tape-item .ti-value.novalue{color:var(--ink-paper-muted);font-family:'Inter';font-size:12px;}
+  .tape-item .ti-value{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:14.5px;white-space:nowrap;padding-top:1px;}
+  .tape-item .ti-value.novalue{color:var(--ink-paper-muted);font-family:var(--ms-font);font-size:12px;}
   .ti-remove{
     background:none;border:none;color:var(--danger);font-size:19.5px;cursor:pointer;
     width:24px;height:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
@@ -366,7 +365,7 @@
   }
   .toggle-row .tr-label{flex:1;}
   .pct-input{
-    width:42px;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:14px;border:1px solid var(--rule-paper);
+    width:42px;font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:14px;border:1px solid var(--rule-paper);
     border-radius:6px;padding:3px 4px;text-align:center;background:#fff;color:var(--ink-paper);
   }
 
@@ -386,16 +385,16 @@
   .totals-grid-header span:nth-child(2), .totals-grid-header span:nth-child(3){text-align:right;}
   .totals-grid-row{font-size:13.5px;color:var(--ink-paper-muted);padding:5px 0;border-top:1px dotted var(--rule-paper);}
   .totals-grid-row span:nth-child(2), .totals-grid-row span:nth-child(3){text-align:right;color:var(--ink-paper);}
-  .totals-grid-row span:nth-child(3){color:var(--gold-ink,#8a5c1e);font-weight:500;}
+  .totals-grid-row span:nth-child(3){color:var(--gold-ink);font-weight:500;}
   .totals-grid-grand{
     padding:10px 0 4px;margin-top:4px;
     border-top:3px double var(--ink-paper);
     font-family:var(--ms-font);font-size:16.5px;font-weight:500;
   }
   .totals-grid-grand span:nth-child(2), .totals-grid-grand span:nth-child(3){
-    text-align:right;font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:17px;
+    text-align:right;font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:17px;
   }
-  .totals-grid-grand span:nth-child(3){color:var(--gold-ink,#8a5c1e);}
+  .totals-grid-grand span:nth-child(3){color:var(--gold-ink);}
   .totals-note{font-size:12px;color:var(--ink-paper-muted);padding-top:2px;}
 
   .tape-seguro{
@@ -420,7 +419,7 @@
     border-left:3px solid var(--gold-ink);
   }
   .seguro-pay-row .pay-label{font-size:13.5px;color:var(--ink-paper);font-weight:500;}
-  .seguro-pay-row .pay-value{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:16px;font-weight:600;color:var(--gold-ink);white-space:nowrap;}
+  .seguro-pay-row .pay-value{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:16px;font-weight:600;color:var(--gold-ink);white-space:nowrap;}
 
   .seguro-grand-box{
     margin-top:12px;padding:14px 16px;border-radius:10px;
@@ -431,7 +430,7 @@
     font-family:var(--ms-font);font-size:15px;font-weight:500;color:var(--paper);
   }
   .seguro-grand-box .grand-value{
-    font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:23.5px;font-weight:600;color:var(--gold);white-space:nowrap;
+    font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:23.5px;font-weight:600;color:var(--gold);white-space:nowrap;
   }
 
   .tape-actions{
@@ -471,7 +470,7 @@
   /* ---------- Upload preview ---------- */
   .preview-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0;}
   .stat-box{background:var(--surface-2);border-radius:10px;padding:12px;text-align:center;}
-  .stat-box .num{font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace;font-size:23.5px;color:var(--accent-strong);}
+  .stat-box .num{font-family:var(--ms-font);font-variant-numeric:tabular-nums;font-size:23.5px;color:var(--accent-strong);}
   .stat-box .lbl{font-size:12px;color:var(--ink-muted);margin-top:2px;}
   .preview-sample{background:var(--surface);border:1px solid var(--rule-dark);border-radius:10px;padding:4px 14px;max-height:180px;overflow-y:auto;margin:12px 0;}
   .preview-sample-row{padding:8px 0;border-bottom:1px solid var(--rule-dark);font-size:13.5px;}
@@ -493,17 +492,17 @@
     .spinner{animation:none;}
   }
 .result-fav{flex:0 0 auto;background:none;border:none;font-size:23.5px;line-height:1;padding:4px 6px 4px 0;color:var(--muted,#8a9a93);cursor:pointer;align-self:flex-start;}
-.result-fav.on{color:#e0b341;}
-.result-fav:focus-visible{outline:2px solid #e0b341;border-radius:6px;}
-button.armado{background:#b3261e !important;border-color:#b3261e !important;color:#fff !important;}
-.badge-anexo{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;background:#e0b341;color:#1b1500;vertical-align:1px;font-family:system-ui,sans-serif;}
-.manual-val{width:110px;margin-top:4px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--gold-ink,#8a5c1e);font:inherit;font-size:15px;text-align:right;background:transparent;color:inherit;}
+.result-fav.on{color:#D97706;}
+.result-fav:focus-visible{outline:2px solid var(--ms-accent);border-radius:6px;}
+button.armado{background:var(--ms-danger) !important;border-color:var(--ms-danger) !important;color:#fff !important;}
+.badge-anexo{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;background:var(--ms-warn-bg);color:var(--ms-warn-ink);border:1px solid var(--ms-warn-line);vertical-align:1px;font-family:var(--ms-font);}
+.manual-val{width:110px;margin-top:4px;padding:6px 8px;border-radius:8px;border:1.5px solid var(--gold-ink);font:inherit;font-size:15px;text-align:right;background:transparent;color:inherit;}
 .ti-pct{font-size:12px;font-weight:450;opacity:.75;}
 .visitas-valor{width:72px;}
 .total-manual{width:100px;}
 .visitas-row{flex-direction:column;align-items:flex-start;gap:6px;}
 .visitas-modo{width:100%;padding:6px 8px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;font:inherit;font-size:14px;}
-.manual-pct{width:52px;margin-right:2px;padding:3px 5px;border-radius:6px;border:1.5px solid var(--gold-ink,#8a5c1e);font:inherit;font-size:13px;text-align:right;background:transparent;color:inherit;}
+.manual-pct{width:52px;margin-right:2px;padding:3px 5px;border-radius:6px;border:1.5px solid var(--gold-ink);font:inherit;font-size:13px;text-align:right;background:transparent;color:inherit;}
 
   /* ---- Arancel sobre el estilo común ---- */
   body{font-family:var(--ms-font);background:var(--ms-bg);}
@@ -572,7 +571,7 @@ button.armado{background:#b3261e !important;border-color:#b3261e !important;colo
     <div class="ms-mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h10"/><path d="M19 15v6M16 18h6"/></svg></div>
     <div class="ms-titles">
       <h1 class="ms-title">Arancel REDHSA</h1>
-      <div class="ms-sub">Honorarios médico quirúrgicos</div>
+      <div class="ms-sub">Honorarios médico-quirúrgicos</div>
     </div>
     <button class="ms-iconbtn" id="btnSettings" aria-label="Ajustes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68 1.65 1.65 0 0 0 10 3.17V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
   </header>
@@ -1675,7 +1674,7 @@ const DEFAULT_DATA = {"version":"2014-corregido-2026-10-21","sistemas":["Anexos:
         '<div class="stat-box"><div class="num mono">'+withValue.toLocaleString('en-US')+'</div><div class="lbl">Con precio</div></div>' +
       '</div>' +
       '<div class="preview-sample">'+sampleHtml+'</div>' + avisoHtml +
-      '<button class="btn-secondary" id="btnConfirmUpload" style="background:var(--accent);border-color:var(--accent);color:#0d1a16;">Usar este arancel</button>' +
+      '<button class="btn-secondary" id="btnConfirmUpload" style="background:var(--accent);border-color:var(--accent);color:#fff;">Usar este arancel</button>' +
       '<button class="btn-secondary" id="btnCancelUpload">Cancelar</button>';
     $('btnConfirmUpload').addEventListener('click', () => {
       const meta = { source:'custom', updatedAt: new Date().toLocaleDateString('es-HN', {year:'numeric',month:'long',day:'numeric'}) };

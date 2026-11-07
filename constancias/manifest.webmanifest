@@ -3,7 +3,7 @@
   "short_name": "Constancias",
   "description": "Constancias, referencias y consentimientos informados.",
   "lang": "es",
-  "id": "./",
+  "id": "/constancias/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

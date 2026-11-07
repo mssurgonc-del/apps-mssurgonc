@@ -3,7 +3,7 @@
   "short_name": "Apps MS",
   "description": "Calculadora ATA, Alta Quirúrgica, Constancias y Arancel.",
   "lang": "es",
-  "id": "./",
+  "id": "/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -3,7 +3,7 @@
   "short_name": "Alta",
   "description": "Recetas, indicaciones, laboratorios y citas al alta.",
   "lang": "es",
-  "id": "./",
+  "id": "/alta-quirurgica/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

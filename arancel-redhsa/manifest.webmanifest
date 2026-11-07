@@ -3,7 +3,7 @@
   "short_name": "Arancel",
   "description": "Honorarios médico-quirúrgicos REDHSA 2014: búsqueda, procedimientos múltiples y presupuesto para el paciente.",
   "lang": "es",
-  "id": "./",
+  "id": "/arancel-redhsa/",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

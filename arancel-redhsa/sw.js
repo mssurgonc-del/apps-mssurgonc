@@ -1,7 +1,7 @@
 // Funciona sin internet: guarda la app, sus íconos y el lector de PDF.
 // La página se busca primero en la red (para recibir actualizaciones) y, sin conexión, se usa la guardada.
-const CACHE = 'arancel-redhsa-v2';
-const ARCHIVOS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png',
+const CACHE = 'arancel-redhsa-v3';
+const ARCHIVOS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './icon.svg',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js',
   'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'];
 self.addEventListener('install', e => {

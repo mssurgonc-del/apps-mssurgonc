@@ -1,0 +1,32 @@
+{
+  "name": "Apps del Dr. Manuel Salinas",
+  "short_name": "Apps MS",
+  "description": "Calculadora ATA, Alta Quirúrgica, Constancias y Arancel.",
+  "lang": "es",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#F1F5F9",
+  "theme_color": "#FFFFFF",
+  "icons": [
+    {
+      "src": "icon-inicio-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-inicio-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-inicio-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

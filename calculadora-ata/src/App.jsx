@@ -407,7 +407,7 @@ export default function App() {
       {/* ENCABEZADO COMPACTO */}
       <header className="bg-white text-slate-900 px-4 pt-3 pb-2">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center gap-x-3 gap-y-2">
-          <div className="w-[38px] h-[38px] rounded-full bg-teal-700 text-white flex items-center justify-center shrink-0"><IconShield /></div>
+          <img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" className="w-[38px] h-[38px] rounded-[11px] shrink-0" />
           <div className="min-w-0 flex-1">
             <h1 className="text-[18px] font-[650] tracking-tight leading-tight truncate">Calculadora ATA 2025</h1>
             <p className="text-xs text-slate-500 leading-tight truncate">Ringel MD, Sosa JA, et al. Thyroid 2025;35(8):841–985 · Corrigendum 35(11):1350</p>

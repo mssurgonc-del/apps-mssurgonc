@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>Constancias — Dr. Manuel Salinas</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="theme-color" content="#FFFFFF">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="https://apis.google.com/js/api.js" async defer></script>
@@ -49,6 +53,10 @@
 .ms-header{background:var(--ms-surface);display:flex;align-items:center;gap:12px;padding:12px 16px 10px;}
 .ms-mark{width:38px;height:38px;border-radius:50%;background:var(--ms-accent);color:#fff;display:flex;align-items:center;justify-content:center;flex:none;}
 .ms-mark svg{width:19px;height:19px;}
+.ms-mark.ms-mark-app{background:none;border-radius:11px;overflow:hidden;}
+.ms-mark-app svg{width:100%;height:100%;display:block;}
+.ms-app-ic{width:40px;height:40px;flex:none;border-radius:11px;overflow:hidden;}
+.ms-app-ic svg{width:100%;height:100%;display:block;}
 .ms-titles{flex:1;min-width:0;}
 .ms-title{font-size:18px;font-weight:650;letter-spacing:-.02em;line-height:1.2;margin:0;color:var(--ms-ink);}
 .ms-sub{font-size:13px;color:var(--ms-muted);line-height:1.35;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -2814,7 +2822,7 @@ function renderHeader(){
   const on = !!state.accessToken;
   return `
   <header class="ms-header">
-    <div class="ms-mark">${ICON_DOC}</div>
+    <div class="ms-mark ms-mark-app"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="96" fill="#0f172a"/><path d="M150 104h150l70 70v206a24 24 0 0 1-24 24H150a24 24 0 0 1-24-24V128a24 24 0 0 1 24-24z" fill="#0d9488"/><path d="M300 104v52a18 18 0 0 0 18 18h52z" fill="#5eead4"/><rect x="166" y="206" width="150" height="20" rx="10" fill="#5eead4"/><rect x="166" y="250" width="176" height="20" rx="10" fill="#5eead4"/><rect x="166" y="294" width="120" height="20" rx="10" fill="#5eead4"/><circle cx="354" cy="370" r="66" fill="#2DD4BF" stroke="#0f172a" stroke-width="14"/><path d="M324 371l22 22 40-44" fill="none" stroke="#0f172a" stroke-width="18" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
     <div class="ms-titles">
       <h1 class="ms-title">Constancias</h1>
       <div class="ms-sub">Dr. Manuel Salinas · Cirujano Oncólogo</div>
@@ -3273,6 +3281,7 @@ function renderPreview(){
   </div>
   <h2 class="screentitle">Vista previa</h2>
   <div style="height:14px"></div>
+  ${!msMembreteGuardado() && !t.cmh ? `<div class="ms-banner ms-banner-warn" style="margin-bottom:12px;">En este aparato no está cargada la hoja membretada: el PDF saldrá con los datos del médico. Para usarla, cárguela en Ajustes › Encabezado de los documentos.</div>` : ''}
   <div class="paper-preview">
     ${msMembrete() ? `<div aria-label="Hoja membretada" style="margin:-4px 0 10px;aspect-ratio:8.5/${msMembrete().top};background:url(${msMembrete().img}) top center/100% auto no-repeat;"></div>` : ''}
     ${!msMembrete() && state.logoDataUrl ? `<div style="text-align:center;"><img src="${state.logoDataUrl}" style="${(state.logoAspect||2.5) >= 3.5 ? 'width:100%;' : 'max-height:110px;max-width:260px;'}margin-bottom:10px;"></div>` : ''}
